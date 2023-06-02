@@ -1,0 +1,315 @@
+package com.shamless.bookingtech.integration.automation.service;
+
+import com.google.gson.Gson;
+import com.shamless.bookingtech.integration.automation.*;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.shamless.bookingtech.common.util.StringUtil.returnJustDigits;
+
+@Component
+@Slf4j
+public class BookingService {
+    private final AutomationOperation operation;
+
+    public BookingService(AutomationOperation operation) {
+        this.operation = operation;
+    }
+
+    public List<HotelPriceExtDto> fetchBookingData() throws InterruptedException {
+        operation.start("https://www.booking.com/");
+        closeRegisterModal();
+        changeLanguage("English (US)");
+        changeCurrency("GBP");
+        enterLocation("Norwich, United Kingdom");
+        enterDateByDayRange("1");
+        enterCustomerTypeAndCount();
+        clickSearchButton();
+        //operation.timeout(20);
+        WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
+                .map(e -> e.findElements(By.cssSelector("[aria-live='assertive']")).stream().findFirst()
+                        .orElseGet(() -> {
+                            log.error("Property count title not found!");
+                            throw new NoSuchElementException("Property count title not found!");
+                        })).orElseGet(() -> {
+                    log.error("Property count title not found!");
+                    throw new NoSuchElementException("Property count title not found!");
+                });
+        int hotelCountTotal = Integer.parseInt(returnJustDigits(title.getText()));
+        List<WebElement> hotelDivList = getHotelDivList();
+        int hotelCountOnPage = hotelDivList.size();
+        List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
+        if (hotelCountTotal > hotelCountOnPage) {
+            int divide = hotelCountTotal / hotelCountOnPage;
+            int mod = hotelCountTotal % hotelCountOnPage;
+            int pageCount = (mod > 0) ? (divide + 1) : divide;
+            if (pageCount > 1) {
+                hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+                Optional<WebElement> pagination = operation.findElementByCssSelector("[data-testid='pagination']", ReturnAttitude.ERROR);
+                for (int currentPage = 2; currentPage <= pageCount; currentPage++) {
+                    int finalCurrentPage = currentPage;
+                    pagination.ifPresentOrElse(e -> {
+                        e.findElements(By.cssSelector("[aria-label=' " + finalCurrentPage + "'"))
+                                .stream()
+                                //.filter(e1 -> e1.getText().equals(String.valueOf(finalCurrentPage)))
+                                .findFirst().ifPresentOrElse(button -> {
+                                    log.info("Page button count {}", finalCurrentPage);
+                                    operation.click(button);
+                                    try {
+                                        operation.timeout(30);
+                                    } catch (InterruptedException ex) {
+                                        log.warn("Timeout interrupted!");
+                                    }
+                                    List<WebElement> hotelDivListInside = getHotelDivList();
+                                    hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivListInside, finalCurrentPage));
+                                }, () -> {
+                                    log.error("Pagination not found!");
+                                    throw new NoSuchElementException("Pagination not found!");
+                                });
+
+                    }, () -> {
+                        log.error("Pagination not found!");
+                        throw new NoSuchElementException("Pagination not found!");
+                    });
+
+                }
+            }
+        } else if (hotelCountTotal < hotelCountOnPage) {
+            hotelDivList = hotelDivList.stream().limit(hotelCountTotal).collect(Collectors.toList());
+            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+        } else {
+            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+        }
+
+        log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
+        Gson gson = new Gson();
+        String json = gson.toJson(hotelPriceExtDtoList);
+        log.info(json);
+        operation.finish();
+        return hotelPriceExtDtoList;
+    }
+
+    private List<WebElement> getHotelDivList(){
+        log.info("Hotel divs taking...");
+        List<WebElement> hotelDivList = operation.findElementsByCssSelector("[data-testid='property-card']");
+        if (hotelDivList.isEmpty()) {
+            log.error("Hotels not found!");
+            throw new NoSuchElementException("Hotel not found!");
+        }
+        return hotelDivList;
+    }
+
+    private List<HotelPriceExtDto> fetchDataFromPage(List<WebElement> hotelDivList, int page) {
+        log.info("Page {} data fetching...", page);
+        List<HotelPriceExtDto> hotelPriceExtDtoList = hotelDivList.stream().map(hotel -> {
+            HotelPriceExtDto hotelPriceExtDto = new HotelPriceExtDto();
+            hotelPriceExtDto.setHotelName(fetchAndSetHotelName(hotel));
+            hotelPriceExtDto.setPrice(fetchAndSetPrice(hotel));
+            return hotelPriceExtDto;
+        }).collect(Collectors.toList());
+        log.info("Total {} hotel and price fetched from page {}", hotelPriceExtDtoList.size(), page);
+        Gson gson = new Gson();
+        String json = gson.toJson(hotelPriceExtDtoList);
+        log.info(json);
+        return hotelPriceExtDtoList;
+    }
+
+    private void changeLanguage(String language) {
+        Optional<WebElement> languageModalButton = operation.findElementByCssSelector("[data-testid='header-language-picker-trigger']", ReturnAttitude.ERROR);
+        operation.click(languageModalButton);
+        List<WebElement> languageList = operation.findElementsByCssSelector("[data-testid='selection-item']");
+        if (languageList.isEmpty()) {
+            log.error("Language List not found!");
+            throw new NoSuchElementException("Language List not found!");
+        }
+        languageList.stream().flatMap(lang -> {
+            List<WebElement> elm = lang.findElements(By.cssSelector("span.cf67405157"));
+            if (!elm.isEmpty() && language.equalsIgnoreCase(elm.get(0).getText())) {
+                return Stream.of(lang);
+            }
+            return Stream.empty();
+        }).findFirst().ifPresent(operation::click);
+    }
+
+    private void changeCurrency(String currency) {
+        Optional<WebElement> currencyModalButton = operation.findElementByCssSelector("[data-testid='header-currency-picker-trigger']", ReturnAttitude.ERROR);
+        operation.click(currencyModalButton);
+        List<WebElement> currencyList = operation.findElementsByCssSelector("[data-testid='selection-item']");
+        if (currencyList.isEmpty()) {
+            log.error("Currency List not found!");
+            throw new NoSuchElementException("Currency List not found!");
+        }
+        currencyList.stream().flatMap(cur -> {
+            List<WebElement> elm = cur.findElements(By.cssSelector("div.ea1163d21f"));
+            if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
+                log.info("{} currency found successfully", currency);
+                return Stream.of(cur);
+            }
+            return Stream.empty();
+        }).findFirst().ifPresent(operation::click);
+    }
+
+    private void closeSelectionModal(String modalName) {
+        operation.findElementByCssSelector("[data-testid='selection-modal-close']", ReturnAttitude.ERROR)
+                .ifPresentOrElse(operation::click, () -> {
+                    log.error("{} Modal Close Button not found!", modalName);
+                    throw new NoSuchElementException(modalName + " Modal Close Button not found!");
+                });
+    }
+
+    private BigDecimal fetchAndSetPrice(WebElement hotel) {
+        log.info("Checking price...");
+        List<WebElement> priceList = hotel.findElements(By.cssSelector("[data-testid='price-and-discounted-price']"));
+        if (priceList.isEmpty()) {
+            log.error("Hotel price not found!");
+            throw new NoSuchElementException("Hotel title not found!");
+        }
+        String price = priceList.get(0).getText();
+        log.info("hotel price fetched successful: {}", price);
+        String priceDigit = returnJustDigits(price);
+        return BigDecimal.valueOf(Long.parseLong(priceDigit));
+    }
+
+    private String fetchAndSetHotelName(WebElement hotel) {
+        log.info("Checking hotel name...");
+        List<WebElement> titleList = hotel.findElements(By.cssSelector("[data-testid='title']"));
+        if (titleList.isEmpty()) {
+            log.error("Hotel title not found!");
+            throw new NoSuchElementException("Hotel title not found!");
+        }
+        String hotelName = titleList.get(0).getText();
+        log.info("hotel name fetched successful: {}", hotelName);
+        return hotelName;
+    }
+
+    private void closeRegisterModal() throws InterruptedException {
+        for (int i = 10; i > 0; i--) {
+            log.info("Clicking close register modal x button...");
+            List<WebElement> xButtonInRegisterModal = operation.findElementsByCssSelector("button.fc63351294.a822bdf511.e3c025e003.fa565176a8.f7db01295e.c334e6f658.ae1678b153");
+            if (xButtonInRegisterModal.size() == 1 && xButtonInRegisterModal.get(0).isDisplayed()) {
+                log.info("Close register modal x button found successfully...");
+                operation.click(xButtonInRegisterModal.get(0));
+                log.info("Clicked register modal close button found successfully...");
+                break;
+            }
+            log.warn("Not found already register modal close button. Trying again...");
+            operation.timeout(2);
+        }
+    }
+
+    private void enterLocation(String location) {
+        Optional<WebElement> locationInput = operation.findElementById(":Ra9:");
+        operation.click(locationInput);
+        operation.sendKeys(location, locationInput);
+    }
+
+    private void enterDateByDayRange(String day) {
+        Optional<WebElement> dateRangeInput = operation.findElementByCssSelector("div.d606c76c5a", ReturnAttitude.ERROR);
+        dateRangeInput.ifPresentOrElse(operation::click, () -> {
+            log.error("Hata");
+            throw new NoSuchElementException("Hata");
+        });
+        selectDateRangeFromCalendar(LocalDate.now(), LocalDate.now().plusDays(Long.parseLong(day)));
+    }
+
+    private void selectDateRangeFromCalendar(LocalDate now, LocalDate plusDays) {
+        List<WebElement> dates = operation.findElementsByCssSelector("span.b21c1c6c83");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        goToDayOnCalendar(now, dates, formatter);
+        //goToDayOnCalendar(plusDays, dates, formatter);
+    }
+
+    private void goToDayOnCalendar(LocalDate date, List<WebElement> dates, DateTimeFormatter formatter) {
+        String today = date.format(formatter);
+        dates.stream()
+                .filter(e -> today.equals(e.getAttribute("data-date"))).findFirst()
+                .ifPresentOrElse(operation::click, () -> {
+                    log.error("Date not found");
+                    throw new NoSuchElementException("Date not found!");
+                });
+    }
+
+    private void enterCustomerTypeAndCount() throws InterruptedException {
+        Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("div.d67edddcf0", ReturnAttitude.ERROR);
+        operation.click(elementByCssSelector);
+        List<WebElement> customerTypeAndCountDivList = operation.findElementsByCssSelector("div.b2b5147b20");
+        outerLoop:
+        for (WebElement customerTypeAndCountDiv : customerTypeAndCountDivList) {
+            List<WebElement> customerTypeAndCountLabelList = customerTypeAndCountDiv.findElements(By.cssSelector("label.a68a7ee8ee"));
+            if (customerTypeAndCountLabelList.isEmpty()) {
+                log.error("customerTypeAndCount Label not found!");
+                throw new NoSuchElementException("customerTypeAndCountDiv not found!");
+            }
+            log.info("customerTypeAndCount Label is available");
+            String forGroup = customerTypeAndCountLabelList.get(0).getAttribute("for");
+            for (CustomerSelectType selectType : CustomerSelectType.values()) {
+                boolean isReturn = chooseCustomerTypeAndCount(selectType, forGroup, customerTypeAndCountDiv);
+                if (isReturn) continue outerLoop;
+            }
+        }
+
+    }
+
+    private boolean chooseCustomerTypeAndCount(CustomerSelectType selectType, String forGroup, WebElement customerTypeAndCountDiv) throws InterruptedException {
+        if (selectType.getForGroup().equals(forGroup)) {
+            List<WebElement> customerCountSpanList = customerTypeAndCountDiv.findElements(By.cssSelector("span.e615eb5e43"));
+            if (customerCountSpanList.isEmpty()) {
+                log.error("customerCountSpan not found!");
+                throw new NoSuchElementException("customerCountSpan not found!");
+            }
+            log.info("customerCountSpan is available");
+            log.info("customerCountSpan text fetching...");
+            String text = customerCountSpanList.get(0).getText();
+            log.info("customerCountSpan text is {}", text);
+            if (text == null) {
+                log.error("customerCountSpan text is empty!");
+                throw new IllegalArgumentException("customerCountSpan text is empty!");
+            }
+            int customerCount = Integer.parseInt(text);
+            if (customerCount != selectType.getCount()) {
+                if (customerCount > selectType.getCount()) {
+                    //minus
+                    int clickCount = customerCount - selectType.getCount();
+                    pressButton(customerTypeAndCountDiv, clickCount, ButtonType.MINUS);
+                } else {
+                    //plus
+                    int clickCount = selectType.getCount() - customerCount;
+                    pressButton(customerTypeAndCountDiv, clickCount, ButtonType.PLUS);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void pressButton(WebElement customerTypeAndCountDiv, int clickCount, ButtonType buttonType) throws InterruptedException {
+        for (int i = 0; i < clickCount; i++) {
+            List<WebElement> button = customerTypeAndCountDiv.findElements(By.cssSelector(buttonType.getSelector()));
+            if (button.isEmpty()) {
+                log.error(buttonType.name() + " button not found!");
+                throw new IllegalArgumentException(buttonType.name() + " button not found!");
+            }
+            operation.click(button.get(0));
+            operation.timeout(1);
+        }
+    }
+
+    private void clickSearchButton() {
+        log.info("Clicking search button...");
+        Optional<WebElement> searchButton = operation.findElementByCssSelector("button.fc63351294.a822bdf511.d4b6b7a9e7.cfb238afa1.c938084447.f4605622ad.aa11d0d5cd", ReturnAttitude.ERROR);
+        operation.click(searchButton);
+        log.info("Clicked search button successfully");
+    }
+}
