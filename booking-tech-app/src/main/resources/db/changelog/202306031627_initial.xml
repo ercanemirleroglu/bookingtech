@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="202306031628-1" author="ercan">
+        <createTable tableName="location">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_team"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP"/>
+            <column name="name" type="VARCHAR2(100)"/>
+        </createTable>
+        <createSequence sequenceName="location_id_seq"/>
+    </changeSet>
+    <changeSet id="202306031628-2" author="ercan">
+        <createTable tableName="hotel">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_tournament"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP"/>
+            <column name="name" type="VARCHAR2(100)"/>
+            <column name="rating" type="double precision"/>
+            <column name="location_id" type="BIGINT"/>
+        </createTable>
+        <createSequence sequenceName="hotel_id_seq"/>
+    </changeSet>
+    <changeSet id="202306031628-3" author="ercan">
+        <createTable tableName="price">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_tour"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP"/>
+            <column name="current_value" type="${money}"/>
+            <column name="previous_value" type="${money}"/>
+            <column name="current_currency" type="CHAR(3)"/>
+            <column name="previous_currency" type="CHAR(3)"/>
+            <column name="hotel_id" type="BIGINT"/>
+            <column name="param_adult" type="INTEGER"/>
+            <column name="param_child" type="INTEGER"/>
+            <column name="param_room" type="INTEGER"/>
+        </createTable>
+        <createSequence sequenceName="price_id_seq"/>
+    </changeSet>
+    <changeSet id="202306031628-4" author="ercan">
+        <createTable tableName="param">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_leaguesituation"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP"/>
+            <column name="key" type="VARCHAR2(100)"/>
+            <column name="value" type="VARCHAR2(100)"/>
+        </createTable>
+        <createSequence sequenceName="param_id_seq"/>
+    </changeSet>
+
+    <changeSet id="202306031628-5" author="ercan">
+        <addForeignKeyConstraint baseTableName="hotel"
+                                 baseColumnNames="location_id"
+                                 constraintName="fk_location_hotel_id"
+                                 referencedTableName="location"
+                                 referencedColumnNames="id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+        />
+    </changeSet>
+    <changeSet id="202306031628-6" author="ercan">
+        <addForeignKeyConstraint baseTableName="price"
+                                 baseColumnNames="hotel_id"
+                                 constraintName="fk_hotel_price_id"
+                                 referencedTableName="hotel"
+                                 referencedColumnNames="id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+        />
+    </changeSet>
+</databaseChangeLog>
