@@ -1,5 +1,6 @@
 package com.shamless.bookingtech.domain.entity;
 
+import com.shamless.bookingtech.common.util.model.Param;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,8 @@ public class ParamEntity extends AbstractEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "param_id_seq_generator")
     private Long id;
-    private String key;
+    @Enumerated(EnumType.STRING)
+    private Param key;
     private String value;
 
 }
