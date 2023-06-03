@@ -1,5 +1,6 @@
 package com.shamless.bookingtech.integration.automation;
 
+import com.shamless.bookingtech.integration.automation.model.ReturnAttitude;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -22,6 +23,7 @@ public class AutomationOperation extends AutomationDriver {
     }
 
     public void finish(){
+        log.info("Session is closing...");
         terminateDriver();
     }
 

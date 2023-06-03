@@ -1,18 +1,25 @@
 package com.shamless.bookingtech.integration.automation.service;
 
 import com.google.gson.Gson;
+import com.shamless.bookingtech.common.util.JsonUtil;
+import com.shamless.bookingtech.common.util.model.AppMoney;
+import com.shamless.bookingtech.common.util.model.Param;
 import com.shamless.bookingtech.integration.automation.*;
+import com.shamless.bookingtech.integration.automation.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.javamoney.moneta.Money;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Component;
 
+import javax.money.Monetary;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,14 +35,15 @@ public class BookingService {
         this.operation = operation;
     }
 
-    public List<HotelPriceExtDto> fetchBookingData() throws InterruptedException {
+    public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) throws InterruptedException {
         operation.start("https://www.booking.com/");
         closeRegisterModal();
-        changeLanguage("English (US)");
-        changeCurrency("GBP");
-        enterLocation("Norwich, United Kingdom");
-        enterDateByDayRange("1");
-        enterCustomerTypeAndCount();
+        changeLanguage(params.get(Param.APP_LANGUAGE));
+        changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
+        enterLocation(params.get(Param.SEARCH_LOCATION));
+        enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
+        List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
+        enterCustomerTypeAndCount(customerSelectModels);
         clickSearchButton();
         //operation.timeout(20);
         WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
@@ -92,13 +100,17 @@ public class BookingService {
         } else {
             hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
         }
-
         log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
-        Gson gson = new Gson();
-        String json = gson.toJson(hotelPriceExtDtoList);
-        log.info(json);
+        printDtoOnLog(hotelPriceExtDtoList);
         operation.finish();
         return hotelPriceExtDtoList;
+    }
+
+    private void printDtoOnLog(List<HotelPriceExtDto> hotelPriceExtDtoList) {
+        @SuppressWarnings("unchecked")
+        JsonUtil<HotelPriceExtDto> jsonUtil = (JsonUtil<HotelPriceExtDto>) JsonUtil.getInstance();
+        String json = jsonUtil.toJson(hotelPriceExtDtoList);
+        log.info(json);
     }
 
     private List<WebElement> getHotelDivList(){
@@ -117,12 +129,12 @@ public class BookingService {
             HotelPriceExtDto hotelPriceExtDto = new HotelPriceExtDto();
             hotelPriceExtDto.setHotelName(fetchAndSetHotelName(hotel));
             hotelPriceExtDto.setPrice(fetchAndSetPrice(hotel));
+            hotelPriceExtDto.setLocation(fetchAndSetLocation(hotel));
+            hotelPriceExtDto.setRating(fetchAndSetRating(hotel));
             return hotelPriceExtDto;
         }).collect(Collectors.toList());
         log.info("Total {} hotel and price fetched from page {}", hotelPriceExtDtoList.size(), page);
-        Gson gson = new Gson();
-        String json = gson.toJson(hotelPriceExtDtoList);
-        log.info(json);
+        printDtoOnLog(hotelPriceExtDtoList);
         return hotelPriceExtDtoList;
     }
 
@@ -169,7 +181,7 @@ public class BookingService {
                 });
     }
 
-    private BigDecimal fetchAndSetPrice(WebElement hotel) {
+    private AppMoney fetchAndSetPrice(WebElement hotel) {
         log.info("Checking price...");
         List<WebElement> priceList = hotel.findElements(By.cssSelector("[data-testid='price-and-discounted-price']"));
         if (priceList.isEmpty()) {
@@ -179,7 +191,9 @@ public class BookingService {
         String price = priceList.get(0).getText();
         log.info("hotel price fetched successful: {}", price);
         String priceDigit = returnJustDigits(price);
-        return BigDecimal.valueOf(Long.parseLong(priceDigit));
+        BigDecimal priceNum = BigDecimal.valueOf(Double.parseDouble(priceDigit));
+        Money money = Money.of(priceNum, Monetary.getCurrency("GBP"));
+        return new AppMoney(money);
     }
 
     private String fetchAndSetHotelName(WebElement hotel) {
@@ -192,6 +206,35 @@ public class BookingService {
         String hotelName = titleList.get(0).getText();
         log.info("hotel name fetched successful: {}", hotelName);
         return hotelName;
+    }
+
+    private Double fetchAndSetRating(WebElement hotel) {
+        log.info("Checking Rating...");
+        List<WebElement> ratingList = hotel.findElements(By.cssSelector("[data-testid='review-score']"));
+        if (ratingList.isEmpty()) {
+            log.warn("Rating div not found!");
+            return null;
+        }
+        List<WebElement> ratings = ratingList.get(0).findElements(By.cssSelector("div.b5cd09854e.d10a6220b4"));
+        if (ratings.isEmpty()) {
+            log.warn("Ratings not found!");
+            return null;
+        }
+        String rating = ratings.get(0).getText();
+        log.info("Rating fetched successful: {}", rating);
+        return Double.parseDouble(rating);
+    }
+
+    private String fetchAndSetLocation(WebElement hotel) {
+        log.info("Checking location...");
+        List<WebElement> locationList = hotel.findElements(By.cssSelector("[data-testid='address']"));
+        if (locationList.isEmpty()) {
+            log.error("Location not found!");
+            throw new NoSuchElementException("Location not found!");
+        }
+        String location = locationList.get(0).getText();
+        log.info("Location fetched successful: {}", location);
+        return location;
     }
 
     private void closeRegisterModal() throws InterruptedException {
@@ -241,7 +284,7 @@ public class BookingService {
                 });
     }
 
-    private void enterCustomerTypeAndCount() throws InterruptedException {
+    private void enterCustomerTypeAndCount(List<CustomerSelectModel> customerSelectModels) throws InterruptedException {
         Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("div.d67edddcf0", ReturnAttitude.ERROR);
         operation.click(elementByCssSelector);
         List<WebElement> customerTypeAndCountDivList = operation.findElementsByCssSelector("div.b2b5147b20");
@@ -254,16 +297,16 @@ public class BookingService {
             }
             log.info("customerTypeAndCount Label is available");
             String forGroup = customerTypeAndCountLabelList.get(0).getAttribute("for");
-            for (CustomerSelectType selectType : CustomerSelectType.values()) {
-                boolean isReturn = chooseCustomerTypeAndCount(selectType, forGroup, customerTypeAndCountDiv);
+            for (CustomerSelectModel selectModel : customerSelectModels) {
+                boolean isReturn = chooseCustomerTypeAndCount(selectModel, forGroup, customerTypeAndCountDiv);
                 if (isReturn) continue outerLoop;
             }
         }
 
     }
 
-    private boolean chooseCustomerTypeAndCount(CustomerSelectType selectType, String forGroup, WebElement customerTypeAndCountDiv) throws InterruptedException {
-        if (selectType.getForGroup().equals(forGroup)) {
+    private boolean chooseCustomerTypeAndCount(CustomerSelectModel selectModel, String forGroup, WebElement customerTypeAndCountDiv) throws InterruptedException {
+        if (selectModel.getType().getForGroup().equals(forGroup)) {
             List<WebElement> customerCountSpanList = customerTypeAndCountDiv.findElements(By.cssSelector("span.e615eb5e43"));
             if (customerCountSpanList.isEmpty()) {
                 log.error("customerCountSpan not found!");
@@ -278,14 +321,14 @@ public class BookingService {
                 throw new IllegalArgumentException("customerCountSpan text is empty!");
             }
             int customerCount = Integer.parseInt(text);
-            if (customerCount != selectType.getCount()) {
-                if (customerCount > selectType.getCount()) {
+            if (customerCount != selectModel.getCount()) {
+                if (customerCount > selectModel.getCount()) {
                     //minus
-                    int clickCount = customerCount - selectType.getCount();
+                    int clickCount = customerCount - selectModel.getCount();
                     pressButton(customerTypeAndCountDiv, clickCount, ButtonType.MINUS);
                 } else {
                     //plus
-                    int clickCount = selectType.getCount() - customerCount;
+                    int clickCount = selectModel.getCount() - customerCount;
                     pressButton(customerTypeAndCountDiv, clickCount, ButtonType.PLUS);
                 }
             }

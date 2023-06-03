@@ -1,0 +1,6 @@
+package com.shamless.bookingtech.integration.automation.model;
+
+public enum ReturnAttitude {
+    ERROR, EMPTY
+}
+

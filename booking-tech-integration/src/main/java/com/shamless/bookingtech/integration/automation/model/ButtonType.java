@@ -1,4 +1,4 @@
-package com.shamless.bookingtech.integration.automation;
+package com.shamless.bookingtech.integration.automation.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
