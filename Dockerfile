@@ -23,9 +23,17 @@ RUN apt-get install -y wget unzip \
     && mv chromedriver /usr/local/bin/chromedriver \
     && chmod +x /usr/local/bin/chromedriver
 
+# Google Chrome'u yükleyin
+RUN apt-get install -y curl \
+    && curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable=113.0.5672.126-1
+
 # Xvfb ve Java için gerekli paketleri yükleyin
 RUN apt-get install -y xvfb openjdk-17-jdk
 
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
+
 # Xvfb servisini başlatın
 CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && DISPLAY=:99 java -jar /app/app.jar"]
