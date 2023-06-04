@@ -23,8 +23,11 @@ RUN apt-get install -y wget unzip \
     && mv chromedriver /usr/local/bin/chromedriver \
     && chmod +x /usr/local/bin/chromedriver
 
-# JAR dosyasını çalışma dizinine kopyalayın
-RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
+# Chrome başlatma için ek yapılandırmaları yapın
+ENV DISPLAY=:99
 
-# Yürütülebilir JAR dosyasını belirtin
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Xvfb paketini yükleyin
+RUN apt-get install -y xvfb
+
+# Xvfb servisini başlatın
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && java -jar /app/app.jar"]
