@@ -26,9 +26,9 @@ RUN apt-get install -y wget unzip \
 # Xvfb ve Java için gerekli paketleri yükleyin
 RUN apt-get install -y xvfb openjdk-17-jdk
 
-# Xvfb servisini başlatın
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && DISPLAY=:99"]
-
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
+# Xvfb servisini başlatın
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && DISPLAY=:99 java -jar /app/app.jar"]
+
 # Yürütülebilir JAR dosyasını belirtin
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
