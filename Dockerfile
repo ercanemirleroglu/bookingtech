@@ -19,5 +19,4 @@ WORKDIR /app
 # JAR dosyasını kopyalayın
 COPY --from=build /app/booking-tech-app/target/*.jar /app/app.jar
 
-# Xvfb servisini başlatın
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && DISPLAY=:99 java -jar /app/app.jar"]
+ENTRYPOINT ["java", "-jar", "target/your-app.jar"]
