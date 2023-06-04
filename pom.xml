@@ -97,6 +97,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>shameless-booking-tech</finalName>
 	</build>
 
 </project>
