@@ -11,7 +11,7 @@ COPY . /app
 RUN mvn clean install
 
 # Selenium/standalone-chrome görüntüsünü kullanın
-FROM selenium/standalone-chrome
+FROM selenium/standalone-chrome:latest
 
 # Çalışma dizinini ayarlayın
 WORKDIR /app
