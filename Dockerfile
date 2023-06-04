@@ -19,4 +19,4 @@ WORKDIR /app
 # JAR dosyasını kopyalayın
 COPY --from=build /app/booking-tech-app/target/*.jar /app/app.jar
 
-ENTRYPOINT ["java", "-jar", "target/your-app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
