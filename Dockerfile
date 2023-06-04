@@ -13,7 +13,7 @@ ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn clean install
 
 # Chromium paketini yükleyin
-RUN apt-get update && apt-get install -y chromium-browser
+RUN apt-get update && apt-get install -y chromium
 
 # ChromeDriver'ı indirin ve doğru konuma yerleştirin
 RUN apt-get install -y wget unzip \
