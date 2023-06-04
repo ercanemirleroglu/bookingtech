@@ -11,7 +11,7 @@ COPY . /app
 RUN mvn clean install
 
 # JAR dosyasını çalışma dizinine kopyalayın
-RUN cp /app/bookingtech/booking-tech-app/target/shameless-booking-tech.jar /app/app.jar
+RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
 
 # Yürütülebilir JAR dosyasını belirtin
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
