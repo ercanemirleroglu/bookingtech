@@ -9,7 +9,7 @@ public class AutomationDriver {
     protected static WebDriver driver;
 
     protected void executeDriverByPath(String path) {
-        WebDriverManager.chromedriver().driverVersion("113.0.5672.63").setup();
+        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("start-maximized"); // open Browser in maximized mode
         options.addArguments("disable-infobars"); // disabling infobars
