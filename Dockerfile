@@ -23,11 +23,8 @@ RUN apt-get install -y wget unzip \
     && mv chromedriver /usr/local/bin/chromedriver \
     && chmod +x /usr/local/bin/chromedriver
 
-# Chrome başlatma için ek yapılandırmaları yapın
-ENV DISPLAY=:99
-
-# Xvfb paketini yükleyin
-RUN apt-get install -y xvfb
+# Xvfb ve Java için gerekli paketleri yükleyin
+RUN apt-get install -y xvfb openjdk-17-jdk
 
 # Xvfb servisini başlatın
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && java -jar /app/app.jar"]
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && DISPLAY=:99 java -jar /app/app.jar"]
