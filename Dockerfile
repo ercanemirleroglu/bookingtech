@@ -13,10 +13,15 @@ ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn clean install
 
 # Chromium paketini yükleyin
-RUN apt-get update && apt-get install -y chromium
+RUN apt-get update && apt-get install -y chromium-browser
 
-# WebDriver'ı kopyalayın
-#COPY chromedriver /usr/local/bin/
+# ChromeDriver'ı indirin ve doğru konuma yerleştirin
+RUN apt-get install -y wget unzip \
+    && wget -q https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip \
+    && unzip chromedriver_linux64.zip \
+    && rm chromedriver_linux64.zip \
+    && mv chromedriver /usr/local/bin/chromedriver \
+    && chmod +x /usr/local/bin/chromedriver
 
 # JAR dosyasını çalışma dizinine kopyalayın
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
