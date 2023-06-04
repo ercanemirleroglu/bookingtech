@@ -12,9 +12,6 @@ ENV MAVEN_OPTS="-Xmx512m"
 # Projenizi derleyin ve jar dosyasını oluşturun
 RUN mvn clean install
 
-# Chromium paketini yükleyin
-RUN apt-get update && apt-get install -y chromium
-
 # ChromeDriver'ı indirin ve doğru konuma yerleştirin
 RUN apt-get install -y wget unzip \
     && wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip \
