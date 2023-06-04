@@ -10,7 +10,7 @@ COPY . /app
 ENV MAVEN_OPTS="-Xmx512m"
 
 # Projenizi derleyin ve jar dosyasını oluşturun
-#RUN mvn clean install
+RUN mvn clean install
 
 # Chromium paketini yükleyin
 RUN apt-get update && apt-get install -y chromium
@@ -26,8 +26,6 @@ RUN apt-get install -y wget unzip \
 # Xvfb ve Java için gerekli paketleri yükleyin
 RUN apt-get install -y xvfb openjdk-17-jdk
 
-RUN mkdir /app
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
-
 # Xvfb servisini başlatın
 CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && DISPLAY=:99 java -jar /app/app.jar"]
