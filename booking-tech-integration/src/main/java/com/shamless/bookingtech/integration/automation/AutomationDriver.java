@@ -14,7 +14,7 @@ public class AutomationDriver {
     protected static WebDriver driver;
 
     protected void executeDriverByPath(String path) {
-        WebDriverManager.firefoxdriver().setup();
+        WebDriverManager.firefoxdriver().browserVersion("112.0.1").setup();
         //System.setProperty("webdriver.gecko.driver", driverPath);
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("-headless");
