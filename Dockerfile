@@ -1,61 +1,3 @@
-FROM debian:bullseye-slim
-
-ARG firefox_ver=113.0.2
-ARG geckodriver_ver=0.33.0
-ARG build_rev=0
-
-
-RUN apt-get update \
- && apt-get upgrade -y \
- && apt-get install -y --no-install-recommends --no-install-suggests \
-            ca-certificates \
- && update-ca-certificates \
-    \
- # Install tools for building
- && toolDeps=" \
-        curl bzip2 \
-    " \
- && apt-get install -y --no-install-recommends --no-install-suggests \
-            $toolDeps \
-    \
- # Install dependencies for Firefox
- && apt-get install -y --no-install-recommends --no-install-suggests \
-            `apt-cache depends firefox-esr | awk '/Depends:/{print$2}'` \
-            # additional 'firefox-esl' dependencies which is not in 'depends' list
-            libasound2 libxt6 libxtst6 \
-    \
- # Download and install Firefox
- && curl -fL -o /tmp/firefox.tar.bz2 \
-         https://ftp.mozilla.org/pub/firefox/releases/${firefox_ver}/linux-x86_64/en-GB/firefox-${firefox_ver}.tar.bz2 \
- && tar -xjf /tmp/firefox.tar.bz2 -C /tmp/ \
- && mv /tmp/firefox /opt/firefox \
-    \
- # Download and install geckodriver
- && curl -fL -o /tmp/geckodriver.tar.gz \
-         https://github.com/mozilla/geckodriver/releases/download/v${geckodriver_ver}/geckodriver-v${geckodriver_ver}-linux64.tar.gz \
- && tar -xzf /tmp/geckodriver.tar.gz -C /tmp/ \
- && chmod +x /tmp/geckodriver \
- && mv /tmp/geckodriver /usr/local/bin/ \
-    \
- # Cleanup unnecessary stuff
- && apt-get purge -y --auto-remove \
-                  -o APT::AutoRemove::RecommendsImportant=false \
-            $toolDeps \
- && rm -rf /var/lib/apt/lists/* \
-           /tmp/*
-
-
-# As this image cannot run in non-headless mode anyway, it's better to forcibly
-# enable it, regardless whether WebDriver client requests it in capabilities or
-# not.
-ENV MOZ_HEADLESS=1
-
-EXPOSE 4444
-
-ENTRYPOINT ["geckodriver"]
-
-CMD ["--binary=/opt/firefox/firefox", "--log=debug"]
-
 FROM maven:3.8.4-openjdk-17-slim AS build
 
 WORKDIR /app
@@ -65,6 +7,28 @@ COPY . /app
 ENV MAVEN_OPTS="-Xmx512m"
 
 RUN mvn clean install
+
+#Firefox sürümünü belirle
+ARG FIREFOX_VERSION=112.0.1
+
+#Firefox'un indirme URL'sini oluştur
+ARG FIREFOX_URL=https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2
+
+# Firefox'u indir ve kur
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl bzip2 libcairo2 libcairo-gobject2 libxt6 libsm6 libice6 libgtk-3-0 libx11-xcb1 libdbus-glib-1-2 psmisc xvfb libappindicator1 libasound2 libatk1.0-0 libatk-bridge2.0-0 libcairo-gobject2 libgconf-2-4 libgtk-3-0 libice6 libnspr4 libnss3 libsm6 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxi6 libxinerama1 libxrandr2 libxss1 libxt6 libxtst6 fonts-liberation && rm -rf /var/lib/apt/lists/* \
+ && curl -sSL -o /tmp/firefox.tar.bz2 ${FIREFOX_URL} \
+ && tar -xjf /tmp/firefox.tar.bz2 -C /opt \
+ && ln -s /opt/firefox/firefox /usr/bin/firefox \
+ && rm /tmp/firefox.tar.bz2
+
+##Geckodriver sürümünü belirle
+#ARG GECKODRIVER_VERSION=0.32.1
+#
+## Geckodriver'ı indir ve kur
+#RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz \
+# && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin \
+# && rm /tmp/geckodriver.tar.gz
 
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
 
