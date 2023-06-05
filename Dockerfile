@@ -13,6 +13,7 @@ ARG FIREFOX_VERSION=112.0.1
 
 #Firefox'un indirme URL'sini oluştur
 ARG FIREFOX_URL=https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2
+
 # X sunucusu başlat
 ENV DISPLAY=:99
 
