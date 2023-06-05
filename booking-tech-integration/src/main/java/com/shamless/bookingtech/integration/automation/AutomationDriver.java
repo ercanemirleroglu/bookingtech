@@ -18,9 +18,10 @@ public class AutomationDriver {
     protected void executeDriverByPath(String path) {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         ChromeOptions options = new ChromeOptions();
-        //options.setBinary("/opt/firefox/firefox");
+        options.addArguments("--remote-debugging-address=0.0.0.0");
+        options.addArguments("--remote-debugging-port=0");
         options.addArguments("--headless");
-        //options.addArguments("--no-sandbox");
+        options.addArguments("--no-sandbox");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
         driver.get(path);
