@@ -11,15 +11,17 @@ import org.springframework.beans.factory.annotation.Value;
 public class AutomationDriver {
     @Value("${application.drivers.geckoDriverPath}")
     private String driverPath;
+    @Value("${application.drivers.chromeDriverPath}")
+    private String chromeDriverPath;
     protected static WebDriver driver;
 
     protected void executeDriverByPath(String path) {
-        System.setProperty("webdriver.gecko.driver", driverPath);
-        FirefoxOptions options = new FirefoxOptions();
-        options.setBinary("/opt/firefox/firefox");
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+        ChromeOptions options = new ChromeOptions();
+        //options.setBinary("/opt/firefox/firefox");
         //options.addArguments("-headless");
         //options.addArguments("--no-sandbox");
-        driver = new FirefoxDriver(options);
+        driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
         driver.get(path);
     }

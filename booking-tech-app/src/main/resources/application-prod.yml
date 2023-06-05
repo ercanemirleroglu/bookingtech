@@ -25,3 +25,4 @@ spring:
 application:
   drivers:
     geckoDriverPath: /usr/local/bin/geckodriver
+    chromeDriverPath: /usr/local/bin/chromedriver
