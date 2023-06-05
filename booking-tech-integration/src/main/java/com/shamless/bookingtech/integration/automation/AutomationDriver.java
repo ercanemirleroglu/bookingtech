@@ -18,7 +18,7 @@ public class AutomationDriver {
         FirefoxOptions options = new FirefoxOptions();
         options.setBinary("/opt/firefox/firefox");
         options.addArguments("-headless");
-        options.addArguments("--no-sandbox");
+        //options.addArguments("--no-sandbox");
         driver = new FirefoxDriver(options);
         //driver.manage().window().maximize();
         driver.get(path);
