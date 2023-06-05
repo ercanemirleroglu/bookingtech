@@ -10,7 +10,7 @@ RUN mvn clean install
 
 #Firefox sürümünü belirle
 
-ARG FIREFOX_VERSION=113.2.0
+ARG FIREFOX_VERSION=113.0.2
 
 #Firefox'un indirme URL'sini oluştur
 
