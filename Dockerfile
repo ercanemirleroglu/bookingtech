@@ -12,7 +12,7 @@ RUN mvn clean install
 ARG FIREFOX_VERSION=113.0.2
 
 # Firefox'un indirme URL'sini oluştur
-ARG FIREFOX_URL=https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX_VERSION}/firefox-${FIREFOX_VERSION}.tar.bz2
+ARG FIREFOX_URL=https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2
 
 # Firefox'u indir ve kur
 RUN apt-get update && apt-get install -y --no-install-recommends \
