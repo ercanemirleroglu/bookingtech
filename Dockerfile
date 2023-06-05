@@ -9,7 +9,7 @@ ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn clean install
 
 # ChromeDriver sürümünü belirle
-ARG CHROME_DRIVER_VERSION=94.0.4606.41
+ARG CHROME_DRIVER_VERSION=114.0.5735.106
 
 # ChromeDriver'ın indirme URL'sini oluştur
 ARG CHROME_DRIVER_URL=https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
