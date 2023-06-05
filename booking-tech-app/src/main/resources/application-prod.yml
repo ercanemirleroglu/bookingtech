@@ -21,3 +21,7 @@ spring:
       password: ${PROD_DB_PASSWORD}
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
+
+application:
+  drivers:
+    geckoDriverPath: /usr/local/bin/geckodriver
