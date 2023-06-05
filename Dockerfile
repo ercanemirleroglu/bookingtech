@@ -16,14 +16,13 @@ ARG FIREFOX_VERSION=111.0
 
 ARG FIREFOX_URL=https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2
 
-#Firefox'u indir ve kur
-
-RUN apt-get update && apt-get install -y --no-install-recommends
-ca-certificates curl bzip2 libgtk-3-0 && rm -rf /var/lib/apt/lists/*
-&& curl -sSL -o /tmp/firefox.tar.bz2 ${FIREFOX_URL}
-&& tar -xjf /tmp/firefox.tar.bz2 -C /opt
-&& ln -s /opt/firefox/firefox /usr/bin/firefox
-&& rm /tmp/firefox.tar.bz2
+# Firefox'u indir ve kur
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl bzip2 libgtk-3-0 && rm -rf /var/lib/apt/lists/* \
+ && curl -sSL -o /tmp/firefox.tar.bz2 ${FIREFOX_URL} \
+ && tar -xjf /tmp/firefox.tar.bz2 -C /opt \
+ && ln -s /opt/firefox/firefox /usr/bin/firefox \
+ && rm /tmp/firefox.tar.bz2
 
 #Geckodriver sürümünü belirle
 
