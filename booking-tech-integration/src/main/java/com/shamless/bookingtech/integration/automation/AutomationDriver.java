@@ -19,7 +19,7 @@ public class AutomationDriver {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         ChromeOptions options = new ChromeOptions();
         //options.setBinary("/opt/firefox/firefox");
-        //options.addArguments("-headless");
+        options.addArguments("--headless");
         //options.addArguments("--no-sandbox");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
