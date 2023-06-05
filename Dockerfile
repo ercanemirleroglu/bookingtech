@@ -30,6 +30,10 @@ RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/
  && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin \
  && rm /tmp/geckodriver.tar.gz
 
+ENV MOZ_HEADLESS=1
+
+EXPOSE 4444
+
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
 
 #Yürütülebilir JAR dosyasını belirtin
