@@ -19,7 +19,7 @@ RUN apt-get update \
  && rm -fr /var/lib/apt/lists/*
 
 # GeckoDriver'ı indirme ve kurma
-RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.32.2/geckodriver-v0.32.2-linux64.tar.gz \
+RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz \
  && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin \
  && rm /tmp/geckodriver.tar.gz
 
