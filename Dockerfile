@@ -28,7 +28,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends --no-install-suggests \
             `apt-cache depends firefox-esr | awk '/Depends:/{print$2}'` \
             # additional 'firefox-esl' dependencies which is not in 'depends' list
-            libasound2 libxt6 libxtst6 \
+            libcairo2 libcairo-gobject2 libxt6 libsm6 libice6 libgtk-3-0 libx11-xcb1 libdbus-glib-1-2 psmisc xvfb libappindicator1 libasound2 libatk1.0-0 libatk-bridge2.0-0 libcairo-gobject2 libgconf-2-4 libgtk-3-0 libice6 libnspr4 libnss3 libsm6 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxi6 libxinerama1 libxrandr2 libxss1 libxt6 libxtst6 fonts-liberation \
     \
  # Download and install Firefox
  && curl -fL -o /tmp/firefox.tar.bz2 \
