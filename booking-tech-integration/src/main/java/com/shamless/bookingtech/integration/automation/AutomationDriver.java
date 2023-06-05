@@ -19,6 +19,7 @@ public class AutomationDriver {
         options.addArguments("-headless");
         //options.addArguments("--start-maximized");
         //options.addPreference("extensions.enabled", false);
+        options.addArguments("--no-sandbox");
         driver = new FirefoxDriver(options);
         //driver.manage().window().maximize();
 
