@@ -15,12 +15,13 @@ public class AutomationDriver {
 
     protected void executeDriverByPath(String path) {
         System.setProperty("webdriver.gecko.driver", driverPath);
-        FirefoxOptions options = new FirefoxOptions();
+        //FirefoxOptions options = new FirefoxOptions();
         //options.addArguments("-headless");
         //options.addArguments("--start-maximized");
         //options.addPreference("extensions.enabled", false);
-        options.addArguments("--no-sandbox");
-        driver = new FirefoxDriver(options);
+        //options.addArguments("--no-sandbox");
+        //driver = new FirefoxDriver(options);
+        driver = new FirefoxDriver();
         //driver.manage().window().maximize();
 
         driver.get(path);
