@@ -14,17 +14,12 @@ public class AutomationDriver {
     protected static WebDriver driver;
 
     protected void executeDriverByPath(String path) {
-        WebDriverManager.firefoxdriver().browserVersion("112.0.1").driverVersion("0.32.0").avoidBrowserDetection().avoidResolutionCache();
-        //System.setProperty("webdriver.gecko.driver", driverPath);
+        System.setProperty("webdriver.gecko.driver", driverPath);
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("-headless");
-        //options.addArguments("--start-maximized");
-        //options.addPreference("extensions.enabled", false);
-        //options.addArguments("--no-sandbox");
+        options.addArguments("--no-sandbox");
         driver = new FirefoxDriver(options);
-        //driver = new FirefoxDriver();
         //driver.manage().window().maximize();
-
         driver.get(path);
     }
 
