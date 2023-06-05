@@ -30,12 +30,6 @@ RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/
  && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin \
  && rm /tmp/geckodriver.tar.gz
 
-# Firefox ve Geckodriver sürümlerini kontrol etmek için
-RUN firefox --version && geckodriver --version
-
-# Diğer adımları devam ettir...
-
-
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
 
 # Yürütülebilir JAR dosyasını belirtin
