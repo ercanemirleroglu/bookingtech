@@ -16,7 +16,7 @@ public class AutomationDriver {
     protected void executeDriverByPath(String path) {
         System.setProperty("webdriver.gecko.driver", driverPath);
         FirefoxOptions options = new FirefoxOptions();
-        //options.addArguments("-headless");
+        options.addArguments("-headless");
         //options.addArguments("--start-maximized");
         //options.addPreference("extensions.enabled", false);
         driver = new FirefoxDriver(options);
