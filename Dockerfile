@@ -9,7 +9,7 @@ ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn clean install
 
 #Firefox sürümünü belirle
-ARG FIREFOX_VERSION=92.0
+ARG FIREFOX_VERSION=112.0.1
 
 #Firefox'un indirme URL'sini oluştur
 ARG FIREFOX_URL=https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2
@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm /tmp/firefox.tar.bz2
 
 #Geckodriver sürümünü belirle
-ARG GECKODRIVER_VERSION=0.30.0
+ARG GECKODRIVER_VERSION=0.32.1
 
 # Geckodriver'ı indir ve kur
 RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz \
