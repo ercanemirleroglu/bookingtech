@@ -4,20 +4,24 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.springframework.beans.factory.annotation.Value;
 
 public class AutomationDriver {
+    @Value("${application.drivers.geckoDriverPath}")
+    private String driverPath;
     protected static WebDriver driver;
 
     protected void executeDriverByPath(String path) {
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("start-maximized"); // open Browser in maximized mode
-        options.addArguments("disable-infobars"); // disabling infobars
-        options.addArguments("--disable-extensions"); // disabling extensions
-        options.addArguments("--disable-gpu"); // applicable to windows os only
-        options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
-        options.addArguments("--no-sandbox"); // Bypass OS security model
-        driver = new ChromeDriver(options);
+        System.setProperty("webdriver.gecko.driver", driverPath);
+        FirefoxOptions options = new FirefoxOptions();
+        options.addArguments("-headless");
+        //options.addArguments("--start-maximized");
+        options.addPreference("extensions.enabled", false);
+        driver = new FirefoxDriver(options);
+        //driver.manage().window().maximize();
+
         driver.get(path);
     }
 

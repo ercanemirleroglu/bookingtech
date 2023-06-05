@@ -76,7 +76,7 @@ public class BookingService {
                                     log.info("Page button count {}", finalCurrentPage);
                                     operation.click(button);
                                     try {
-                                        operation.timeout(30);
+                                        operation.timeout(10);
                                     } catch (InterruptedException ex) {
                                         log.warn("Timeout interrupted!");
                                     }
@@ -113,7 +113,7 @@ public class BookingService {
         log.info(json);
     }
 
-    private List<WebElement> getHotelDivList(){
+    private List<WebElement> getHotelDivList() {
         log.info("Hotel divs taking...");
         List<WebElement> hotelDivList = operation.findElementsByCssSelector("[data-testid='property-card']");
         if (hotelDivList.isEmpty()) {
@@ -258,16 +258,30 @@ public class BookingService {
         operation.sendKeys(location, locationInput);
     }
 
-    private void enterDateByDayRange(String day) {
-        Optional<WebElement> dateRangeInput = operation.findElementByCssSelector("div.d606c76c5a", ReturnAttitude.ERROR);
-        dateRangeInput.ifPresentOrElse(operation::click, () -> {
+    private void enterDateByDayRange(String day) throws InterruptedException {
+        Optional<WebElement> dateRangeInput = operation.findElementByCssSelector("[data-testid='searchbox-dates-container']", ReturnAttitude.ERROR);
+        dateRangeInput.ifPresentOrElse(e -> {
+            Optional<WebElement> calendar = Optional.empty();
+            for (int i = 0; (i < 10 && (calendar.isEmpty() || !calendar.get().isDisplayed())); i++) {
+                operation.click(e);
+                try {
+                    operation.timeout(1);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                calendar = operation.findElementByCssSelector("[data-testid='datepicker-tabs']", ReturnAttitude.EMPTY);
+            }
+
+
+        }, () -> {
             log.error("Hata");
             throw new NoSuchElementException("Hata");
         });
+
         selectDateRangeFromCalendar(LocalDate.now(), LocalDate.now().plusDays(Long.parseLong(day)));
     }
 
-    private void selectDateRangeFromCalendar(LocalDate now, LocalDate plusDays) {
+    private void selectDateRangeFromCalendar(LocalDate now, LocalDate plusDays) throws InterruptedException {
         List<WebElement> dates = operation.findElementsByCssSelector("span.b21c1c6c83");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         goToDayOnCalendar(now, dates, formatter);

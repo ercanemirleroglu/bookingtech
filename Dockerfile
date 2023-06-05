@@ -12,20 +12,21 @@ ENV MAVEN_OPTS="-Xmx512m"
 # Projenizi derleyin ve jar dosyasını oluşturun
 RUN mvn clean install
 
-# Chromium paketini yükleyin
-RUN apt-get update && apt-get install -y chromium
+# Firefox ve GeckoDriver'ı yükleyin
+USER root
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    ca-certificates curl firefox-esr \
+ && rm -fr /var/lib/apt/lists/*
 
-# ChromeDriver'ı indirin ve doğru konuma yerleştirin
-RUN apt-get install -y wget unzip \
-    && wget -q https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip \
-    && unzip chromedriver_linux64.zip \
-    && rm chromedriver_linux64.zip \
-    && mv chromedriver /usr/local/bin/chromedriver \
-    && chmod +x /usr/local/bin/chromedriver
+# GeckoDriver'ı indirme ve kurma
+RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
+ && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin \
+ && rm /tmp/geckodriver.tar.gz
 
-# Xvfb ve Java için gerekli paketleri yükleyin
-RUN apt-get install -y xvfb openjdk-17-jdk
+USER airflow
 
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
-# Xvfb servisini başlatın
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -ac +extension RANDR & sleep 5 && DISPLAY=:99 java -jar /app/app.jar"]
+
+# Yürütülebilir JAR dosyasını belirtin
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
