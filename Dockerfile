@@ -10,7 +10,7 @@ RUN mvn clean install
 
 #Firefox sürümünü belirle
 
-ARG FIREFOX_VERSION=111.0
+ARG FIREFOX_VERSION=113.2.0
 
 #Firefox'un indirme URL'sini oluştur
 
@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm /tmp/firefox.tar.bz2
 
 #Geckodriver sürümünü belirle
-ARG GECKODRIVER_VERSION=0.31.0
+ARG GECKODRIVER_VERSION=0.33.0
 
 # Geckodriver'ı indir ve kur
 RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz \
