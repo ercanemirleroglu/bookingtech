@@ -31,8 +31,8 @@ ARG GECKODRIVER_VERSION=0.31.0
 #Geckodriver'ı indir ve kur
 
 RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz
-&& tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
-&& rm /tmp/geckodriver.tar.gz
+ && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
+ && rm /tmp/geckodriver.tar.gz
 
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
 
