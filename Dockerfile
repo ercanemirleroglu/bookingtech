@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && curl -sSL -o /tmp/firefox.tar.bz2 ${FIREFOX_URL} \
  && tar -xjf /tmp/firefox.tar.bz2 -C /opt \
  && ln -s /opt/firefox/firefox /usr/bin/firefox \
- && rm /tmp/firefox.tar.bz2 \
+ && rm /tmp/firefox.tar.bz2
 
 #Geckodriver sürümünü belirle
 ARG GECKODRIVER_VERSION=0.31.0
