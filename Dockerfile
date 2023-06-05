@@ -13,7 +13,6 @@ ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn clean install
 
 # Firefox ve GeckoDriver'ı yükleyin
-USER root
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     ca-certificates curl firefox-esr \
@@ -23,8 +22,6 @@ RUN apt-get update \
 RUN curl -sSL -o /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz \
  && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin \
  && rm /tmp/geckodriver.tar.gz
-
-USER airflow
 
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
 
