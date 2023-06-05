@@ -9,7 +9,7 @@ ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn clean install
 
 #Firefox sürümünü belirle
-ARG FIREFOX_VERSION=113.0.2
+ARG FIREFOX_VERSION=92.0
 
 #Firefox'un indirme URL'sini oluştur
 ARG FIREFOX_URL=https://ftp.mozilla.org/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2
