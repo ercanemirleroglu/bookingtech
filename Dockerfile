@@ -1,13 +1,3 @@
-FROM maven:3.8.4-openjdk-17-slim AS build
-
-WORKDIR /app
-
-COPY . /app
-
-ENV MAVEN_OPTS="-Xmx512m"
-
-RUN mvn clean install
-
 FROM debian:bullseye-slim
 
 ARG firefox_ver=113.0.2
@@ -65,6 +55,16 @@ EXPOSE 4444
 ENTRYPOINT ["geckodriver"]
 
 CMD ["--binary=/opt/firefox/firefox", "--log=debug"]
+
+FROM maven:3.8.4-openjdk-17-slim AS build
+
+WORKDIR /app
+
+COPY . /app
+
+ENV MAVEN_OPTS="-Xmx512m"
+
+RUN mvn clean install
 
 RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
 
