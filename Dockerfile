@@ -8,6 +8,8 @@ ENV MAVEN_OPTS="-Xmx512m"
 
 RUN mvn clean install
 
+FROM debian:bullseye-slim
+
 ARG firefox_ver=113.0.2
 ARG geckodriver_ver=0.33.0
 
