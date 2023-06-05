@@ -16,6 +16,7 @@ public class AutomationDriver {
     protected void executeDriverByPath(String path) {
         System.setProperty("webdriver.gecko.driver", driverPath);
         FirefoxOptions options = new FirefoxOptions();
+        options.setBinary("/opt/firefox/firefox");
         options.addArguments("-headless");
         options.addArguments("--no-sandbox");
         driver = new FirefoxDriver(options);
