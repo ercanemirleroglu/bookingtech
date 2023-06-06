@@ -36,6 +36,20 @@ public class BookingService {
     }
 
     public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) throws InterruptedException {
+        int tryCount = 1;
+        while(tryCount <= 5) {
+            try{
+                return manageOperation(params);
+            }catch (Exception e) {
+                log.error("Try count {}, Error message: {}", tryCount, e.getMessage());
+                tryCount++;
+                operation.finish();
+            }
+        }
+        throw new IllegalArgumentException("Oops! Automation is finished unsuccessfully!");
+    }
+
+    private List<HotelPriceExtDto> manageOperation(Map<Param, String> params) throws InterruptedException {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
         operation.start("https://www.booking.com/");
         Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
@@ -108,8 +122,6 @@ public class BookingService {
         printDtoOnLog(hotelPriceExtDtoList);
         operation.finish();
         return hotelPriceExtDtoList;
-
-
     }
 
     private void printDtoOnLog(List<HotelPriceExtDto> hotelPriceExtDtoList) {

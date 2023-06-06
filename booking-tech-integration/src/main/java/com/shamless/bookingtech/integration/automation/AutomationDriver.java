@@ -22,9 +22,9 @@ public class AutomationDriver {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         ChromeOptions options = manageOptions();
         setDriver(options, path);
-        setUserAgent(options);
-        terminateDriver();
-        setDriver(options, path);
+        //setUserAgent(options);
+        //terminateDriver();
+        //setDriver(options, path);
     }
 
     private ChromeOptions manageOptions(){
@@ -36,6 +36,7 @@ public class AutomationDriver {
         //options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("user-agent=\\" + "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
         //Map<String, Object> stringObjectMap = options.asMap();
         return options;
     }
