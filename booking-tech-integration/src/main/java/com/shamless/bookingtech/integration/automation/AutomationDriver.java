@@ -27,8 +27,8 @@ public class AutomationDriver {
         options.addArguments("--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
-        Thread.sleep(60 * 1000);
         driver.get(path);
+        Thread.sleep(120 * 1000);
     }
 
     protected void terminateDriver() {
