@@ -18,7 +18,7 @@ public class AutomationOperation extends AutomationDriver {
         super();
     }
 
-    public void start(String path) {
+    public void start(String path) throws InterruptedException {
         log.info("{} page is opening...", path);
         executeDriverByPath(path);
         log.info("{} page is opened. Now it's loading...", path);

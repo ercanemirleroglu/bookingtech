@@ -37,6 +37,11 @@ public class BookingService {
 
     public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) throws InterruptedException {
         operation.start("https://www.booking.com/");
+        Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
+        elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
+            log.warn("Yazı görünemdi!");
+        });
+
         closeRegisterModal();
         changeLanguage(params.get(Param.APP_LANGUAGE));
         changeCurrency(params.get(Param.APP_CURRENCY_UNIT));

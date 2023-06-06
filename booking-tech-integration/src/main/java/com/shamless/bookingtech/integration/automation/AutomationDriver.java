@@ -15,11 +15,11 @@ public class AutomationDriver {
     private String chromeDriverPath;
     protected static WebDriver driver;
 
-    protected void executeDriverByPath(String path) {
+    protected void executeDriverByPath(String path) throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-debugging-address=0.0.0.0");
-        options.addArguments("--remote-debugging-port=0");
+        //options.addArguments("--remote-debugging-address=0.0.0.0");
+        //options.addArguments("--remote-debugging-port=0");
         options.addArguments("--headless=new");
         //options.addArguments("--window-size=1920,1080");
         options.addArguments("--disable-gpu");
@@ -27,6 +27,7 @@ public class AutomationDriver {
         options.addArguments("--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
+        Thread.sleep(60 * 1000);
         driver.get(path);
     }
 
