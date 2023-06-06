@@ -25,6 +25,7 @@ public class AutomationDriver {
         setUserAgent(options);
         //terminateDriver();
         driver = new ChromeDriver(options);
+        driver.get(path);
         //setDriver(options, path);
     }
 
