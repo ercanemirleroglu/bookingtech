@@ -25,7 +25,7 @@ public class AutomationDriver {
         options.addArguments("--headless=new");
         //options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
-        //options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
         driver.get(path);
