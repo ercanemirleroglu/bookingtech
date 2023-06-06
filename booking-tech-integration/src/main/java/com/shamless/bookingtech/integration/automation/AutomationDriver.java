@@ -22,9 +22,9 @@ public class AutomationDriver {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         ChromeOptions options = manageOptions();
         setDriver(options, path);
-        //setUserAgent(options);
-        //terminateDriver();
-        //setDriver(options, path);
+        setUserAgent(options);
+        terminateDriver();
+        setDriver(options, path);
     }
 
     private ChromeOptions manageOptions() {
@@ -33,7 +33,7 @@ public class AutomationDriver {
         //options.addArguments("--remote-debugging-address=0.0.0.0");
         //options.addArguments("--remote-debugging-port=0");
         options.addArguments("--headless=new");
-        //options.addArguments("--disable-gpu");
+        options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("user-agent=\\" + "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
