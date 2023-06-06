@@ -20,7 +20,8 @@ public class AutomationDriver {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-debugging-address=0.0.0.0");
         options.addArguments("--remote-debugging-port=0");
-        options.addArguments("--headless");
+        options.addArguments("--headless=new");
+        options.addArguments("--window-size=1920,1080");
         options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
