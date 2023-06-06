@@ -46,10 +46,9 @@ public class BookingService {
                 elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
                     log.warn("Yazı görünemdi!");
                 });
-
-                //closeRegisterModal();
-                //changeLanguage(params.get(Param.APP_LANGUAGE));
-                //changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
+                closeRegisterModal();
+                changeLanguage(params.get(Param.APP_LANGUAGE));
+                changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
                 enterLocation(params.get(Param.SEARCH_LOCATION));
                 enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
                 List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);

@@ -19,7 +19,7 @@ public class AutomationOperation extends AutomationDriver {
     }
 
     public void start(String path) throws InterruptedException {
-        log.info("{} page is opening...", path);
+        log.info("redirect to {}", path);
         executeDriverByPath(path);
         log.info("{} page is opened. Now it's loading...", path);
     }

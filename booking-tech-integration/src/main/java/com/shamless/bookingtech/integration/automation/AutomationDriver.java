@@ -1,15 +1,16 @@
 package com.shamless.bookingtech.integration.automation;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class AutomationDriver {
     @Value("${application.drivers.geckoDriverPath}")
     private String driverPath;
@@ -19,6 +20,15 @@ public class AutomationDriver {
 
     protected void executeDriverByPath(String path) throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+        ChromeOptions options = manageOptions();
+        setDriver(options, path);
+        setUserAgent(options);
+        terminateDriver();
+        setDriver(options, path);
+    }
+
+    private ChromeOptions manageOptions(){
+        log.info("Options settings...");
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
         //options.addArguments("--remote-debugging-port=0");
@@ -26,10 +36,24 @@ public class AutomationDriver {
         //options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
+        //Map<String, Object> stringObjectMap = options.asMap();
+        return options;
+    }
+
+    private void setDriver(ChromeOptions options, String path){
+        log.info("driver initializing...");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
+        log.info("{} page is opening", path);
         driver.get(path);
-        driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.MINUTES);
+    }
+
+    private void setUserAgent(ChromeOptions options) {
+        log.info("User-Agent fetching...");
+        String useragent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
+        log.info("User-agent setting... {}", useragent);
+        options.addArguments("user-agent=\\" + useragent);
     }
 
     protected void terminateDriver() {
