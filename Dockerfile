@@ -7,7 +7,7 @@ COPY . /app
 RUN mvn clean install
 
 # ChromeDriver sürümünü belirle
-ARG CHROME_DRIVER_VERSION=113.0.5672.63
+ARG CHROME_DRIVER_VERSION=114.0.5735.90
 
 # ChromeDriver'ın indirme URL'sini oluştur
 ARG CHROME_DRIVER_URL=https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
