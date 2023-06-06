@@ -36,79 +36,93 @@ public class BookingService {
     }
 
     public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) throws InterruptedException {
-        operation.start("https://www.booking.com/");
-        Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
-        elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
-            log.warn("Yazı görünemdi!");
-        });
+        List<HotelPriceExtDto> hotelPriceExtDtoList;
+        int tryCount = 3;
+        while (tryCount > 0) {
+            try{
+                hotelPriceExtDtoList = new ArrayList<>();
+                operation.start("https://www.booking.com/");
+                Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
+                elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
+                    log.warn("Yazı görünemdi!");
+                });
 
-        closeRegisterModal();
-        changeLanguage(params.get(Param.APP_LANGUAGE));
-        changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
-        enterLocation(params.get(Param.SEARCH_LOCATION));
-        enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
-        List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
-        enterCustomerTypeAndCount(customerSelectModels);
-        clickSearchButton();
-        //operation.timeout(20);
-        WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
-                .map(e -> e.findElements(By.cssSelector("[aria-live='assertive']")).stream().findFirst()
-                        .orElseGet(() -> {
+                closeRegisterModal();
+                changeLanguage(params.get(Param.APP_LANGUAGE));
+                changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
+                enterLocation(params.get(Param.SEARCH_LOCATION));
+                enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
+                List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
+                enterCustomerTypeAndCount(customerSelectModels);
+                clickSearchButton();
+                //operation.timeout(20);
+                WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
+                        .map(e -> e.findElements(By.cssSelector("[aria-live='assertive']")).stream().findFirst()
+                                .orElseGet(() -> {
+                                    log.error("Property count title not found!");
+                                    throw new NoSuchElementException("Property count title not found!");
+                                })).orElseGet(() -> {
                             log.error("Property count title not found!");
                             throw new NoSuchElementException("Property count title not found!");
-                        })).orElseGet(() -> {
-                    log.error("Property count title not found!");
-                    throw new NoSuchElementException("Property count title not found!");
-                });
-        int hotelCountTotal = Integer.parseInt(returnJustDigits(title.getText()));
-        List<WebElement> hotelDivList = getHotelDivList();
-        int hotelCountOnPage = hotelDivList.size();
-        List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
-        if (hotelCountTotal > hotelCountOnPage) {
-            int divide = hotelCountTotal / hotelCountOnPage;
-            int mod = hotelCountTotal % hotelCountOnPage;
-            int pageCount = (mod > 0) ? (divide + 1) : divide;
-            if (pageCount > 1) {
-                hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
-                Optional<WebElement> pagination = operation.findElementByCssSelector("[data-testid='pagination']", ReturnAttitude.ERROR);
-                for (int currentPage = 2; currentPage <= pageCount; currentPage++) {
-                    int finalCurrentPage = currentPage;
-                    pagination.ifPresentOrElse(e -> {
-                        e.findElements(By.cssSelector("[aria-label=' " + finalCurrentPage + "'"))
-                                .stream()
-                                //.filter(e1 -> e1.getText().equals(String.valueOf(finalCurrentPage)))
-                                .findFirst().ifPresentOrElse(button -> {
-                                    log.info("Page button count {}", finalCurrentPage);
-                                    operation.click(button);
-                                    try {
-                                        operation.timeout(10);
-                                    } catch (InterruptedException ex) {
-                                        log.warn("Timeout interrupted!");
-                                    }
-                                    List<WebElement> hotelDivListInside = getHotelDivList();
-                                    hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivListInside, finalCurrentPage));
-                                }, () -> {
-                                    log.error("Pagination not found!");
-                                    throw new NoSuchElementException("Pagination not found!");
-                                });
+                        });
+                int hotelCountTotal = Integer.parseInt(returnJustDigits(title.getText()));
+                List<WebElement> hotelDivList = getHotelDivList();
+                int hotelCountOnPage = hotelDivList.size();
+                if (hotelCountTotal > hotelCountOnPage) {
+                    int divide = hotelCountTotal / hotelCountOnPage;
+                    int mod = hotelCountTotal % hotelCountOnPage;
+                    int pageCount = (mod > 0) ? (divide + 1) : divide;
+                    if (pageCount > 1) {
+                        hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+                        Optional<WebElement> pagination = operation.findElementByCssSelector("[data-testid='pagination']", ReturnAttitude.ERROR);
+                        for (int currentPage = 2; currentPage <= pageCount; currentPage++) {
+                            int finalCurrentPage = currentPage;
+                            List<HotelPriceExtDto> finalHotelPriceExtDtoList = hotelPriceExtDtoList;
+                            pagination.ifPresentOrElse(e -> {
+                                e.findElements(By.cssSelector("[aria-label=' " + finalCurrentPage + "'"))
+                                        .stream()
+                                        //.filter(e1 -> e1.getText().equals(String.valueOf(finalCurrentPage)))
+                                        .findFirst().ifPresentOrElse(button -> {
+                                            log.info("Page button count {}", finalCurrentPage);
+                                            operation.click(button);
+                                            try {
+                                                operation.timeout(10);
+                                            } catch (InterruptedException ex) {
+                                                log.warn("Timeout interrupted!");
+                                            }
+                                            List<WebElement> hotelDivListInside = getHotelDivList();
+                                            finalHotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivListInside, finalCurrentPage));
+                                        }, () -> {
+                                            log.error("Pagination not found!");
+                                            throw new NoSuchElementException("Pagination not found!");
+                                        });
 
-                    }, () -> {
-                        log.error("Pagination not found!");
-                        throw new NoSuchElementException("Pagination not found!");
-                    });
+                            }, () -> {
+                                log.error("Pagination not found!");
+                                throw new NoSuchElementException("Pagination not found!");
+                            });
 
+                        }
+                    }
+                } else if (hotelCountTotal < hotelCountOnPage) {
+                    hotelDivList = hotelDivList.stream().limit(hotelCountTotal).collect(Collectors.toList());
+                    hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+                } else {
+                    hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
                 }
+                log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
+                printDtoOnLog(hotelPriceExtDtoList);
+                operation.finish();
+                return hotelPriceExtDtoList;
+            }catch (Exception e) {
+                log.error("Try count {}... An error occurred about automation! Error: {}", tryCount, e.getMessage());
+                operation.finish();
+                tryCount--;
+                fetchBookingData(params);
             }
-        } else if (hotelCountTotal < hotelCountOnPage) {
-            hotelDivList = hotelDivList.stream().limit(hotelCountTotal).collect(Collectors.toList());
-            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
-        } else {
-            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
         }
-        log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
-        printDtoOnLog(hotelPriceExtDtoList);
-        operation.finish();
-        return hotelPriceExtDtoList;
+        log.error("An error occurred about automation! This job was unsuccessful!");
+        throw new IllegalArgumentException("An error occurred about automation! This job was unsuccessful!");
     }
 
     private void printDtoOnLog(List<HotelPriceExtDto> hotelPriceExtDtoList) {
