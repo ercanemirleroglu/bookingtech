@@ -1,13 +1,13 @@
 FROM maven:3.8.4-openjdk-17-slim AS build
 
+# /dev/shm boyutunu ayarla
+RUN mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=512M tmpfs /dev/shm
+
 WORKDIR /app
 
 COPY . /app
 
 RUN mvn clean install
-
-# /dev/shm boyutunu ayarla
-RUN mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=512M tmpfs /dev/shm
 
 # ChromeDriver sürümünü belirle
 ARG CHROME_DRIVER_VERSION=114.0.5735.16
