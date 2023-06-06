@@ -37,7 +37,7 @@ public class BookingService {
 
     public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) throws InterruptedException {
         List<HotelPriceExtDto> hotelPriceExtDtoList;
-        int tryCount = 3;
+        int tryCount = 5;
         while (tryCount > 0) {
             try{
                 hotelPriceExtDtoList = new ArrayList<>();
