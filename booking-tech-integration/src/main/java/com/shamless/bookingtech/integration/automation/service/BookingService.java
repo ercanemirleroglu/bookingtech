@@ -47,9 +47,9 @@ public class BookingService {
                     log.warn("Yazı görünemdi!");
                 });
 
-                closeRegisterModal();
-                changeLanguage(params.get(Param.APP_LANGUAGE));
-                changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
+                //closeRegisterModal();
+                //changeLanguage(params.get(Param.APP_LANGUAGE));
+                //changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
                 enterLocation(params.get(Param.SEARCH_LOCATION));
                 enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
                 List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
@@ -115,7 +115,7 @@ public class BookingService {
                 operation.finish();
                 return hotelPriceExtDtoList;
             }catch (Exception e) {
-                log.error("Try count {}... An error occurred about automation! Error: {}", tryCount, e.getMessage());
+                log.error("Try count {}... An error occurred about automation! Error: {}", tryCount, e.getCause());
                 operation.finish();
                 tryCount--;
                 fetchBookingData(params);
