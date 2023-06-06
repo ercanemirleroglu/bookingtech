@@ -8,6 +8,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.concurrent.TimeUnit;
+
 public class AutomationDriver {
     @Value("${application.drivers.geckoDriverPath}")
     private String driverPath;
@@ -21,18 +23,21 @@ public class AutomationDriver {
         //options.addArguments("--remote-debugging-address=0.0.0.0");
         //options.addArguments("--remote-debugging-port=0");
         options.addArguments("--headless=new");
-        //options.addArguments("--window-size=1920,1080");
         options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
         driver.get(path);
-        Thread.sleep(120 * 1000);
+        driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
     }
 
     protected void terminateDriver() {
         if (driver != null)
             driver.quit();
+    }
+
+    protected void timeoutDriver(long second) throws InterruptedException {
+        Thread.sleep(second * 1000);
     }
 }

@@ -32,7 +32,7 @@ public class AutomationOperation extends AutomationDriver {
 
     public void timeout(long second) throws InterruptedException {
         log.info("Waiting {} seconds...", second);
-        Thread.sleep(second * 1000);
+        timeoutDriver(second);
     }
 
     public void click(WebElement webElement) {
