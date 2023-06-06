@@ -6,10 +6,12 @@ import com.shamless.bookingtech.common.util.model.AppMoney;
 import com.shamless.bookingtech.common.util.model.Param;
 import com.shamless.bookingtech.integration.automation.*;
 import com.shamless.bookingtech.integration.automation.model.*;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.slf4j.Slf4j;
 import org.javamoney.moneta.Money;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Component;
 
@@ -37,21 +39,27 @@ public class BookingService {
 
     public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) throws InterruptedException {
         int tryCount = 1;
-        while(tryCount <= 5) {
-            try{
-                return manageOperation(params);
-            }catch (Exception e) {
+        boolean mustStart = true;
+        while (tryCount <= 5) {
+            try {
+                return manageOperation(params, mustStart);
+            } catch (Exception e) {
                 log.error("Try count {}, Error message: {}", tryCount, e.getMessage());
                 tryCount++;
-                operation.finish();
+                if (e instanceof WebDriverException)
+                    operation.finish();
+                else {
+                    mustStart = false;
+                    operation.refreshPage("https://www.booking.com/");
+                }
             }
         }
         throw new IllegalArgumentException("Oops! Automation is finished unsuccessfully!");
     }
 
-    private List<HotelPriceExtDto> manageOperation(Map<Param, String> params) throws InterruptedException {
+    private List<HotelPriceExtDto> manageOperation(Map<Param, String> params, boolean mustStart) throws InterruptedException {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
-        operation.start("https://www.booking.com/");
+        if (mustStart) operation.start("https://www.booking.com/");
         Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
         elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
             log.warn("Yazı görünemdi!");

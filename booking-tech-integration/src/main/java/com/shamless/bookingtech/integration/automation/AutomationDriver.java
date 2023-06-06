@@ -27,7 +27,7 @@ public class AutomationDriver {
         //setDriver(options, path);
     }
 
-    private ChromeOptions manageOptions(){
+    private ChromeOptions manageOptions() {
         log.info("Options settings...");
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
@@ -41,7 +41,7 @@ public class AutomationDriver {
         return options;
     }
 
-    private void setDriver(ChromeOptions options, String path){
+    private void setDriver(ChromeOptions options, String path) {
         log.info("driver initializing...");
         driver = new ChromeDriver(options);
         //driver.manage().window().maximize();
@@ -64,5 +64,15 @@ public class AutomationDriver {
 
     protected void timeoutDriver(long second) throws InterruptedException {
         Thread.sleep(second * 1000);
+    }
+
+    public void refreshPage(String path) {
+        if (driver != null) {
+            log.info("Refreshing page for {}", path);
+            driver.get(path);
+        } else {
+            log.warn("There is a problem about browser. It is reopening...");
+            terminateDriver();
+        }
     }
 }
