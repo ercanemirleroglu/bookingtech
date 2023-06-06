@@ -4,9 +4,10 @@ WORKDIR /app
 
 COPY . /app
 
-ENV MAVEN_OPTS="-Xmx512m"
-
 RUN mvn clean install
+
+# /dev/shm boyutunu ayarla
+RUN mount -t tmpfs -o rw,nosuid,nodev,noexec,relatime,size=512M tmpfs /dev/shm
 
 # ChromeDriver sürümünü belirle
 ARG CHROME_DRIVER_VERSION=114.0.5735.16
