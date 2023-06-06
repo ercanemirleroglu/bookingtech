@@ -23,10 +23,8 @@ public class AutomationDriver {
         ChromeOptions options = manageOptions();
         setDriver(options, path);
         setUserAgent(options);
-        //terminateDriver();
-        driver = new ChromeDriver(options);
-        driver.get(path);
-        //setDriver(options, path);
+        terminateDriver();
+        setDriver(options, path);
     }
 
     private ChromeOptions manageOptions(){
