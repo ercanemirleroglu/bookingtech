@@ -19,12 +19,15 @@ public class AutomationOperation extends AutomationDriver {
     }
 
     public void start(String path) {
+        log.info("{} page is opening...", path);
         executeDriverByPath(path);
+        log.info("{} page is opened. Now it's loading...", path);
     }
 
     public void finish(){
         log.info("Session is closing...");
         terminateDriver();
+        log.info("Session is closed successfully");
     }
 
     public void timeout(long second) throws InterruptedException {

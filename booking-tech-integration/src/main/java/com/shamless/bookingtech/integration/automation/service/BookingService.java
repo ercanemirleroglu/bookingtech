@@ -238,16 +238,16 @@ public class BookingService {
     }
 
     private void closeRegisterModal() throws InterruptedException {
-        for (int i = 100; i > 0; i--) {
+        for (int i = 1000; i > 0; i--) {
             log.info("Clicking close register modal x button...");
             List<WebElement> xButtonInRegisterModal = operation.findElementsByCssSelector("button.fc63351294.a822bdf511.e3c025e003.fa565176a8.f7db01295e.c334e6f658.ae1678b153");
-            if (xButtonInRegisterModal.size() == 1 && xButtonInRegisterModal.get(0).isDisplayed()) {
+            if (xButtonInRegisterModal.size() == 1) {
                 log.info("Close register modal x button found successfully...");
                 operation.click(xButtonInRegisterModal.get(0));
                 log.info("Clicked register modal close button found successfully...");
                 break;
             }
-            log.warn("Not found already register modal close button. Trying again...");
+            log.warn("Not found register modal close button still. Trying again...");
             operation.timeout(2);
         }
     }
