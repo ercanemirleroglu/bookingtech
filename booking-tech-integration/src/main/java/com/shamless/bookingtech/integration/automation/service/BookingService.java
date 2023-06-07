@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.money.Monetary;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -57,15 +58,15 @@ public class BookingService {
         throw new IllegalArgumentException("Oops! Automation is finished unsuccessfully!");
     }
 
-    private List<HotelPriceExtDto> manageOperation(Map<Param, String> params, boolean mustStart) throws InterruptedException {
+    private List<HotelPriceExtDto> manageOperation(Map<Param, String> params, boolean mustStart) throws InterruptedException, MalformedURLException {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
         if (mustStart) operation.start("https://www.booking.com/");
-        Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
+        /*Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
         elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
             log.warn("Yazı görünemdi!");
-        });
+        });*/
         closeRegisterModal();
-        changeLanguage(params.get(Param.APP_LANGUAGE));
+        //changeLanguage(params.get(Param.APP_LANGUAGE));
         changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
         enterLocation(params.get(Param.SEARCH_LOCATION));
         enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
@@ -264,7 +265,7 @@ public class BookingService {
     }
 
     private void closeRegisterModal() throws InterruptedException {
-        for (int i = 10; i > 0; i--) {
+        for (int i = 20; i > 0; i--) {
             log.info("Clicking close register modal x button...");
             List<WebElement> xButtonInRegisterModal = operation.findElementsByCssSelector("button.fc63351294.a822bdf511.e3c025e003.fa565176a8.f7db01295e.c334e6f658.ae1678b153");
             if (xButtonInRegisterModal.size() == 1) {
@@ -274,7 +275,7 @@ public class BookingService {
                 break;
             }
             log.warn("Not found register modal close button still. Trying again...");
-            operation.timeout(2);
+            operation.timeout(3);
         }
     }
 

@@ -2,11 +2,18 @@ package com.shamless.bookingtech.integration.automation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -18,37 +25,42 @@ public class AutomationDriver {
     private String chromeDriverPath;
     protected static WebDriver driver;
 
-    protected void executeDriverByPath(String path) throws InterruptedException {
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
-        ChromeOptions options = manageOptions();
+    protected void executeDriverByPath(String path) throws InterruptedException, MalformedURLException {
+        //System.setProperty("webdriver.gecko.driver", driverPath);
+        FirefoxOptions options = manageOptions();
         setDriver(options, path);
         //setUserAgent(options);
         //terminateDriver();
         //setDriver(options, path);
     }
 
-    private ChromeOptions manageOptions() {
+    private FirefoxOptions manageOptions() {
         log.info("Options settings...");
-        ChromeOptions options = new ChromeOptions();
+        FirefoxOptions options = new FirefoxOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
         //options.addArguments("--remote-debugging-port=0");
-        options.addArguments("--headless=new");
-        options.addArguments("--disable-gpu");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("user-agent=\\" + "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
+        options.setHeadless(true);
+        //options.addArguments("user-agent=\\" + "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
         //options.setCapability("detach", true);
         //Map<String, Object> stringObjectMap = options.asMap();
         return options;
     }
 
-    private void setDriver(ChromeOptions options, String path) {
+    private void setDriver(FirefoxOptions options, String path) throws MalformedURLException {
         log.info("driver initializing...");
-        driver = new ChromeDriver(options);
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+
+        capabilities.setBrowserName("firefox");
+        //capabilities.setPlatform(Platform.LINUX);
+        //capabilities.setVersion("114.0.5735.106");
+        //capabilities.setCapability("goog:chromeOptions", options);
+        driver = new FirefoxDriver(options);
+
         //driver.manage().window().maximize();
         log.info("{} page is opening", path);
         driver.get(path);
         driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.MINUTES);
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.MINUTES);
     }
 
     private void setUserAgent(ChromeOptions options) {

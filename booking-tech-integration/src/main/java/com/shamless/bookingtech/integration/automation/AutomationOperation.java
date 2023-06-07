@@ -7,6 +7,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ public class AutomationOperation extends AutomationDriver {
         super();
     }
 
-    public void start(String path) throws InterruptedException {
+    public void start(String path) throws InterruptedException, MalformedURLException {
         log.info("redirect to {}", path);
         executeDriverByPath(path);
         log.info("{} page is opened. Now it's loading...", path);
