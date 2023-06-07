@@ -1,0 +1,28 @@
+server:
+  port: 9090
+spring:
+  datasource:
+    url: "jdbc:postgresql://shameless-booking-instance.ckwxuigzvke5.eu-north-1.rds.amazonaws.com:5432/booking"
+    driverClassName: org.postgresql.Driver
+    username: "postgres"
+    password: "12345678"
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  security:
+    user:
+      password: "wUFQrH56tGTmUg2eoZOF"
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+application:
+  drivers:
+    geckoDriverPath: /usr/local/bin/geckodriver
+    chromeDriverPath: /usr/local/bin/chromedriver
