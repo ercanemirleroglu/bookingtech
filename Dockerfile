@@ -6,30 +6,9 @@ COPY . /app
 
 RUN mvn clean install
 
-# ChromeDriver sürümünü belirle
-ARG CHROME_DRIVER_VERSION=114.0.5735.90
+FROM selenium/standalone-firefox:4.10.0-20230607
 
-# ChromeDriver'ın indirme URL'sini oluştur
-ARG CHROME_DRIVER_URL=https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
-
-# ChromeDriver'ı indir ve kur
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl unzip \
- && rm -rf /var/lib/apt/lists/* \
- && curl -sSL -o /tmp/chromedriver.zip ${CHROME_DRIVER_URL} \
- && unzip /tmp/chromedriver.zip -d /usr/local/bin \
- && rm /tmp/chromedriver.zip
-
-# Chrome tarayıcısını indir ve kur
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget gnupg ca-certificates procps \
- && rm -rf /var/lib/apt/lists/* \
- && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
- && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
- && apt-get update && apt-get install -y google-chrome-stable \
- && rm -rf /var/lib/apt/lists/*
-
-RUN cp /app/booking-tech-app/target/*.jar /app/app.jar
+COPY --from=build /app/booking-tech-app/target/*.jar /app/app.jar
 
 # Yürütülebilir JAR dosyasını belirtin
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
