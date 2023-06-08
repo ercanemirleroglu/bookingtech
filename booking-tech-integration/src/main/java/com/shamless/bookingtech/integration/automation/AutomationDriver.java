@@ -39,7 +39,7 @@ public class AutomationDriver {
         FirefoxOptions options = new FirefoxOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
         //options.addArguments("--remote-debugging-port=0");
-        //options.setHeadless(true);
+        options.setHeadless(true);
         //options.addArguments("user-agent=\\" + "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
         //options.setCapability("detach", true);
         //Map<String, Object> stringObjectMap = options.asMap();
