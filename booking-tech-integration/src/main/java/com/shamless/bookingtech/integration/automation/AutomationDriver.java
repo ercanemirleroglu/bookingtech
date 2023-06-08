@@ -26,7 +26,7 @@ public class AutomationDriver {
     protected static WebDriver driver;
 
     protected void executeDriverByPath(String path) throws InterruptedException, MalformedURLException {
-        //System.setProperty("webdriver.gecko.driver", driverPath);
+        System.setProperty("webdriver.gecko.driver", driverPath);
         FirefoxOptions options = manageOptions();
         setDriver(options, path);
         //setUserAgent(options);
@@ -39,7 +39,7 @@ public class AutomationDriver {
         FirefoxOptions options = new FirefoxOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
         //options.addArguments("--remote-debugging-port=0");
-        options.setHeadless(true);
+        //options.setHeadless(true);
         //options.addArguments("user-agent=\\" + "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
         //options.setCapability("detach", true);
         //Map<String, Object> stringObjectMap = options.asMap();
@@ -48,9 +48,9 @@ public class AutomationDriver {
 
     private void setDriver(FirefoxOptions options, String path) throws MalformedURLException {
         log.info("driver initializing...");
-        DesiredCapabilities capabilities = new DesiredCapabilities();
+        //DesiredCapabilities capabilities = new DesiredCapabilities();
 
-        capabilities.setBrowserName("firefox");
+        //capabilities.setBrowserName("firefox");
         //capabilities.setPlatform(Platform.LINUX);
         //capabilities.setVersion("114.0.5735.106");
         //capabilities.setCapability("goog:chromeOptions", options);
