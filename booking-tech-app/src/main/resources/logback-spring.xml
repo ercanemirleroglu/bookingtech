@@ -1,9 +1,9 @@
 <configuration>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/spring.log</file>
+        <file>/home/ec2-user/logs/spring.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/spring-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/home/ec2-user/logs/spring-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>3</maxHistory>
         </rollingPolicy>
         <encoder>
