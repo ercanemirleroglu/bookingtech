@@ -2,9 +2,7 @@ package com.shamless.bookingtech.integration.automation;
 
 import com.shamless.bookingtech.integration.automation.model.ReturnAttitude;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
@@ -38,7 +36,13 @@ public class AutomationOperation extends AutomationDriver {
 
     public void click(WebElement webElement) {
         log.info("Clicking Web Element...");
-        webElement.click();
+        try {
+            webElement.click();
+        }catch (ElementClickInterceptedException ex) {
+            log.warn("Element can not be clicked. Trying again on javascript executor...");
+            JavascriptExecutor executor = (JavascriptExecutor) driver;
+            executor.executeScript("arguments[0].click();", webElement);
+        }
         log.info("Clicked Web Element Successfully");
     }
 
@@ -65,13 +69,27 @@ public class AutomationOperation extends AutomationDriver {
     }
 
     public Optional<WebElement> findElementByCssSelector(String cssSelector, ReturnAttitude attitude) {
+        log.info("Elements fetching...");
         List<WebElement> elements = driver.findElements(By.cssSelector(cssSelector));
         if (elements.isEmpty()) {
-            if (ReturnAttitude.ERROR.equals(attitude)) throw new NoSuchElementException("Element could not be found!");
-            else if (ReturnAttitude.EMPTY.equals(attitude)) return Optional.empty();
-            else throw new IllegalArgumentException("Select return attitude!");
+            log.warn("Element can not be found when fetching! Trying again execute script...");
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+            elements = (List<WebElement>) jsExecutor.executeScript("return document.querySelectorAll('" + cssSelector + "')");
+            if (elements.isEmpty()) {
+                if (ReturnAttitude.ERROR.equals(attitude)) throw new NoSuchElementException("Element could not be found!");
+                else if (ReturnAttitude.EMPTY.equals(attitude)) return Optional.empty();
+                else throw new IllegalArgumentException("Select return attitude!");
+            }
         }
         return elements.stream().findFirst();
+    }
+
+    public List<WebElement> findElementsByExecutor(WebElement parent, String cssSelector){
+        log.info("Element fetching on execute script...");
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        List<WebElement> elements = (List<WebElement>) jsExecutor.executeScript(
+                "return arguments[0].querySelectorAll(\"" + cssSelector + "\")", parent);
+        return elements;
     }
 
     public Optional<WebElement> findElementById(String id) {

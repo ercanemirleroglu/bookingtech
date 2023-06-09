@@ -1,18 +1,13 @@
 package com.shamless.bookingtech.integration.automation.service;
 
-import com.google.gson.Gson;
 import com.shamless.bookingtech.common.util.JsonUtil;
 import com.shamless.bookingtech.common.util.model.AppMoney;
 import com.shamless.bookingtech.common.util.model.Param;
 import com.shamless.bookingtech.integration.automation.*;
 import com.shamless.bookingtech.integration.automation.model.*;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.slf4j.Slf4j;
 import org.javamoney.moneta.Money;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.springframework.stereotype.Component;
 
 import javax.money.Monetary;
@@ -38,7 +33,7 @@ public class BookingService {
         this.operation = operation;
     }
 
-    public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) throws InterruptedException {
+    public List<HotelPriceExtDto> fetchBookingData(Map<Param, String> params) {
         int tryCount = 1;
         boolean mustStart = true;
         while (tryCount <= 5) {
@@ -61,19 +56,15 @@ public class BookingService {
     private List<HotelPriceExtDto> manageOperation(Map<Param, String> params, boolean mustStart) throws InterruptedException, MalformedURLException {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
         if (mustStart) operation.start("https://www.booking.com/");
-        Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
-        elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
-            log.warn("Yazı görünemdi!");
-        });
         closeRegisterModal();
-        //changeLanguage(params.get(Param.APP_LANGUAGE));
-        //changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
+        changeLanguage(params.get(Param.APP_LANGUAGE));
+        changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
         enterLocation(params.get(Param.SEARCH_LOCATION));
         enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
         List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
         enterCustomerTypeAndCount(customerSelectModels);
         clickSearchButton();
-        operation.timeout(20);
+        //operation.timeout(20);
         WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
                 .map(e -> e.findElements(By.cssSelector("[aria-live='assertive']")).stream().findFirst()
                         .orElseGet(() -> {
@@ -83,9 +74,11 @@ public class BookingService {
                     log.error("Property count title not found!");
                     throw new NoSuchElementException("Property count title not found!");
                 });
+        log.info(title.getText());
         int hotelCountTotal = Integer.parseInt(returnJustDigits(title.getText()));
         List<WebElement> hotelDivList = getHotelDivList();
         int hotelCountOnPage = hotelDivList.size();
+        log.info("Hotel Div Count on this page: {}", hotelCountOnPage);
         if (hotelCountTotal > hotelCountOnPage) {
             int divide = hotelCountTotal / hotelCountOnPage;
             int mod = hotelCountTotal % hotelCountOnPage;
@@ -165,7 +158,7 @@ public class BookingService {
         return hotelPriceExtDtoList;
     }
 
-    private void changeLanguage(String language) {
+    private void changeLanguage(String language) throws InterruptedException {
         Optional<WebElement> languageModalButton = operation.findElementByCssSelector("[data-testid='header-language-picker-trigger']", ReturnAttitude.ERROR);
         operation.click(languageModalButton);
         List<WebElement> languageList = operation.findElementsByCssSelector("[data-testid='selection-item']");
@@ -191,7 +184,7 @@ public class BookingService {
             throw new NoSuchElementException("Currency List not found!");
         }
         currencyList.stream().flatMap(cur -> {
-            List<WebElement> elm = cur.findElements(By.cssSelector("div. ea1163d21f"));
+            List<WebElement> elm = cur.findElements(By.cssSelector("div.ea1163d21f"));
             if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
                 log.info("{} currency found successfully", currency);
                 return Stream.of(cur);
@@ -210,7 +203,7 @@ public class BookingService {
 
     private AppMoney fetchAndSetPrice(WebElement hotel) {
         log.info("Checking price...");
-        List<WebElement> priceList = hotel.findElements(By.cssSelector("[data-testid='price-and-discounted-price']"));
+        List<WebElement> priceList = operation.findElementsByExecutor(hotel, "[data-testid='price-and-discounted-price']");
         if (priceList.isEmpty()) {
             log.error("Hotel price not found!");
             throw new NoSuchElementException("Hotel title not found!");
@@ -265,7 +258,7 @@ public class BookingService {
     }
 
     private void closeRegisterModal() throws InterruptedException {
-        for (int i = 20; i > 0; i--) {
+        for (int i = 10; i > 0; i--) {
             log.info("Clicking close register modal x button...");
             List<WebElement> xButtonInRegisterModal = operation.findElementsByCssSelector("button.fc63351294.a822bdf511.e3c025e003.fa565176a8.f7db01295e.c334e6f658.ae1678b153");
             if (xButtonInRegisterModal.size() == 1) {
@@ -275,7 +268,7 @@ public class BookingService {
                 break;
             }
             log.warn("Not found register modal close button still. Trying again...");
-            operation.timeout(3);
+            operation.timeout(2);
         }
     }
 
