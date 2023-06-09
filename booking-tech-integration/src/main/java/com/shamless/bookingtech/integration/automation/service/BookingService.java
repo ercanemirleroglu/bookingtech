@@ -45,7 +45,7 @@ public class BookingService {
             try {
                 return manageOperation(params, mustStart);
             } catch (Exception e) {
-                log.error("Try count {}, Error message: {}", tryCount, e.getMessage());
+                log.error("Try count: " + tryCount + " Error message: " + e);
                 tryCount++;
                 if (e instanceof WebDriverException)
                     operation.finish();
@@ -61,19 +61,19 @@ public class BookingService {
     private List<HotelPriceExtDto> manageOperation(Map<Param, String> params, boolean mustStart) throws InterruptedException, MalformedURLException {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
         if (mustStart) operation.start("https://www.booking.com/");
-        /*Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
+        Optional<WebElement> elementByCssSelector = operation.findElementByCssSelector("[data-testid='herobanner-title1']", ReturnAttitude.EMPTY);
         elementByCssSelector.ifPresentOrElse(e -> log.info("--------------- {} ---------------", e.getText()), () -> {
             log.warn("Yazı görünemdi!");
-        });*/
-        //closeRegisterModal();
+        });
+        closeRegisterModal();
         //changeLanguage(params.get(Param.APP_LANGUAGE));
-        changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
+        //changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
         enterLocation(params.get(Param.SEARCH_LOCATION));
         enterDateByDayRange(params.get(Param.SEARCH_DATE_RANGE));
         List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
         enterCustomerTypeAndCount(customerSelectModels);
         clickSearchButton();
-        //operation.timeout(20);
+        operation.timeout(20);
         WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
                 .map(e -> e.findElements(By.cssSelector("[aria-live='assertive']")).stream().findFirst()
                         .orElseGet(() -> {
@@ -191,7 +191,7 @@ public class BookingService {
             throw new NoSuchElementException("Currency List not found!");
         }
         currencyList.stream().flatMap(cur -> {
-            List<WebElement> elm = cur.findElements(By.cssSelector("div.ea1163d21f"));
+            List<WebElement> elm = cur.findElements(By.cssSelector("div. ea1163d21f"));
             if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
                 log.info("{} currency found successfully", currency);
                 return Stream.of(cur);

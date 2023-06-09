@@ -25,4 +25,4 @@ spring:
 application:
   drivers:
     geckoDriverPath: /home/ec2-user/drivers/geckodriver
-    chromeDriverPath: /home/ec2-user/drivers/chromedriver
+    chromeDriverPath: /usr/bin/chromedriver

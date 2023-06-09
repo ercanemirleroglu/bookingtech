@@ -26,28 +26,29 @@ public class AutomationDriver {
     protected static WebDriver driver;
 
     protected void executeDriverByPath(String path) throws InterruptedException, MalformedURLException {
-        System.setProperty("webdriver.gecko.driver", driverPath);
-        FirefoxOptions options = manageOptions();
+        System.setProperty("webdriver.gecko.driver", chromeDriverPath);
+        ChromeOptions options = manageOptions();
         setDriver(options, path);
         //setUserAgent(options);
         //terminateDriver();
         //setDriver(options, path);
     }
 
-    private FirefoxOptions manageOptions() {
+    private ChromeOptions manageOptions() {
         log.info("Options settings...");
-        FirefoxOptions options = new FirefoxOptions();
+        ChromeOptions options = new ChromeOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
         //options.addArguments("--remote-debugging-port=0");
-        options.setHeadless(true);
-        options.setBinary("/home/ec2-user/local/firefox/firefox");
+        options.addArguments("--headless");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--window-size=1400,800");
         //options.addArguments("user-agent=\\" + "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
         //options.setCapability("detach", true);
         //Map<String, Object> stringObjectMap = options.asMap();
         return options;
     }
 
-    private void setDriver(FirefoxOptions options, String path) throws MalformedURLException {
+    private void setDriver(ChromeOptions options, String path) throws MalformedURLException {
         log.info("driver initializing...");
         //DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -55,13 +56,13 @@ public class AutomationDriver {
         //capabilities.setPlatform(Platform.LINUX);
         //capabilities.setVersion("114.0.5735.106");
         //capabilities.setCapability("goog:chromeOptions", options);
-        driver = new FirefoxDriver(options);
+        driver = new ChromeDriver(options);
 
         //driver.manage().window().maximize();
         log.info("{} page is opening", path);
+        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.MINUTES);
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.MINUTES);
         driver.get(path);
-        driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.MINUTES);
-        driver.manage().timeouts().implicitlyWait(1, TimeUnit.MINUTES);
     }
 
     private void setUserAgent(ChromeOptions options) {
