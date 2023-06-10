@@ -4,10 +4,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
-    <changeSet id="202306031628-1" author="ercan">
-        <createTable tableName="location">
+    <changeSet id="20230610234000-1" author="ercan">
+        <createTable tableName="LOCATION">
             <column name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="pk_team"/>
+                <constraints primaryKey="true" primaryKeyName="pk_location"/>
             </column>
             <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -17,10 +17,10 @@
         </createTable>
         <createSequence sequenceName="location_id_seq"/>
     </changeSet>
-    <changeSet id="202306031628-2" author="ercan">
-        <createTable tableName="hotel">
+    <changeSet id="20230610234000-2" author="ercan">
+        <createTable tableName="HOTEL">
             <column name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="pk_tournament"/>
+                <constraints primaryKey="true" primaryKeyName="pk_hotel"/>
             </column>
             <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -32,10 +32,28 @@
         </createTable>
         <createSequence sequenceName="hotel_id_seq"/>
     </changeSet>
-    <changeSet id="202306031628-3" author="ercan">
-        <createTable tableName="price">
+    <changeSet id="20230610234000-7" author="ercan">
+        <createTable tableName="SEARCH_CRITERIA">
             <column name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="pk_tour"/>
+                <constraints primaryKey="true" primaryKeyName="pk_search_criteria"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP"/>
+            <column name="param_adult" type="INTEGER"/>
+            <column name="param_child" type="INTEGER"/>
+            <column name="param_room" type="INTEGER"/>
+            <column name="from_date" type="DATE"/>
+            <column name="to_date" type="DATE"/>
+            <column name="location" type="VARCHAR2(255)"/>
+        </createTable>
+        <createSequence sequenceName="search_criteria_id_seq"/>
+    </changeSet>
+    <changeSet id="20230610234000-3" author="ercan">
+        <createTable tableName="PRICE">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_price"/>
             </column>
             <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -46,16 +64,14 @@
             <column name="current_currency" type="CHAR(3)"/>
             <column name="previous_currency" type="CHAR(3)"/>
             <column name="hotel_id" type="BIGINT"/>
-            <column name="param_adult" type="INTEGER"/>
-            <column name="param_child" type="INTEGER"/>
-            <column name="param_room" type="INTEGER"/>
+            <column name="search_criteria_id" type="BIGINT"/>
         </createTable>
         <createSequence sequenceName="price_id_seq"/>
     </changeSet>
-    <changeSet id="202306031628-4" author="ercan">
-        <createTable tableName="param">
+    <changeSet id="20230610234000-4" author="ercan">
+        <createTable tableName="PARAM">
             <column name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="pk_leaguesituation"/>
+                <constraints primaryKey="true" primaryKeyName="pk_param"/>
             </column>
             <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
@@ -67,7 +83,7 @@
         <createSequence sequenceName="param_id_seq"/>
     </changeSet>
 
-    <changeSet id="202306031628-5" author="ercan">
+    <changeSet id="20230610234000-5" author="ercan">
         <addForeignKeyConstraint baseTableName="hotel"
                                  baseColumnNames="location_id"
                                  constraintName="fk_location_hotel_id"
@@ -77,11 +93,21 @@
                                  initiallyDeferred="false"
         />
     </changeSet>
-    <changeSet id="202306031628-6" author="ercan">
+    <changeSet id="20230610234000-6" author="ercan">
         <addForeignKeyConstraint baseTableName="price"
                                  baseColumnNames="hotel_id"
                                  constraintName="fk_hotel_price_id"
                                  referencedTableName="hotel"
+                                 referencedColumnNames="id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+        />
+    </changeSet>
+    <changeSet id="20230610234000-8" author="ercan">
+        <addForeignKeyConstraint baseTableName="price"
+                                 baseColumnNames="search_criteria_id"
+                                 constraintName="fk_search_criteria_price_id"
+                                 referencedTableName="search_criteria"
                                  referencedColumnNames="id"
                                  deferrable="false"
                                  initiallyDeferred="false"
