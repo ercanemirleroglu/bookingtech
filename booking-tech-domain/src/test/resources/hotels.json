@@ -1,0 +1,1886 @@
+[
+  {
+    "hotelName": "Prosper House Apartment 5",
+    "price": {
+      "value": 77.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich City Center, Norwich",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Wellington Apartments",
+    "price": {
+      "value": 95.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich City Center, Norwich",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "Unique Warehouse Style Flat - Amazing Location",
+    "price": {
+      "value": 64.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich City Center, Norwich",
+    "rating": 7.9
+  },
+  {
+    "hotelName": "The Maids Head Hotel",
+    "price": {
+      "value": 91.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich City Center, Norwich",
+    "rating": 8.4
+  },
+  {
+    "hotelName": "Unique 1 bed mezzanine / City Center",
+    "price": {
+      "value": 51.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich City Center, Norwich",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "The Assembly House",
+    "price": {
+      "value": 196.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich City Center, Norwich",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "St Giles House Hotel",
+    "price": {
+      "value": 124.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich City Center, Norwich",
+    "rating": 7.5
+  },
+  {
+    "hotelName": "The Station Hotel",
+    "price": {
+      "value": 61.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.3
+  },
+  {
+    "hotelName": "Central Hotel",
+    "price": {
+      "value": 51.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.5
+  },
+  {
+    "hotelName": "Riverside Guest House",
+    "price": {
+      "value": 54.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 6.7
+  },
+  {
+    "hotelName": "Namaste Palace Hotel",
+    "price": {
+      "value": 49.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 6.7
+  },
+  {
+    "hotelName": "Stunning designer apartment in an ancient building",
+    "price": {
+      "value": 129.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.4
+  },
+  {
+    "hotelName": "Marlborough Hotel",
+    "price": {
+      "value": 49.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "Abbey Guest House",
+    "price": {
+      "value": 78.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Revado Hotel",
+    "price": {
+      "value": 51.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.1
+  },
+  {
+    "hotelName": "The Earlham Hotel",
+    "price": {
+      "value": 100.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.6
+  },
+  {
+    "hotelName": "The Georgian Townhouse",
+    "price": {
+      "value": 76.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.2
+  },
+  {
+    "hotelName": "The William IV",
+    "price": {
+      "value": 110.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.4
+  },
+  {
+    "hotelName": "Holiday Inn Norwich City, an IHG Hotel",
+    "price": {
+      "value": 99.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Large Stunning City Centre House with Cinema Room",
+    "price": {
+      "value": 64.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.4
+  },
+  {
+    "hotelName": "Best Western Annesley House Hotel",
+    "price": {
+      "value": 95.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Number 82 The Unthank",
+    "price": {
+      "value": 88.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.9
+  },
+  {
+    "hotelName": "George Hotel, Best Western Signature Collection",
+    "price": {
+      "value": 148.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Rooms At The Rosebery",
+    "price": {
+      "value": 102.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "The Summer Room",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.3
+  },
+  {
+    "hotelName": "The Lodge at Salhouse",
+    "price": {
+      "value": 120.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich"
+  },
+  {
+    "hotelName": "The Town House by Innkeeper\u0027s Collection",
+    "price": {
+      "value": 65.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.5
+  },
+  {
+    "hotelName": "Chestnut Grove Bed And Breakfast",
+    "price": {
+      "value": 85.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.5
+  },
+  {
+    "hotelName": "Stylish 2 Bed Apartment with Beautiful Garden",
+    "price": {
+      "value": 128.0,
+      "currency": "GBP"
+    },
+    "location": "Earlham",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "Best Western Plus Oaklands Hotel",
+    "price": {
+      "value": 89.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.3
+  },
+  {
+    "hotelName": "Holiday Inn Norwich, Ipswich Road, an IHG Hotel",
+    "price": {
+      "value": 99.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.8
+  },
+  {
+    "hotelName": "The Red Lion Eaton",
+    "price": {
+      "value": 80.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.2
+  },
+  {
+    "hotelName": "Sprowston Manor Hotel, Golf \u0026 Country Club",
+    "price": {
+      "value": 75.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 6.6
+  },
+  {
+    "hotelName": "Dunston Hall Hotel, Spa \u0026 Golf Resort",
+    "price": {
+      "value": 119.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.4
+  },
+  {
+    "hotelName": "OYO Elm Farm Country House, Norwich Airport",
+    "price": {
+      "value": 53.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 6.7
+  },
+  {
+    "hotelName": "The Black Swan Inn",
+    "price": {
+      "value": 120.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Stower Grange Hotel",
+    "price": {
+      "value": 129.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Church Farm Guest House",
+    "price": {
+      "value": 95.0,
+      "currency": "GBP"
+    },
+    "location": "Horsford",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "Old Rectory Hotel, Crostwick",
+    "price": {
+      "value": 115.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Kings Head Bawburgh",
+    "price": {
+      "value": 160.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Sugarbeat Eating House",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Meadow Farm Cottage",
+    "price": {
+      "value": 85.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Park Farm Hotel",
+    "price": {
+      "value": 199.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.7
+  },
+  {
+    "hotelName": "Wensum Valley Hotel Golf and Country Club",
+    "price": {
+      "value": 74.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 6.8
+  },
+  {
+    "hotelName": "Recruiting Sergeant",
+    "price": {
+      "value": 124.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "The Norfolk Mead Hotel",
+    "price": {
+      "value": 145.0,
+      "currency": "GBP"
+    },
+    "location": "Coltishall",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Hotel Wroxham",
+    "price": {
+      "value": 89.0,
+      "currency": "GBP"
+    },
+    "location": "Wroxham",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "The Kings Head Wroxham by Greene King Inns",
+    "price": {
+      "value": 80.0,
+      "currency": "GBP"
+    },
+    "location": "Wroxham",
+    "rating": 7.1
+  },
+  {
+    "hotelName": "The Rising Sun",
+    "price": {
+      "value": 115.0,
+      "currency": "GBP"
+    },
+    "location": "Coltishall",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Kings Head Coltishall",
+    "price": {
+      "value": 90.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 7.6
+  },
+  {
+    "hotelName": "Dragons Den",
+    "price": {
+      "value": 95.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich"
+  },
+  {
+    "hotelName": "Marsham Arms Inn",
+    "price": {
+      "value": 78.0,
+      "currency": "GBP"
+    },
+    "location": "Hevingham",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "The Honingham Buck",
+    "price": {
+      "value": 75.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Lingwood Hall",
+    "price": {
+      "value": 92.0,
+      "currency": "GBP"
+    },
+    "location": "Lingwood",
+    "rating": 7.5
+  },
+  {
+    "hotelName": "The Swan Inn by Innkeeper\u0027s Collection",
+    "price": {
+      "value": 89.0,
+      "currency": "GBP"
+    },
+    "location": "Horning",
+    "rating": 8.0
+  },
+  {
+    "hotelName": "No 10 The Abbey",
+    "price": {
+      "value": 94.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Barnham Broom Hotel, Golf \u0026 Spa",
+    "price": {
+      "value": 120.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.1
+  },
+  {
+    "hotelName": "The Plough Inn",
+    "price": {
+      "value": 90.0,
+      "currency": "GBP"
+    },
+    "location": "Marsham",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "The Loddon Swan",
+    "price": {
+      "value": 86.0,
+      "currency": "GBP"
+    },
+    "location": "Loddon",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Regency Guest House",
+    "price": {
+      "value": 115.0,
+      "currency": "GBP"
+    },
+    "location": "Neatishead",
+    "rating": 9.4
+  },
+  {
+    "hotelName": "Muntjac View, Beechcroft Barns, Cawston, Norfolk",
+    "price": {
+      "value": 79.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Badgers Drift, Beechcroft Barns, Cawston, Norfolk",
+    "price": {
+      "value": 79.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.6
+  },
+  {
+    "hotelName": "Cobweb Cottage",
+    "price": {
+      "value": 67.0,
+      "currency": "GBP"
+    },
+    "location": "Spooner Row",
+    "rating": 7.8
+  },
+  {
+    "hotelName": "The Ironmongers Boutique accommodation",
+    "price": {
+      "value": 156.0,
+      "currency": "GBP"
+    },
+    "location": "Aylsham",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Maple Hut Four Acre Farm",
+    "price": {
+      "value": 113.0,
+      "currency": "GBP"
+    },
+    "location": "Aylsham",
+    "rating": 9.8
+  },
+  {
+    "hotelName": "Wayford Bridge Inn Hotel",
+    "price": {
+      "value": 89.0,
+      "currency": "GBP"
+    },
+    "location": "Stalham",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "1 ivy cottages the street norton subcourse NR146RS",
+    "price": {
+      "value": 87.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.5
+  },
+  {
+    "hotelName": "Bastwick House B\u0026B",
+    "price": {
+      "value": 73.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.3
+  },
+  {
+    "hotelName": "The Castle Inn",
+    "price": {
+      "value": 150.0,
+      "currency": "GBP"
+    },
+    "location": "Bungay",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "The White Hart Hotel",
+    "price": {
+      "value": 106.0,
+      "currency": "GBP"
+    },
+    "location": "Hingham",
+    "rating": 9.2
+  },
+  {
+    "hotelName": "The Harnser",
+    "price": {
+      "value": 100.0,
+      "currency": "GBP"
+    },
+    "location": "Stalham",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Beechwood Hotel",
+    "price": {
+      "value": 200.0,
+      "currency": "GBP"
+    },
+    "location": "North Walsham",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "Rooms at number 4",
+    "price": {
+      "value": 56.0,
+      "currency": "GBP"
+    },
+    "location": "North Walsham",
+    "rating": 8.4
+  },
+  {
+    "hotelName": "The Griffin Hotel",
+    "price": {
+      "value": 90.0,
+      "currency": "GBP"
+    },
+    "location": "Attleborough",
+    "rating": 7.4
+  },
+  {
+    "hotelName": "Old Field Barn Luxury B \u0026 B",
+    "price": {
+      "value": 95.0,
+      "currency": "GBP"
+    },
+    "location": "Attleborough",
+    "rating": 9.6
+  },
+  {
+    "hotelName": "The Kings Head",
+    "price": {
+      "value": 92.0,
+      "currency": "GBP"
+    },
+    "location": "New Buckenham",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "2 Bed Barn conversion",
+    "price": {
+      "value": 146.0,
+      "currency": "GBP"
+    },
+    "location": "Tibenham",
+    "rating": 10.0
+  },
+  {
+    "hotelName": "PondView Cottage with swimming pool, and garden",
+    "price": {
+      "value": 129.0,
+      "currency": "GBP"
+    },
+    "location": "Tibenham",
+    "rating": 6.8
+  },
+  {
+    "hotelName": "The Retreat",
+    "price": {
+      "value": 62.0,
+      "currency": "GBP"
+    },
+    "location": "Tibenham",
+    "rating": 6.9
+  },
+  {
+    "hotelName": "The Ingham Swan",
+    "price": {
+      "value": 100.0,
+      "currency": "GBP"
+    },
+    "location": "Stalham",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Aldercarr Hall",
+    "price": {
+      "value": 87.0,
+      "currency": "GBP"
+    },
+    "location": "Attleborough",
+    "rating": 7.5
+  },
+  {
+    "hotelName": "The Old Ram Coaching Inn",
+    "price": {
+      "value": 125.0,
+      "currency": "GBP"
+    },
+    "location": "Tivetshall Saint Margaret",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Blue Cabin Bridge Stores",
+    "price": {
+      "value": 89.0,
+      "currency": "GBP"
+    },
+    "location": "Fritton",
+    "rating": 10.0
+  },
+  {
+    "hotelName": "The Boathouse",
+    "price": {
+      "value": 95.0,
+      "currency": "GBP"
+    },
+    "location": "Rollesby",
+    "rating": 9.4
+  },
+  {
+    "hotelName": "Glendower Guest Apartments",
+    "price": {
+      "value": 116.0,
+      "currency": "GBP"
+    },
+    "location": "East Dereham",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "Kings Head Hotel Ltd",
+    "price": {
+      "value": 78.0,
+      "currency": "GBP"
+    },
+    "location": "East Dereham",
+    "rating": 5.9
+  },
+  {
+    "hotelName": "Swan Motel",
+    "price": {
+      "value": 80.0,
+      "currency": "GBP"
+    },
+    "location": "Beccles",
+    "rating": 8.7
+  },
+  {
+    "hotelName": "The Romany Rye Wetherspoon",
+    "price": {
+      "value": 57.0,
+      "currency": "GBP"
+    },
+    "location": "East Dereham",
+    "rating": 7.9
+  },
+  {
+    "hotelName": "The George Hotel, Dereham",
+    "price": {
+      "value": 79.0,
+      "currency": "GBP"
+    },
+    "location": "East Dereham",
+    "rating": 8.1
+  },
+  {
+    "hotelName": "Decoy Barn Fritton",
+    "price": {
+      "value": 74.0,
+      "currency": "GBP"
+    },
+    "location": "Fritton",
+    "rating": 9.6
+  },
+  {
+    "hotelName": "Fritton Lake - The Clubhouse",
+    "price": {
+      "value": 220.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth"
+  },
+  {
+    "hotelName": "Swan Hotel",
+    "price": {
+      "value": 74.0,
+      "currency": "GBP"
+    },
+    "location": "Harleston",
+    "rating": 6.6
+  },
+  {
+    "hotelName": "Primrose Cottage",
+    "price": {
+      "value": 97.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 9.7
+  },
+  {
+    "hotelName": "J.D.Young",
+    "price": {
+      "value": 96.0,
+      "currency": "GBP"
+    },
+    "location": "Harleston",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Dawn Chorus Holidays",
+    "price": {
+      "value": 105.0,
+      "currency": "GBP"
+    },
+    "location": "Beccles",
+    "rating": 9.5
+  },
+  {
+    "hotelName": "The Queens Head Glamping",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Foulsham",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Breckland Lodge",
+    "price": {
+      "value": 79.0,
+      "currency": "GBP"
+    },
+    "location": "Attleborough",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Waveney House Hotel",
+    "price": {
+      "value": 120.0,
+      "currency": "GBP"
+    },
+    "location": "Beccles",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "The Half Moon Inn",
+    "price": {
+      "value": 78.0,
+      "currency": "GBP"
+    },
+    "location": "Pulham Saint Mary the Virgin",
+    "rating": 8.7
+  },
+  {
+    "hotelName": "Swan House",
+    "price": {
+      "value": 92.0,
+      "currency": "GBP"
+    },
+    "location": "Beccles",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "The King\u0027s Head Hotel Wetherspoon",
+    "price": {
+      "value": 93.0,
+      "currency": "GBP"
+    },
+    "location": "Beccles",
+    "rating": 8.1
+  },
+  {
+    "hotelName": "The Orangery",
+    "price": {
+      "value": 91.0,
+      "currency": "GBP"
+    },
+    "location": "Thurning",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "Seals Bacton",
+    "price": {
+      "value": 105.0,
+      "currency": "GBP"
+    },
+    "location": "Bacton",
+    "rating": 9.6
+  },
+  {
+    "hotelName": "Seaview Cottage",
+    "price": {
+      "value": 110.0,
+      "currency": "GBP"
+    },
+    "location": "Bacton",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "Poachers Pocket Seaview",
+    "price": {
+      "value": 90.0,
+      "currency": "GBP"
+    },
+    "location": "Bacton",
+    "rating": 7.9
+  },
+  {
+    "hotelName": "Kings Head Hotel",
+    "price": {
+      "value": 100.0,
+      "currency": "GBP"
+    },
+    "location": "North Elmham",
+    "rating": 8.7
+  },
+  {
+    "hotelName": "Mells Shells",
+    "price": {
+      "value": 52.0,
+      "currency": "GBP"
+    },
+    "location": "Hemsby",
+    "rating": 9.7
+  },
+  {
+    "hotelName": "The Cliff Top Inn",
+    "price": {
+      "value": 80.0,
+      "currency": "GBP"
+    },
+    "location": "Bacton",
+    "rating": 8.2
+  },
+  {
+    "hotelName": "Chalet 5 sundowner",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Hemsby",
+    "rating": 7.1
+  },
+  {
+    "hotelName": "Marsh Farm Holiday Park",
+    "price": {
+      "value": 87.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.7
+  },
+  {
+    "hotelName": "#31 Sundowner",
+    "price": {
+      "value": 74.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.0
+  },
+  {
+    "hotelName": "17 Breakaway Chalet",
+    "price": {
+      "value": 97.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.2
+  },
+  {
+    "hotelName": "North Quay Apartment A - 1 Bed",
+    "price": {
+      "value": 53.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth"
+  },
+  {
+    "hotelName": "Entire flat with nice view, N 6",
+    "price": {
+      "value": 52.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth"
+  },
+  {
+    "hotelName": "Spacious 3 Beds ,Sleeps 8 Caravan Self Catering California Cliffs Holiday Park,Scratby",
+    "price": {
+      "value": 156.0,
+      "currency": "GBP"
+    },
+    "location": "Scratby",
+    "rating": 3.8
+  },
+  {
+    "hotelName": "3 Bed ,Sleeps 8 Caravan California Cliffs Holiday Park",
+    "price": {
+      "value": 156.0,
+      "currency": "GBP"
+    },
+    "location": "Scratby",
+    "rating": 5.9
+  },
+  {
+    "hotelName": "Entire Two Double Bedrooms Flat with River Yare View H6",
+    "price": {
+      "value": 73.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "The Royal Hotel",
+    "price": {
+      "value": 145.0,
+      "currency": "GBP"
+    },
+    "location": "Mundesley",
+    "rating": 7.3
+  },
+  {
+    "hotelName": "Spacious Two Double Bedrooms Flat, H 5",
+    "price": {
+      "value": 75.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.2
+  },
+  {
+    "hotelName": "Enire New Flat With View to River Yare, H7",
+    "price": {
+      "value": 71.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.2
+  },
+  {
+    "hotelName": "Spacious 3 Bedrooms ,Sleeps 8 Caravan Self Catering California Cliffs Holiday Park",
+    "price": {
+      "value": 140.0,
+      "currency": "GBP"
+    },
+    "location": "Scratby",
+    "rating": 2.7
+  },
+  {
+    "hotelName": "Post Office Penthouse",
+    "price": {
+      "value": 91.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "Entire Two Bedrooms Flat, 1F",
+    "price": {
+      "value": 64.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.7
+  },
+  {
+    "hotelName": "Spacious Entire Flat, 1",
+    "price": {
+      "value": 51.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Spacious Flat with River View, 1A",
+    "price": {
+      "value": 46.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.2
+  },
+  {
+    "hotelName": "Spacious Entire Flat,1D",
+    "price": {
+      "value": 55.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 10.0
+  },
+  {
+    "hotelName": "South Quay Apartment",
+    "price": {
+      "value": 71.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "The Ship Inn",
+    "price": {
+      "value": 100.0,
+      "currency": "GBP"
+    },
+    "location": "Mundesley",
+    "rating": 8.0
+  },
+  {
+    "hotelName": "Premier Apartments",
+    "price": {
+      "value": 56.0,
+      "currency": "GBP"
+    },
+    "location": "Caister-on-Sea",
+    "rating": 9.5
+  },
+  {
+    "hotelName": "The Troll Cart Wetherspoon",
+    "price": {
+      "value": 99.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Wonderful Townhouse with BBQ Backyard",
+    "price": {
+      "value": 136.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "Exclusive House with Canadian Hot Tub",
+    "price": {
+      "value": 185.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "OYO Belvedere Guest House, Great Yarmouth",
+    "price": {
+      "value": 46.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 4.6
+  },
+  {
+    "hotelName": "The Three Horseshoes",
+    "price": {
+      "value": 115.0,
+      "currency": "GBP"
+    },
+    "location": "Briston",
+    "rating": 9.2
+  },
+  {
+    "hotelName": "Seashells Guest House",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.9
+  },
+  {
+    "hotelName": "Cosy Home by the Sea in Great Yarmouth",
+    "price": {
+      "value": 69.0,
+      "currency": "GBP"
+    },
+    "location": "Southtown"
+  },
+  {
+    "hotelName": "The Elmfield",
+    "price": {
+      "value": 60.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "OYO Studiotel GY - Modern Hotel Apartments",
+    "price": {
+      "value": 79.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "All Seasons Guest House",
+    "price": {
+      "value": 69.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.7
+  },
+  {
+    "hotelName": "The Dolphin Hotel",
+    "price": {
+      "value": 63.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 6.4
+  },
+  {
+    "hotelName": "St George Hotel Great Yarmouth",
+    "price": {
+      "value": 48.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 6.6
+  },
+  {
+    "hotelName": "St Annes",
+    "price": {
+      "value": 64.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "OYO The Waverley Hotel",
+    "price": {
+      "value": 60.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.0
+  },
+  {
+    "hotelName": "Yarmouth Apartments, Street Permit Parking, Close To Everything, Beach, Pier, Free WIFI",
+    "price": {
+      "value": 62.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.5
+  },
+  {
+    "hotelName": "SEA VIEW STAY 17 Princes Road",
+    "price": {
+      "value": 64.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.9
+  },
+  {
+    "hotelName": "No 58",
+    "price": {
+      "value": 62.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "The Mayfair Hotel",
+    "price": {
+      "value": 52.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 6.6
+  },
+  {
+    "hotelName": "The Little Emily - Room Only",
+    "price": {
+      "value": 48.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.7
+  },
+  {
+    "hotelName": "Annabelle Rooms",
+    "price": {
+      "value": 80.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.2
+  },
+  {
+    "hotelName": "Fjaerland Hotel",
+    "price": {
+      "value": 46.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 4.5
+  },
+  {
+    "hotelName": "Willows Guest House",
+    "price": {
+      "value": 88.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.4
+  },
+  {
+    "hotelName": "Marlborough White house- entire 3 bedroom home for your holiday",
+    "price": {
+      "value": 248.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 10.0
+  },
+  {
+    "hotelName": "Villa Rose",
+    "price": {
+      "value": 39.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 4.3
+  },
+  {
+    "hotelName": "The Embassy Hotel",
+    "price": {
+      "value": 74.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 6.3
+  },
+  {
+    "hotelName": "Arona Guest Hotel",
+    "price": {
+      "value": 100.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "The Lyndhurst Guest House",
+    "price": {
+      "value": 54.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.3
+  },
+  {
+    "hotelName": "The Collingwood Guest House",
+    "price": {
+      "value": 81.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 6.9
+  },
+  {
+    "hotelName": "Prom Hotel",
+    "price": {
+      "value": 141.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "The Carlton Hotel",
+    "price": {
+      "value": 59.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.1
+  },
+  {
+    "hotelName": "New Beach Hotel",
+    "price": {
+      "value": 80.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.4
+  },
+  {
+    "hotelName": "NELSON Hotel",
+    "price": {
+      "value": 60.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 6.8
+  },
+  {
+    "hotelName": "Gable End Hotel",
+    "price": {
+      "value": 118.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.1
+  },
+  {
+    "hotelName": "Hotel Ocean",
+    "price": {
+      "value": 138.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.7
+  },
+  {
+    "hotelName": "Marine Lodge",
+    "price": {
+      "value": 80.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.1
+  },
+  {
+    "hotelName": "Knights Court",
+    "price": {
+      "value": 77.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.1
+  },
+  {
+    "hotelName": "Palm Court Hotel",
+    "price": {
+      "value": 82.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 7.7
+  },
+  {
+    "hotelName": "Furzedown Hotel",
+    "price": {
+      "value": 95.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Imperial Hotel",
+    "price": {
+      "value": 120.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "The Majestic",
+    "price": {
+      "value": 60.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 6.8
+  },
+  {
+    "hotelName": "Avalon",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Gorleston-on-Sea",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Cliff Hotel",
+    "price": {
+      "value": 87.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Felbrigg Lodge",
+    "price": {
+      "value": 285.0,
+      "currency": "GBP"
+    },
+    "location": "Aylmerton",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Pier Hotel",
+    "price": {
+      "value": 120.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 8.7
+  },
+  {
+    "hotelName": "Valley Farmhouse B\u0026B",
+    "price": {
+      "value": 150.0,
+      "currency": "GBP"
+    },
+    "location": "Southwold",
+    "rating": 9.3
+  },
+  {
+    "hotelName": "Ocean Retreat Norfolk Rooms",
+    "price": {
+      "value": 152.0,
+      "currency": "GBP"
+    },
+    "location": "Trimingham",
+    "rating": 9.3
+  },
+  {
+    "hotelName": "The Brisley Bell",
+    "price": {
+      "value": 162.0,
+      "currency": "GBP"
+    },
+    "location": "Brisley",
+    "rating": 9.2
+  },
+  {
+    "hotelName": "The Courtyard, Laurel Farm",
+    "price": {
+      "value": 90.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 9.3
+  },
+  {
+    "hotelName": "PK Holiday Home",
+    "price": {
+      "value": 103.0,
+      "currency": "GBP"
+    },
+    "location": "Great Yarmouth",
+    "rating": 9.0
+  },
+  {
+    "hotelName": "The Willow House",
+    "price": {
+      "value": 83.0,
+      "currency": "GBP"
+    },
+    "location": "Watton",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "The Nags Head",
+    "price": {
+      "value": 87.0,
+      "currency": "GBP"
+    },
+    "location": "Norwich",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "Wherry Hotel",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 8.2
+  },
+  {
+    "hotelName": "The Wolf Inn",
+    "price": {
+      "value": 45.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 8.1
+  },
+  {
+    "hotelName": "Melody House",
+    "price": {
+      "value": 110.0,
+      "currency": "GBP"
+    },
+    "location": "Fakenham",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Very Large lovely double room loft apartment",
+    "price": {
+      "value": 66.0,
+      "currency": "GBP"
+    },
+    "location": "Carlton Colville",
+    "rating": 9.8
+  },
+  {
+    "hotelName": "Allseasons Hotel",
+    "price": {
+      "value": 79.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 8.4
+  },
+  {
+    "hotelName": "The Coach House Suffolk",
+    "price": {
+      "value": 88.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "Watton Vibe Hotel",
+    "price": {
+      "value": 66.0,
+      "currency": "GBP"
+    },
+    "location": "Watton",
+    "rating": 8.7
+  },
+  {
+    "hotelName": "Byfords",
+    "price": {
+      "value": 179.0,
+      "currency": "GBP"
+    },
+    "location": "Holt",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "Thompson Hall Retreat",
+    "price": {
+      "value": 295.0,
+      "currency": "GBP"
+    },
+    "location": "Thompson",
+    "rating": 9.6
+  },
+  {
+    "hotelName": "Baytree House",
+    "price": {
+      "value": 75.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "The King\u0027s Head",
+    "price": {
+      "value": 140.0,
+      "currency": "GBP"
+    },
+    "location": "Holt",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "The White Hart",
+    "price": {
+      "value": 83.0,
+      "currency": "GBP"
+    },
+    "location": "Ashill",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "Spacious 3 bed house near beach!",
+    "price": {
+      "value": 261.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 9.4
+  },
+  {
+    "hotelName": "Most Easterly",
+    "price": {
+      "value": 72.0,
+      "currency": "GBP"
+    },
+    "location": "Pakefield",
+    "rating": 9.8
+  },
+  {
+    "hotelName": "Most Easterly (North)",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Pakefield",
+    "rating": 9.4
+  },
+  {
+    "hotelName": "Hatfield Lodge",
+    "price": {
+      "value": 75.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 6.7
+  },
+  {
+    "hotelName": "Best Western Hotel Hatfield",
+    "price": {
+      "value": 75.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 7.6
+  },
+  {
+    "hotelName": "OYO Lord Kitcheners Guest House",
+    "price": {
+      "value": 84.0,
+      "currency": "GBP"
+    },
+    "location": "Lowestoft",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "4 Sea View Walk Pakefield",
+    "price": {
+      "value": 202.0,
+      "currency": "GBP"
+    },
+    "location": "Pakefield",
+    "rating": 8.9
+  },
+  {
+    "hotelName": "Tent Pitch only, no accommodation supplied",
+    "price": {
+      "value": 33.0,
+      "currency": "GBP"
+    },
+    "location": "Colkirk",
+    "rating": 9.8
+  },
+  {
+    "hotelName": "FIELDVIEW FARMHOUSE BED AND BREAKFAST",
+    "price": {
+      "value": 106.0,
+      "currency": "GBP"
+    },
+    "location": "Colkirk",
+    "rating": 9.7
+  },
+  {
+    "hotelName": "The Crown Fakenham",
+    "price": {
+      "value": 81.0,
+      "currency": "GBP"
+    },
+    "location": "Fakenham",
+    "rating": 7.5
+  },
+  {
+    "hotelName": "The Olde Windmill Inn",
+    "price": {
+      "value": 72.0,
+      "currency": "GBP"
+    },
+    "location": "Great Cressingham",
+    "rating": 8.6
+  },
+  {
+    "hotelName": "Sculthorpe Mill",
+    "price": {
+      "value": 116.0,
+      "currency": "GBP"
+    },
+    "location": "Fakenham",
+    "rating": 8.5
+  },
+  {
+    "hotelName": "Nar river b\u0026b",
+    "price": {
+      "value": 120.0,
+      "currency": "GBP"
+    },
+    "location": "King\u0027s Lynn",
+    "rating": 9.6
+  },
+  {
+    "hotelName": "Elmham House - Pilgrim Hotel",
+    "price": {
+      "value": 98.0,
+      "currency": "GBP"
+    },
+    "location": "Little Walsingham",
+    "rating": 8.3
+  },
+  {
+    "hotelName": "Chalet Bungalow, Little Walsingham",
+    "price": {
+      "value": 138.0,
+      "currency": "GBP"
+    },
+    "location": "Little Walsingham",
+    "rating": 7.6
+  },
+  {
+    "hotelName": "Columbine, Thetford, 2BR House",
+    "price": {
+      "value": 64.0,
+      "currency": "GBP"
+    },
+    "location": "Thetford",
+    "rating": 8.8
+  },
+  {
+    "hotelName": "Bell by Greene King Inns",
+    "price": {
+      "value": 70.0,
+      "currency": "GBP"
+    },
+    "location": "Thetford",
+    "rating": 6.8
+  },
+  {
+    "hotelName": "The Crown Inn",
+    "price": {
+      "value": 130.0,
+      "currency": "GBP"
+    },
+    "location": "East Rudham",
+    "rating": 8.6
+  }
+]
