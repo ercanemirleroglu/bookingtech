@@ -3,9 +3,11 @@ package com.shameless.bookingtech.app.service;
 import com.shameless.bookingtech.common.util.JsonUtil;
 import com.shameless.bookingtech.common.util.model.Param;
 import com.shameless.bookingtech.domain.dto.BookingResultDto;
+import com.shameless.bookingtech.domain.dto.ParamDto;
 import com.shameless.bookingtech.domain.model.HotelPriceModel;
 import com.shameless.bookingtech.domain.model.SearchCriteriaModel;
 import com.shameless.bookingtech.domain.service.HotelApplicationService;
+import com.shameless.bookingtech.domain.service.ParamService;
 import com.shameless.bookingtech.integration.automation.model.HotelPriceExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
@@ -26,28 +28,25 @@ public class ProcessService {
 
     private final BookingService bookingService;
     private final HotelApplicationService hotelApplicationService;
+    private final ParamService paramService;
 
-    public ProcessService(BookingService bookingService, HotelApplicationService hotelApplicationService) {
+    public ProcessService(BookingService bookingService, HotelApplicationService hotelApplicationService, ParamService paramService) {
         this.bookingService = bookingService;
         this.hotelApplicationService = hotelApplicationService;
+        this.paramService = paramService;
     }
 
     @Scheduled(fixedRate = 20 * 60 * 1000)
-    public void checkServices() throws InterruptedException, IOException {
+    public void checkServices() {
         Map<Param, String> params = new HashMap<>();
-        params.put(Param.APP_CURRENCY_UNIT, "GBP");
-        params.put(Param.APP_LANGUAGE, "English (US)");
-        params.put(Param.SEARCH_LOCATION, "Norwich, United Kingdom");
-        params.put(Param.SEARCH_ADULT, "2");
-        params.put(Param.SEARCH_CHILD, "0");
-        params.put(Param.SEARCH_ROOM, "1");
-        params.put(Param.SEARCH_DATE_RANGE, "1");
+        List<ParamDto> allParams = paramService.getAllParams();
+        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
         SearchResultExtDto searchResultExtDto = bookingService.fetchBookingData(params);
         hotelApplicationService.save(toDto(searchResultExtDto));
     }
 
     //@Scheduled(fixedRate = 20 * 60 * 1000)
-    public void testService() throws InterruptedException, IOException {
+    public void testService() throws IOException {
         Resource resource = new ClassPathResource("hotels.json");
         String filePath = resource.getFile().getAbsolutePath();
         SearchResultExtDto searchResultExtDto = (SearchResultExtDto) JsonUtil.getInstance().readFile(SearchResultExtDto.class, filePath, "hotels");
