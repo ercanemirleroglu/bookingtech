@@ -1,5 +1,6 @@
 package com.shameless.bookingtech.app.service;
 
+import com.shameless.bookingtech.common.util.JsonUtil;
 import com.shameless.bookingtech.common.util.model.Param;
 import com.shameless.bookingtech.domain.dto.BookingResultDto;
 import com.shameless.bookingtech.domain.model.HotelPriceModel;
@@ -9,10 +10,12 @@ import com.shameless.bookingtech.integration.automation.model.HotelPriceExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
 import com.shameless.bookingtech.integration.automation.service.BookingService;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +33,7 @@ public class ProcessService {
     }
 
     @Scheduled(fixedRate = 20 * 60 * 1000)
-    public void checkServices() throws InterruptedException {
+    public void checkServices() throws InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
         params.put(Param.APP_CURRENCY_UNIT, "GBP");
         params.put(Param.APP_LANGUAGE, "English (US)");
@@ -41,7 +44,14 @@ public class ProcessService {
         params.put(Param.SEARCH_DATE_RANGE, "1");
         SearchResultExtDto searchResultExtDto = bookingService.fetchBookingData(params);
         hotelApplicationService.save(toDto(searchResultExtDto));
+    }
 
+    //@Scheduled(fixedRate = 20 * 60 * 1000)
+    public void testService() throws InterruptedException, IOException {
+        Resource resource = new ClassPathResource("hotels.json");
+        String filePath = resource.getFile().getAbsolutePath();
+        SearchResultExtDto searchResultExtDto = (SearchResultExtDto) JsonUtil.getInstance().readFile(SearchResultExtDto.class, filePath, "hotels");
+        hotelApplicationService.save(toDto(searchResultExtDto));
     }
 
     private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {

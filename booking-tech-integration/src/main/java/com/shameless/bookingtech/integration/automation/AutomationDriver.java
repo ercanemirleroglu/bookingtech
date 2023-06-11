@@ -1,7 +1,6 @@
 package com.shameless.bookingtech.integration.automation;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -32,10 +31,10 @@ public class AutomationDriver {
         log.info("Options settings...");
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
-        /*options.addArguments("--remote-debugging-port=9222");
+        options.addArguments("--remote-debugging-port=9222");
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
-        options.addArguments("--no-sandbox");*/
+        options.addArguments("--no-sandbox");
         //options.addArguments("--window-size=1400,800");
         return options;
     }
@@ -46,7 +45,7 @@ public class AutomationDriver {
         log.info("{} page is opening", path);
         driver.manage().timeouts().pageLoadTimeout(1, TimeUnit.MINUTES);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        driver.manage().window().setSize(new Dimension(1440, 900));
+        //driver.manage().window().maximize();
         driver.get(path);
     }
 
