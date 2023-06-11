@@ -18,7 +18,7 @@ public class SearchCriteriaService {
     }
 
     public SearchCriteriaDto findByParams(SearchCriteriaDto searchCriteriaDto) {
-        return searchCriteriaRepository.findByParamAdultAndParamChildAndParamRoomAndLocation(
+        return searchCriteriaRepository.findByParamAdultAndParamChildAndParamRoomAndParamLocation(
                 searchCriteriaDto.getParamAdult(),
                 searchCriteriaDto.getParamChild(),
                 searchCriteriaDto.getParamRoom(),

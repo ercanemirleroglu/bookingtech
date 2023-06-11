@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-@EnableScheduling
 public class ProcessService {
 
     private final BookingService bookingService;
