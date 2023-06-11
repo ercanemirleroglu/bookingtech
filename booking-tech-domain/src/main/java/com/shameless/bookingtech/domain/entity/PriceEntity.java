@@ -1,11 +1,9 @@
 package com.shameless.bookingtech.domain.entity;
 
-import com.shameless.bookingtech.domain.model.MoneyConverter;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Columns;
 
-import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,20 +17,10 @@ public class PriceEntity extends AbstractEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "price_id_seq_generator")
     private Long id;
-
-    @Columns(columns = {
-            @Column(name = "current_price_currency"),
-            @Column(name = "current_price")
-    })
-    @Convert(converter = MoneyConverter.class)
-    private MonetaryAmount currentPrice;
-
-    @Columns(columns = {
-            @Column(name = "previous_price_currency"),
-            @Column(name = "previous_price")
-    })
-    @Convert(converter = MoneyConverter.class)
-    private MonetaryAmount previousPrice;
+    private BigDecimal currentPrice;
+    private String currentCurrency;
+    private BigDecimal previousPrice;
+    private String previousCurrency;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
@@ -41,7 +29,5 @@ public class PriceEntity extends AbstractEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "search_criteria_id")
     private SearchCriteriaEntity searchCriteria;
-
-
 
 }

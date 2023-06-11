@@ -6,9 +6,11 @@ import org.javamoney.moneta.Money;
 import java.math.BigDecimal;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppMoney {
-    private final BigDecimal value;
-    private final String currency;
+    private BigDecimal value;
+    private String currency;
 
     public AppMoney(Money money){
         value = BigDecimal.valueOf(money.getNumber().doubleValue());

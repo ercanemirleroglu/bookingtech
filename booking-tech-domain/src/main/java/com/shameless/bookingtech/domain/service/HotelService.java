@@ -41,7 +41,7 @@ public class HotelService {
                     hotelDtoListInThisProcess.add(updatedDto);
                 }
             } else {
-                LocationEntity location = locationRepository.findByName(hotelDto.getName())
+                LocationEntity location = locationRepository.findByName(hotelDto.getLocation().getName())
                         .orElseThrow(() -> new IllegalArgumentException("Location could not found! Location is " + hotelDto.getName()));
                 HotelEntity from = hotelFactory.from(hotelDto, location);
                 HotelEntity save = hotelRepository.save(from);

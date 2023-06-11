@@ -13,6 +13,7 @@ public class HotelMapper {
                 .lastModifiedDate(entity.getLastModifiedDate())
                 .name(entity.getName())
                 .location(LocationMapper.INSTANCE.toDto(entity.getLocation()))
+                .rating(entity.getRating())
                 .build();
     }
 

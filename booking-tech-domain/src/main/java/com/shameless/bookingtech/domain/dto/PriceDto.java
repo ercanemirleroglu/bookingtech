@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,8 +16,10 @@ public class PriceDto {
     private Long id;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
-    private AppMoneyDto currentPrice;
-    private AppMoneyDto previousPrice;
+    private BigDecimal currentPrice;
+    private String currentCurrency;
+    private BigDecimal previousPrice;
+    private String previousCurrency;
     private HotelDto hotel;
     private SearchCriteriaDto searchCriteria;
 }

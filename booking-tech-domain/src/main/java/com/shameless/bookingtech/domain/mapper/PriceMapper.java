@@ -11,8 +11,10 @@ public class PriceMapper {
                 .id(entity.getId())
                 .createdDate(entity.getCreatedDate())
                 .lastModifiedDate(entity.getLastModifiedDate())
-                .currentPrice(AppMoneyMapper.INSTANCE.toDto(entity.getCurrentPrice()))
-                .previousPrice(AppMoneyMapper.INSTANCE.toDto(entity.getPreviousPrice()))
+                .currentPrice(entity.getCurrentPrice())
+                .currentCurrency(entity.getCurrentCurrency())
+                .previousPrice(entity.getPreviousPrice())
+                .previousCurrency(entity.getPreviousCurrency())
                 .hotel(HotelMapper.INSTANCE.toDto(entity.getHotel()))
                 .searchCriteria(SearchCriteriaMapper.INSTANCE.toDto(entity.getSearchCriteria()))
                 .build();

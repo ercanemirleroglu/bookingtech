@@ -14,8 +14,10 @@ public class PriceFactory {
     public PriceEntity from(PriceDto dto, HotelEntity hotel, SearchCriteriaEntity searchCriteria) {
         return PriceEntity.builder()
                 .hotel(hotel)
-                .currentPrice(AppMoneyMapper.INSTANCE.toMoney(dto.getCurrentPrice()))
-                .previousPrice(AppMoneyMapper.INSTANCE.toMoney(dto.getPreviousPrice()))
+                .currentPrice(dto.getCurrentPrice())
+                .currentCurrency(dto.getCurrentCurrency())
+                .previousPrice(dto.getPreviousPrice())
+                .previousCurrency(dto.getPreviousCurrency())
                 .searchCriteria(searchCriteria)
                 .build();
     }
