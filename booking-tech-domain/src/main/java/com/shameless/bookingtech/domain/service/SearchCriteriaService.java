@@ -22,7 +22,7 @@ public class SearchCriteriaService {
                 searchCriteriaDto.getParamAdult(),
                 searchCriteriaDto.getParamChild(),
                 searchCriteriaDto.getParamRoom(),
-                searchCriteriaDto.getLocation()
+                searchCriteriaDto.getParamLocation()
         ).map(SearchCriteriaMapper.INSTANCE::toDto).orElse(null);
     }
 

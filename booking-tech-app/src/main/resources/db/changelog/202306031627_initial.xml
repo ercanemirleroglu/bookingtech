@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet id="20230610234000-1" author="ercan">
-        <createTable tableName="LOCATION">
+        <createTable tableName="location">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pk_location"/>
             </column>
@@ -18,7 +18,7 @@
         <createSequence sequenceName="location_id_seq"/>
     </changeSet>
     <changeSet id="20230610234000-2" author="ercan">
-        <createTable tableName="HOTEL">
+        <createTable tableName="hotel">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pk_hotel"/>
             </column>
@@ -33,7 +33,7 @@
         <createSequence sequenceName="hotel_id_seq"/>
     </changeSet>
     <changeSet id="20230610234000-7" author="ercan">
-        <createTable tableName="SEARCH_CRITERIA">
+        <createTable tableName="search_criteria">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pk_search_criteria"/>
             </column>
@@ -46,12 +46,12 @@
             <column name="param_room" type="INTEGER"/>
             <column name="from_date" type="DATE"/>
             <column name="to_date" type="DATE"/>
-            <column name="location" type="VARCHAR2(255)"/>
+            <column name="param_location" type="VARCHAR2(255)"/>
         </createTable>
         <createSequence sequenceName="search_criteria_id_seq"/>
     </changeSet>
     <changeSet id="20230610234000-3" author="ercan">
-        <createTable tableName="PRICE">
+        <createTable tableName="price">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pk_price"/>
             </column>
@@ -69,7 +69,7 @@
         <createSequence sequenceName="price_id_seq"/>
     </changeSet>
     <changeSet id="20230610234000-4" author="ercan">
-        <createTable tableName="PARAM">
+        <createTable tableName="param">
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pk_param"/>
             </column>

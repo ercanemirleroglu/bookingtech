@@ -21,7 +21,7 @@ public class SearchCriteriaEntity extends AbstractEntity<Long> {
     private Integer paramAdult;
     private Integer paramChild;
     private Integer paramRoom;
-    private String location;
+    private String paramLocation;
     private LocalDate fromDate;
     private LocalDate toDate;
 

@@ -31,7 +31,7 @@ public class HotelApplicationService {
                 .paramAdult(bookingResultDto.getSearchCriteria().getAdult())
                 .paramChild(bookingResultDto.getSearchCriteria().getChild())
                 .paramRoom(bookingResultDto.getSearchCriteria().getRoom())
-                .location(bookingResultDto.getSearchCriteria().getLocation())
+                .paramLocation(bookingResultDto.getSearchCriteria().getLocation())
                 .build();
 
         SearchCriteriaDto byParams = searchCriteriaService.findByParams(searchCriteriaDto);

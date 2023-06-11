@@ -13,7 +13,7 @@ public class SearchCriteriaFactory {
                 .paramAdult(dto.getParamAdult())
                 .paramChild(dto.getParamChild())
                 .paramRoom(dto.getParamRoom())
-                .location(dto.getLocation())
+                .location(dto.getParamLocation())
                 .fromDate(dto.getFromDate())
                 .toDate(dto.getToDate())
                 .build();

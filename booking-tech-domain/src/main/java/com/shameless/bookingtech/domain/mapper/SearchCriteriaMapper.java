@@ -14,7 +14,7 @@ public class SearchCriteriaMapper {
                 .paramAdult(entity.getParamAdult())
                 .paramChild(entity.getParamChild())
                 .paramRoom(entity.getParamRoom())
-                .location(entity.getLocation())
+                .paramLocation(entity.getParamLocation())
                 .fromDate(entity.getFromDate())
                 .toDate(entity.getToDate())
                 .build();

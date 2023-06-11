@@ -19,7 +19,7 @@ public class SearchCriteriaDto {
     private Integer paramAdult;
     private Integer paramChild;
     private Integer paramRoom;
-    private String location;
+    private String paramLocation;
     private LocalDate fromDate;
     private LocalDate toDate;
 }
