@@ -7,38 +7,45 @@
     <changeSet author="ercan" id="20230611224500-1" dbms="h2, postgresql">
         <insert tableName="param">
             <column name="id" valueSequenceNext="param_id_seq"/>
-            <column name="key" value="APP_CURRENCY_UNIT"/>
-            <column name="value" value="GBP"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="APP_CURRENCY_UNIT"/>
+            <column name="param_value" value="GBP"/>
         </insert>
         <insert tableName="param">
             <column name="id" valueSequenceNext="param_id_seq"/>
-            <column name="key" value="APP_LANGUAGE"/>
-            <column name="value" value="English (US)"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="APP_LANGUAGE"/>
+            <column name="param_value" value="English (US)"/>
         </insert>
         <insert tableName="param">
             <column name="id" valueSequenceNext="param_id_seq"/>
-            <column name="key" value="SEARCH_LOCATION"/>
-            <column name="value" value="Norwich, United Kingdom"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="SEARCH_LOCATION"/>
+            <column name="param_value" value="Norwich, United Kingdom"/>
         </insert>
         <insert tableName="param">
             <column name="id" valueSequenceNext="param_id_seq"/>
-            <column name="key" value="SEARCH_ADULT"/>
-            <column name="value" value="2"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="SEARCH_ADULT"/>
+            <column name="param_value" value="2"/>
         </insert>
         <insert tableName="param">
             <column name="id" valueSequenceNext="param_id_seq"/>
-            <column name="key" value="SEARCH_CHILD"/>
-            <column name="value" value="0"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="SEARCH_CHILD"/>
+            <column name="param_value" value="0"/>
         </insert>
         <insert tableName="param">
             <column name="id" valueSequenceNext="param_id_seq"/>
-            <column name="key" value="SEARCH_ROOM"/>
-            <column name="value" value="1"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="SEARCH_ROOM"/>
+            <column name="param_value" value="1"/>
         </insert>
         <insert tableName="param">
             <column name="id" valueSequenceNext="param_id_seq"/>
-            <column name="key" value="SEARCH_DATE_RANGE"/>
-            <column name="value" value="1"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="SEARCH_DATE_RANGE"/>
+            <column name="param_value" value="1"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

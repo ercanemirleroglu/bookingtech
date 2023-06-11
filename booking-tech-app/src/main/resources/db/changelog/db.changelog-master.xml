@@ -8,5 +8,9 @@
     <property name="money" value="DECIMAL(19, 4)" dbms="h2"/>
     <property name="money" value="MONEY" dbms="postgresql"/>
 
+    <property name="now" value="now()" dbms="h2"/>
+    <property name="now" value="LOCALTIMESTAMP" dbms="postgresql"/>
+
     <include file="202306031627_initial.xml" relativeToChangelogFile="true"/>
+    <include file="202306112244_params.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

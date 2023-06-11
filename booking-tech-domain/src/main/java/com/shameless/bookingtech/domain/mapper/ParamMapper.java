@@ -11,8 +11,8 @@ public class ParamMapper {
                 .id(entity.getId())
                 .createdDate(entity.getCreatedDate())
                 .lastModifiedDate(entity.getLastModifiedDate())
-                .key(entity.getKey())
-                .value(entity.getValue())
+                .key(entity.getParamKey())
+                .value(entity.getParamValue())
                 .build();
     }
 

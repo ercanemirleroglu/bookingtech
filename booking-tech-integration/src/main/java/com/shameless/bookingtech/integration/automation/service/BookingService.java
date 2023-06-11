@@ -93,7 +93,7 @@ public class BookingService {
             int mod = hotelCountTotal % hotelCountOnPage;
             int pageCount = (mod > 0) ? (divide + 1) : divide;
             if (pageCount > 1) {
-                hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+                hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1, params.get(Param.APP_CURRENCY_UNIT)));
                 Optional<WebElement> pagination = operation.findElementByCssSelector("[data-testid='pagination']", ReturnAttitude.ERROR);
                 for (int currentPage = 2; currentPage <= pageCount; currentPage++) {
                     int finalCurrentPage = currentPage;
@@ -110,7 +110,7 @@ public class BookingService {
                                         log.warn("Timeout interrupted!");
                                     }
                                     List<WebElement> hotelDivListInside = getHotelDivList();
-                                    hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivListInside, finalCurrentPage));
+                                    hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivListInside, finalCurrentPage, params.get(Param.APP_CURRENCY_UNIT)));
                                 }, () -> {
                                     log.error("Pagination not found!");
                                     throw new NoSuchElementException("Pagination not found!");
@@ -125,9 +125,9 @@ public class BookingService {
             }
         } else if (hotelCountTotal < hotelCountOnPage) {
             hotelDivList = hotelDivList.stream().limit(hotelCountTotal).collect(Collectors.toList());
-            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1, params.get(Param.APP_CURRENCY_UNIT)));
         } else {
-            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1));
+            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1, params.get(Param.APP_CURRENCY_UNIT)));
         }
         log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
         printDtoOnLog(hotelPriceExtDtoList);
@@ -155,12 +155,12 @@ public class BookingService {
         return hotelDivList;
     }
 
-    private List<HotelPriceExtDto> fetchDataFromPage(List<WebElement> hotelDivList, int page) {
+    private List<HotelPriceExtDto> fetchDataFromPage(List<WebElement> hotelDivList, int page, String currency) {
         log.info("Page {} data fetching...", page);
         List<HotelPriceExtDto> hotelPriceExtDtoList = hotelDivList.stream().map(hotel ->
                 HotelPriceExtDto.builder()
                     .hotelName(fetchAndSetHotelName(hotel))
-                    .price(fetchAndSetPrice(hotel))
+                    .price(fetchAndSetPrice(hotel, currency))
                     .location(fetchAndSetLocation(hotel))
                     .rating(fetchAndSetRating(hotel))
                     .build()).collect(Collectors.toList());
@@ -212,7 +212,7 @@ public class BookingService {
                 });
     }
 
-    private AppMoney fetchAndSetPrice(WebElement hotel) {
+    private AppMoney fetchAndSetPrice(WebElement hotel, String currency) {
         log.info("Checking price...");
         List<WebElement> priceList = operation.findElementsByExecutor(hotel, "[data-testid='price-and-discounted-price']");
         if (priceList.isEmpty()) {
@@ -223,7 +223,7 @@ public class BookingService {
         log.info("hotel price fetched successful: {}", price);
         String priceDigit = returnJustDigits(price);
         BigDecimal priceNum = BigDecimal.valueOf(Double.parseDouble(priceDigit));
-        Money money = Money.of(priceNum, Monetary.getCurrency("GBP"));
+        Money money = Money.of(priceNum, Monetary.getCurrency(currency));
         return new AppMoney(money);
     }
 

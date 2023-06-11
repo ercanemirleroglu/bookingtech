@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class ParamFactory {
     public ParamEntity from(ParamDto dto) {
         return ParamEntity.builder()
-                .key(dto.getKey())
-                .value(dto.getValue())
+                .paramKey(dto.getKey())
+                .paramValue(dto.getValue())
                 .build();
     }
 }

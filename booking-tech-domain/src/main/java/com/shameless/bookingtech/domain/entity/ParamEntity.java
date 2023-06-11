@@ -16,8 +16,9 @@ public class ParamEntity extends AbstractEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "param_id_seq_generator")
     private Long id;
+
     @Enumerated(EnumType.STRING)
-    private Param key;
-    private String value;
+    private Param paramKey;
+    private String paramValue;
 
 }
