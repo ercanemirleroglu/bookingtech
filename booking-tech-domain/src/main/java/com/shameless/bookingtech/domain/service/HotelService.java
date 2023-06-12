@@ -34,7 +34,7 @@ public class HotelService {
                 if (hotelEntity.getRating().equals(hotelDto.getRating()))
                     hotelEntity.update(hotelDto);
                 if (hotelEntity.getLocation().getName().equals(hotelDto.getLocation().getName())) {
-                    LocationEntity location = locationRepository.findByName(hotelDto.getName())
+                    LocationEntity location = locationRepository.findByName(hotelDto.getLocation().getName())
                             .orElseThrow(() -> new IllegalArgumentException("Location could not found! Location is " + hotelDto.getName()));
                     hotelEntity.update(location);
                     HotelDto updatedDto = HotelMapper.INSTANCE.toDto(hotelEntity);
