@@ -1,5 +1,6 @@
 package com.shameless.bookingtech.domain.entity;
 
+import com.shameless.bookingtech.domain.dto.PriceDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,9 +18,9 @@ public class PriceEntity extends AbstractEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "price_id_seq_generator")
     private Long id;
-    private BigDecimal currentPrice;
+    private BigDecimal currentValue;
     private String currentCurrency;
-    private BigDecimal previousPrice;
+    private BigDecimal previousValue;
     private String previousCurrency;
 
     @ManyToOne
@@ -30,4 +31,10 @@ public class PriceEntity extends AbstractEntity<Long> {
     @JoinColumn(name = "search_criteria_id")
     private SearchCriteriaEntity searchCriteria;
 
+    public void update(PriceDto priceDto) {
+        this.previousCurrency = priceDto.getPreviousCurrency();
+        this.previousValue = priceDto.getPreviousPrice();
+        this.currentCurrency = priceDto.getCurrentCurrency();
+        this.currentValue = priceDto.getCurrentPrice();
+    }
 }

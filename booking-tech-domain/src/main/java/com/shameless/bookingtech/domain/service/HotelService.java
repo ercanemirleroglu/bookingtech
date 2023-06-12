@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -27,23 +28,23 @@ public class HotelService {
 
     public List<HotelDto> addBulk(List<HotelDto> hotelDtoList) {
         List<HotelDto> hotelDtoListInThisProcess = new ArrayList<>();
-        hotelDtoList.forEach(hotelDto -> {
-            Optional<HotelEntity> hotel = hotelRepository.findByName(hotelDto.getName());
+        hotelDtoList.forEach(newHotelDto -> {
+            Optional<HotelEntity> hotel = hotelRepository.findByName(newHotelDto.getName());
             if (hotel.isPresent()) {
                 HotelEntity hotelEntity = hotel.get();
-                if (hotelEntity.getRating().equals(hotelDto.getRating()))
-                    hotelEntity.update(hotelDto);
-                if (hotelEntity.getLocation().getName().equals(hotelDto.getLocation().getName())) {
-                    LocationEntity location = locationRepository.findByName(hotelDto.getLocation().getName())
-                            .orElseThrow(() -> new IllegalArgumentException("Location could not found! Location is " + hotelDto.getName()));
+                if (!Objects.equals(newHotelDto.getRating(), hotelEntity.getRating()))
+                    hotelEntity.update(newHotelDto);
+                if (!Objects.equals(hotelEntity.getLocation().getName(), newHotelDto.getLocation().getName())) {
+                    LocationEntity location = locationRepository.findByName(newHotelDto.getLocation().getName())
+                            .orElseThrow(() -> new IllegalArgumentException("Location could not found! Location is " + newHotelDto.getName()));
                     hotelEntity.update(location);
                     HotelDto updatedDto = HotelMapper.INSTANCE.toDto(hotelEntity);
                     hotelDtoListInThisProcess.add(updatedDto);
                 }
             } else {
-                LocationEntity location = locationRepository.findByName(hotelDto.getLocation().getName())
-                        .orElseThrow(() -> new IllegalArgumentException("Location could not found! Location is " + hotelDto.getName()));
-                HotelEntity from = hotelFactory.from(hotelDto, location);
+                LocationEntity location = locationRepository.findByName(newHotelDto.getLocation().getName())
+                        .orElseThrow(() -> new IllegalArgumentException("Location could not found! Location is " + newHotelDto.getName()));
+                HotelEntity from = hotelFactory.from(newHotelDto, location);
                 HotelEntity save = hotelRepository.save(from);
                 HotelDto createdDto = HotelMapper.INSTANCE.toDto(save);
                 hotelDtoListInThisProcess.add(createdDto);

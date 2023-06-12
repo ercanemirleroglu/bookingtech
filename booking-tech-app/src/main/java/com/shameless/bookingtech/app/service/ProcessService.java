@@ -36,7 +36,7 @@ public class ProcessService {
         this.paramService = paramService;
     }
 
-    @Scheduled(fixedRate = 20 * 60 * 1000)
+    //@Scheduled(fixedRate = 20 * 60 * 1000)
     public void checkServices() {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
@@ -45,7 +45,7 @@ public class ProcessService {
         hotelApplicationService.save(toDto(searchResultExtDto));
     }
 
-    //@Scheduled(fixedRate = 20 * 60 * 1000)
+    @Scheduled(fixedRate = 20 * 60 * 1000)
     public void testService() throws IOException {
         Resource resource = new ClassPathResource("hotels.json");
         String filePath = resource.getFile().getAbsolutePath();

@@ -2,6 +2,7 @@ package com.shameless.bookingtech.domain.service;
 
 import com.shameless.bookingtech.domain.dto.BookingResultDto;
 import com.shameless.bookingtech.domain.dto.HotelDto;
+import com.shameless.bookingtech.domain.dto.PriceDto;
 import com.shameless.bookingtech.domain.dto.SearchCriteriaDto;
 import com.shameless.bookingtech.domain.model.HotelPriceModel;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,13 @@ public class HotelApplicationService {
     private final SearchCriteriaService searchCriteriaService;
     private final LocationService locationService;
     private final HotelService hotelService;
+    private final PriceService priceService;
 
-    public HotelApplicationService(SearchCriteriaService searchCriteriaService, LocationService locationService, HotelService hotelService) {
+    public HotelApplicationService(SearchCriteriaService searchCriteriaService, LocationService locationService, HotelService hotelService, PriceService priceService) {
         this.searchCriteriaService = searchCriteriaService;
         this.locationService = locationService;
         this.hotelService = hotelService;
+        this.priceService = priceService;
     }
 
     @Transactional
@@ -36,9 +39,9 @@ public class HotelApplicationService {
 
         SearchCriteriaDto byParams = searchCriteriaService.findByParams(searchCriteriaDto);
         if (Objects.isNull(byParams))
-            searchCriteriaService.add(searchCriteriaDto);
+            byParams = searchCriteriaService.add(searchCriteriaDto);
         else
-            searchCriteriaService.update(searchCriteriaDto);
+            byParams = searchCriteriaService.update(byParams);
 
         List<String> locations = bookingResultDto.getHotelPriceList().stream()
                 .map(HotelPriceModel::getLocation).distinct().collect(Collectors.toList());
@@ -52,8 +55,10 @@ public class HotelApplicationService {
                         .rating(hotelPriceModel.getRating())
                         .build()).collect(Collectors.toList());
 
-        List<HotelDto> hotelDtoListInThisProcess = hotelService.addBulk(hotelDtoList);
+        hotelService.addBulk(hotelDtoList);
 
+        List<PriceDto> priceDtoList = priceService.setAllPrices(bookingResultDto.getHotelPriceList(), byParams.getId());
+        System.out.println("Bitti");
 
     }
 }
