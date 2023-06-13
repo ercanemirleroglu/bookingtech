@@ -38,7 +38,6 @@ public class PriceService {
 
     private PriceDto updatePrice(PriceDto priceDto, PriceEntity oldPrice) {
         priceDto.setPreviousPrice(oldPrice.getCurrentValue());
-        priceDto.setPreviousCurrency(oldPrice.getCurrentCurrency());
         oldPrice.update(priceDto);
         PriceEntity save = priceRepository.save(oldPrice);
         return PriceMapper.INSTANCE.toDto(save);
@@ -55,7 +54,6 @@ public class PriceService {
                             + hotelPriceModel.getHotelName()));
             Optional<PriceEntity> priceOpt = priceRepository.findFirstByHotelAndSearchCriteriaOrderByLastModifiedDateDesc(hotelEntity, searchCriteriaEntity);
             PriceDto priceDto = PriceDto.builder()
-                    .currentCurrency(hotelPriceModel.getPrice().getCurrency())
                     .currentPrice(hotelPriceModel.getPrice().getValue())
                     .build();
             if (priceOpt.isPresent()) {

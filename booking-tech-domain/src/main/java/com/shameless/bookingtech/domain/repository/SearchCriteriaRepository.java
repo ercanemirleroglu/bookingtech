@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface SearchCriteriaRepository extends JpaRepository<SearchCriteriaEntity, Long> {
 
-    Optional<SearchCriteriaEntity> findByParamAdultAndParamChildAndParamRoomAndParamLocation(Integer paramAdult, Integer paramChild, Integer paramRoom, String Location);
+    Optional<SearchCriteriaEntity> findByParamAdultAndParamChildAndParamRoomAndParamLocationAndParamCurrency(Integer paramAdult, Integer paramChild, Integer paramRoom, String Location, String currency);
 }

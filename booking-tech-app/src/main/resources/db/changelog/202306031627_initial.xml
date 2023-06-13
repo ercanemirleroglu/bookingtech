@@ -47,6 +47,7 @@
             <column name="from_date" type="DATE"/>
             <column name="to_date" type="DATE"/>
             <column name="param_location" type="VARCHAR2(255)"/>
+            <column name="param_currency" type="CHAR(3)"/>
         </createTable>
         <createSequence sequenceName="search_criteria_id_seq"/>
     </changeSet>
@@ -61,8 +62,6 @@
             <column name="modified_date" type="TIMESTAMP"/>
             <column name="current_value" type="${money}"/>
             <column name="previous_value" type="${money}"/>
-            <column name="current_currency" type="CHAR(3)"/>
-            <column name="previous_currency" type="CHAR(3)"/>
             <column name="hotel_id" type="BIGINT"/>
             <column name="search_criteria_id" type="BIGINT"/>
         </createTable>

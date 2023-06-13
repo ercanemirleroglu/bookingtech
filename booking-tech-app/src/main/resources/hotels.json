@@ -4,6 +4,7 @@
     "child": 0,
     "room": 1,
     "location": "Norwich, United Kingdom",
+    "currency": "GBP",
     "dateRange": {
       "startDate": "2023-06-11",
       "endDate": "2023-06-12"

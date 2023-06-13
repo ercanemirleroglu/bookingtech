@@ -19,9 +19,7 @@ public class PriceEntity extends AbstractEntity<Long> {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "price_id_seq_generator")
     private Long id;
     private BigDecimal currentValue;
-    private String currentCurrency;
     private BigDecimal previousValue;
-    private String previousCurrency;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
@@ -32,9 +30,7 @@ public class PriceEntity extends AbstractEntity<Long> {
     private SearchCriteriaEntity searchCriteria;
 
     public void update(PriceDto priceDto) {
-        this.previousCurrency = priceDto.getPreviousCurrency();
         this.previousValue = priceDto.getPreviousPrice();
-        this.currentCurrency = priceDto.getCurrentCurrency();
         this.currentValue = priceDto.getCurrentPrice();
     }
 }

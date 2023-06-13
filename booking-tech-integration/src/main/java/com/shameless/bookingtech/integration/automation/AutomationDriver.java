@@ -31,10 +31,10 @@ public class AutomationDriver {
         log.info("Options settings...");
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("--remote-debugging-address=0.0.0.0");
-        options.addArguments("--remote-debugging-port=9222");
+        /*options.addArguments("--remote-debugging-port=9222");
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
-        options.addArguments("--no-sandbox");
+        options.addArguments("--no-sandbox");*/
         //options.addArguments("--window-size=1400,800");
         return options;
     }

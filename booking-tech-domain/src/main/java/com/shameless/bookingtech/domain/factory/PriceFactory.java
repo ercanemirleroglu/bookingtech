@@ -15,9 +15,7 @@ public class PriceFactory {
         return PriceEntity.builder()
                 .hotel(hotel)
                 .currentValue(dto.getCurrentPrice())
-                .currentCurrency(dto.getCurrentCurrency())
                 .previousValue(dto.getPreviousPrice())
-                .previousCurrency(dto.getPreviousCurrency())
                 .searchCriteria(searchCriteria)
                 .build();
     }

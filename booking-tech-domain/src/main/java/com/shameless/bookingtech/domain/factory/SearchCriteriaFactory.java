@@ -14,6 +14,7 @@ public class SearchCriteriaFactory {
                 .paramChild(dto.getParamChild())
                 .paramRoom(dto.getParamRoom())
                 .paramLocation(dto.getParamLocation())
+                .paramCurrency(dto.getParamCurrency())
                 .fromDate(dto.getFromDate())
                 .toDate(dto.getToDate())
                 .build();

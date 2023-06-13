@@ -1,9 +1,14 @@
 package com.shameless.bookingtech.app.service;
 
+import com.shameless.bookingtech.app.model.PriceEmailModel;
+import com.shameless.bookingtech.app.model.PriceModel;
+import com.shameless.bookingtech.app.model.PriceReportModel;
+import com.shameless.bookingtech.app.model.PriceStatus;
 import com.shameless.bookingtech.common.util.JsonUtil;
 import com.shameless.bookingtech.common.util.model.Param;
 import com.shameless.bookingtech.domain.dto.BookingResultDto;
 import com.shameless.bookingtech.domain.dto.ParamDto;
+import com.shameless.bookingtech.domain.dto.PriceDto;
 import com.shameless.bookingtech.domain.model.HotelPriceModel;
 import com.shameless.bookingtech.domain.model.SearchCriteriaModel;
 import com.shameless.bookingtech.domain.service.HotelApplicationService;
@@ -18,6 +23,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +56,15 @@ public class ProcessService {
         Resource resource = new ClassPathResource("hotels.json");
         String filePath = resource.getFile().getAbsolutePath();
         SearchResultExtDto searchResultExtDto = (SearchResultExtDto) JsonUtil.getInstance().readFile(SearchResultExtDto.class, filePath, "hotels");
-        hotelApplicationService.save(toDto(searchResultExtDto));
+        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
+        Map<PriceStatus, List<PriceModel>> groupsByPriceStatus = priceDtoList.stream().map(PriceModel::new)
+                .filter(priceModel -> !PriceStatus.STATIC.equals(priceModel.getPriceStatus()))
+                .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
+        List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
+        PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto.getSearchCriteria());
+        System.out.println("Bitti");
+
+
     }
 
     private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {
@@ -76,6 +90,7 @@ public class ProcessService {
                 .child(searchCriteria.getChild())
                 .room(searchCriteria.getRoom())
                 .location(searchCriteria.getLocation())
+                .currency(searchCriteria.getCurrency())
                 .dateRange(searchCriteria.getDateRange())
                 .build();
     }

@@ -27,7 +27,7 @@ public class HotelApplicationService {
     }
 
     @Transactional
-    public void save(BookingResultDto bookingResultDto) {
+    public List<PriceDto> save(BookingResultDto bookingResultDto) {
         SearchCriteriaDto searchCriteriaDto = SearchCriteriaDto.builder()
                 .toDate(bookingResultDto.getSearchCriteria().getDateRange().getEndDate())
                 .fromDate(bookingResultDto.getSearchCriteria().getDateRange().getStartDate())
@@ -35,6 +35,7 @@ public class HotelApplicationService {
                 .paramChild(bookingResultDto.getSearchCriteria().getChild())
                 .paramRoom(bookingResultDto.getSearchCriteria().getRoom())
                 .paramLocation(bookingResultDto.getSearchCriteria().getLocation())
+                .paramCurrency(bookingResultDto.getSearchCriteria().getCurrency())
                 .build();
 
         SearchCriteriaDto byParams = searchCriteriaService.findByParams(searchCriteriaDto);
@@ -57,8 +58,6 @@ public class HotelApplicationService {
 
         hotelService.addBulk(hotelDtoList);
 
-        List<PriceDto> priceDtoList = priceService.setAllPrices(bookingResultDto.getHotelPriceList(), byParams.getId());
-        System.out.println("Bitti");
-
+        return priceService.setAllPrices(bookingResultDto.getHotelPriceList(), byParams.getId());
     }
 }

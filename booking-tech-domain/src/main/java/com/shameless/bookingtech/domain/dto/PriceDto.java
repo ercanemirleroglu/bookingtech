@@ -17,9 +17,7 @@ public class PriceDto {
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
     private BigDecimal currentPrice;
-    private String currentCurrency;
     private BigDecimal previousPrice;
-    private String previousCurrency;
     private HotelDto hotel;
     private SearchCriteriaDto searchCriteria;
 }

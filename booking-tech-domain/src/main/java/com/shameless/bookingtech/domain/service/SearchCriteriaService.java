@@ -18,11 +18,12 @@ public class SearchCriteriaService {
     }
 
     public SearchCriteriaDto findByParams(SearchCriteriaDto searchCriteriaDto) {
-        return searchCriteriaRepository.findByParamAdultAndParamChildAndParamRoomAndParamLocation(
+        return searchCriteriaRepository.findByParamAdultAndParamChildAndParamRoomAndParamLocationAndParamCurrency(
                 searchCriteriaDto.getParamAdult(),
                 searchCriteriaDto.getParamChild(),
                 searchCriteriaDto.getParamRoom(),
-                searchCriteriaDto.getParamLocation()
+                searchCriteriaDto.getParamLocation(),
+                searchCriteriaDto.getParamCurrency()
         ).map(SearchCriteriaMapper.INSTANCE::toDto).orElse(null);
     }
 
