@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Hotel Price Comparison</title>
+  <style>
+    @media only screen and (max-width: 816px) {
+      table {
+        width: 100%;
+        max-width: 816px;
+      }
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 4px;
+      font-family: Arial, sans-serif;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-size: 14px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    h1, h2 {
+      font-family: Arial, sans-serif;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    th:nth-child(1),
+    th:nth-child(2),
+    td:nth-child(1),
+    td:nth-child(2) {
+      width: 25%;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 12.5%;
+    }
+
+    th:nth-child(4),
+    th:nth-child(5),
+    th:nth-child(6),
+    th:nth-child(7),
+    td:nth-child(4),
+    td:nth-child(5),
+    td:nth-child(6),
+    td:nth-child(7) {
+      width: 15%;
+    }
+
+    .total-increase,
+    .total-decrease {
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      padding: 8px;
+      font-family: Arial, sans-serif;
+    }
+
+    .total-increase {
+      background-color: #a6ffb5;
+    }
+
+    .total-decrease {
+      background-color: #ffb5b5;
+    }
+
+    .increase-table {
+      background-color: rgba(0, 255, 0, 0.2);
+    }
+
+    .decrease-table {
+      background-color: rgba(255, 0, 0, 0.2);
+    }
+
+    .header {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    .compressed {
+      margin: 10px 0px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      background-color: #f2f2f2;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+<div style="max-width: 816px; margin: 30px auto;">
+  <h1>Hotel Price Comparison</h1>
+  <p class="compressed">FromDate: [[${model.fromDate}]] | ToDate: [[${model.toDate}]] | Adult: [[${model.adult}]] | Child: [[${model.child}]] | Room: [[${model.room}]] | Location: [[${model.location}]] | Currency: [[${model.currency}]] | Report Datetime: [[${model.reportDateTime}]]</p>
+  <h2>Hotels with Price Increase</h2>
+  <table th:if="${model.increasedTable != null && !model.increasedTable.hotelPriceChangeList?.isEmpty()}" class="increase-table">
+    <tr>
+      <th>Hotel Name</th>
+      <th>Location</th>
+      <th>Rating</th>
+      <th>Previous Price</th>
+      <th>Current Price</th>
+      <th>Price Increase Amount</th>
+      <th>Price Increase Percentage</th>
+    </tr>
+    <tr th:each="priceModel : ${model.increasedTable.hotelPriceChangeList}">
+      <td th:text="${priceModel.hotelName}"></td>
+      <td th:text="${priceModel.location}"></td>
+      <td th:text="${priceModel.rating}"></td>
+      <td th:text="${model.currencySymbol + priceModel.previousValue}"></td>
+      <td th:text="${model.currencySymbol + priceModel.currentValue}"></td>
+      <td th:text="${model.increasedTable.changeSymbol + ' ' + model.currencySymbol + priceModel.changeValue}"></td>
+      <td th:text="${model.increasedTable.changeSymbol + ' ' + priceModel.changePercent + '%'}"></td>
+    </tr>
+    <tr>
+      <td colspan="5" class="total-increase">Average Price Increase</td>
+      <td th:text="${model.increasedTable.changeSymbol + ' ' + model.currencySymbol + model.increasedTable.averageChangeValue}"></td>
+      <td th:text="${model.increasedTable.changeSymbol + ' ' + model.increasedTable.averageChangePercent + '%'}"></td>
+    </tr>
+  </table>
+  <h3 th:if="${model.increasedTable == null || model.increasedTable.hotelPriceChangeList?.isEmpty()}">There is no increased hotel in this session!</h3>
+  <h2>Hotels with Price Decrease</h2>
+  <table th:if="${model.decreasedTable != null && !model.decreasedTable.hotelPriceChangeList?.isEmpty()}" class="decrease-table">
+    <tr>
+      <th>Hotel Name</th>
+      <th>Location</th>
+      <th>Rating</th>
+      <th>Previous Price</th>
+      <th>Current Price</th>
+      <th>Price Decrease Amount</th>
+      <th>Price Decrease Percentage</th>
+    </tr>
+    <tr th:each="priceModel : ${model.decreasedTable.hotelPriceChangeList}">
+      <td th:text="${priceModel.hotelName}"></td>
+      <td th:text="${priceModel.location}"></td>
+      <td th:text="${priceModel.rating}"></td>
+      <td th:text="${model.currencySymbol + priceModel.previousValue}"></td>
+      <td th:text="${model.currencySymbol + priceModel.currentValue}"></td>
+      <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.currencySymbol + priceModel.changeValue}"></td>
+      <td th:text="${model.decreasedTable.changeSymbol + ' ' + priceModel.changePercent + '%'}"></td>
+    </tr>
+    <tr>
+      <td colspan="5" class="total-decrease">Average Price Decrease</td>
+      <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.currencySymbol + model.decreasedTable.averageChangeValue}"></td>
+      <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.decreasedTable.averageChangePercent + '%'}"></td>
+    </tr>
+  </table>
+  <h3 th:if="${model.decreasedTable == null || model.decreasedTable.hotelPriceChangeList?.isEmpty()}">There is no decreased hotel in this session!</h3>
+
+  <h2>Newly Registered Hotels</h2>
+  <table th:if="${model.newTable != null && !model.newTable.hotelPriceChangeList?.isEmpty()}">
+    <tr>
+      <th>Hotel Name</th>
+      <th>Location</th>
+      <th>Rating</th>
+      <th>Current Price</th>
+    </tr>
+    <tr th:each="priceModel : ${model.newTable.hotelPriceChangeList}">
+      <td th:text="${priceModel.hotelName}"></td>
+      <td th:text="${priceModel.location}"></td>
+      <td th:text="${priceModel.rating}"></td>
+      <td th:text="${priceModel.currentValue}"></td>
+    </tr>
+  </table>
+  <h3 th:if="${model.newTable == null || model.newTable.hotelPriceChangeList?.isEmpty()}">There is no new hotel in this session!</h3>
+
+</div>
+</body>
+</html>

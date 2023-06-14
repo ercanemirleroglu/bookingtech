@@ -21,6 +21,21 @@ spring:
       password: password
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
+  mail:
+    host: "smtp.gmail.com"
+    port: 587
+    username: "ercanemirleroglu@gmail.com"
+    password: "dbiwxvbbvftczvbz"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true
+
 
 application:
   drivers:

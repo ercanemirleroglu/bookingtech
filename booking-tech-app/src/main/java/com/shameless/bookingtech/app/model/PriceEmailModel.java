@@ -1,18 +1,15 @@
 package com.shameless.bookingtech.app.model;
 
 import com.shameless.bookingtech.common.util.StringUtil;
-import com.shameless.bookingtech.domain.dto.SearchCriteriaDto;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
-import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
 import lombok.Getter;
-import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
 public class PriceEmailModel {
-    private String message;
     private final Integer adult;
     private final Integer child;
     private final Integer room;
@@ -21,6 +18,7 @@ public class PriceEmailModel {
     private final String currencySymbol;
     private final String fromDate;
     private final String toDate;
+    private final String reportDateTime;
     private PriceReportModel increasedTable;
     private PriceReportModel decreasedTable;
     private PriceReportModel newTable;
@@ -35,9 +33,7 @@ public class PriceEmailModel {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         this.fromDate = searchResultExtDto.getDateRange().getStartDate().format(dateTimeFormatter);
         this.toDate = searchResultExtDto.getDateRange().getEndDate().format(dateTimeFormatter);
-        if (priceReportModelList.size() == 0) {
-            this.message = "Nothing change";
-        } else {
+        if (!priceReportModelList.isEmpty()) {
             this.increasedTable = priceReportModelList.stream().filter(prm -> PriceStatus.INCREASED.equals(prm.getPriceStatus()))
                     .findFirst().orElse(null);
             this.decreasedTable = priceReportModelList.stream().filter(prm -> PriceStatus.DECREASED.equals(prm.getPriceStatus()))
@@ -45,5 +41,7 @@ public class PriceEmailModel {
             this.newTable = priceReportModelList.stream().filter(prm -> PriceStatus.NEW.equals(prm.getPriceStatus()))
                     .findFirst().orElse(null);
         }
+        dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss");
+        this.reportDateTime = LocalDateTime.now().format(dateTimeFormatter);
     }
 }

@@ -1,16 +1,16 @@
 package com.shameless.bookingtech.app.model;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class PriceReportModel {
     private final PriceStatus priceStatus;
-    private final List<PriceModel> hotelPriceChangeList;
+    private List<PriceModel> hotelPriceChangeList = new ArrayList<>();
     private BigDecimal averageChangeValue;
     private BigDecimal averageChangePercent;
     private final String changeSymbol;
