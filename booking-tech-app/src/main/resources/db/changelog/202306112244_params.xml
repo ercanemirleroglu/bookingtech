@@ -51,7 +51,7 @@
             <column name="id" valueSequenceNext="param_id_seq"/>
             <column name="created_date" valueDate="${now}"/>
             <column name="param_key" value="EMAIL_TO"/>
-            <column name="param_value" value="emirleroglu.ercan@gmail.com;ercan.emirleroglu@pinsoft.ist"/>
+            <column name="param_value" value="esergenb@gmail.com"/>
         </insert>
     </changeSet>
 </databaseChangeLog>
