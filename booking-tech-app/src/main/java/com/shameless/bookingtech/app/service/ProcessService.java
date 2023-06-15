@@ -45,17 +45,23 @@ public class ProcessService {
         this.emailService = emailService;
     }
 
-    //@Scheduled(cron = "0 39 10-22 * * ?")
-    public void checkServices() {
+    @Scheduled(cron = "0 53 9-21 * * ?")
+    public void checkServices() throws MessagingException, InterruptedException {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
         SearchResultExtDto searchResultExtDto = bookingService.fetchBookingData(params);
-        hotelApplicationService.save(toDto(searchResultExtDto));
+        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
+        Map<PriceStatus, List<PriceModel>> groupsByPriceStatus = priceDtoList.stream().map(PriceModel::new)
+                .filter(priceModel -> !PriceStatus.STATIC.equals(priceModel.getPriceStatus()))
+                .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
+        List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
+        PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto.getSearchCriteria());
+        emailService.sendMail(priceEmailModel, "emailTemplate");
     }
 
-    @Scheduled(cron = "0 53 9-21 * * ?")
-    public void testService() throws IOException, MessagingException {
+    //@Scheduled(fixedRate = 60 * 60 * 1000)
+    public void testService() throws IOException, MessagingException, InterruptedException {
         Resource resource = new ClassPathResource("hotels.json");
         String filePath = resource.getFile().getAbsolutePath();
         SearchResultExtDto searchResultExtDto = (SearchResultExtDto) JsonUtil.getInstance().readFile(SearchResultExtDto.class, filePath, "hotels");

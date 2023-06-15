@@ -2,7 +2,9 @@ package com.shameless.bookingtech.app.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.SimpleMailMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -10,6 +12,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Component
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
@@ -29,10 +32,20 @@ public class EmailService {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setTo("emirleroglu.ercan@gmail.com;ercan.emirleroglu@pinsoft.ist");
+        String to = "emirleroglu.ercan@gmail.com";
+        String[] toList = to.split(";");
+        helper.setTo(toList);
         helper.setSubject("Hotel Price Comparison");
         helper.setText(htmlContent, true);
+        log.info("Sending E-mail...");
+        try{
+            javaMailSender.send(message);
+        }catch (MailAuthenticationException mae) {
+            log.warn("Mail Auth Error");
+        }catch (MailException me){
+            log.warn("Mail Error!");
+            me.printStackTrace();
+        }
 
-        javaMailSender.send(message);
     }
 }
