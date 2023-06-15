@@ -74,7 +74,7 @@ public class AutomationOperation extends AutomationDriver {
         if (elements.isEmpty()) {
             log.warn("Element can not be found when fetching! Trying again execute script...");
             JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-            elements = (List<WebElement>) jsExecutor.executeScript("return document.querySelectorAll('" + cssSelector + "')");
+            elements = (List<WebElement>) jsExecutor.executeScript("return document.querySelectorAll(\"" + cssSelector + "\")");
             if (elements.isEmpty()) {
                 if (ReturnAttitude.ERROR.equals(attitude)) throw new NoSuchElementException("Element could not be found!");
                 else if (ReturnAttitude.EMPTY.equals(attitude)) return Optional.empty();
