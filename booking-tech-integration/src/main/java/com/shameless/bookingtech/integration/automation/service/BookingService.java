@@ -61,7 +61,7 @@ public class BookingService {
         closeRegisterModal();
         changeLanguage(params.get(Param.APP_LANGUAGE));
         changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
-
+        criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
         criteria.setLocation(params.get(Param.SEARCH_LOCATION));
         enterLocation(criteria.getLocation());
 
