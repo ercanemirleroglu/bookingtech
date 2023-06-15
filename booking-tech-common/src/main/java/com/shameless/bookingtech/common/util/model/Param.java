@@ -12,7 +12,8 @@ public enum Param {
     SEARCH_DATE_RANGE(false),
     SEARCH_ADULT(true),
     SEARCH_CHILD(true),
-    SEARCH_ROOM(true);
+    SEARCH_ROOM(true),
+    EMAIL_TO(false);
 
     private final boolean customerSelect;
 

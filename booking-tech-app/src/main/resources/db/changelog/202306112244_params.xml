@@ -47,5 +47,11 @@
             <column name="param_key" value="SEARCH_DATE_RANGE"/>
             <column name="param_value" value="1"/>
         </insert>
+        <insert tableName="param">
+            <column name="id" valueSequenceNext="param_id_seq"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="param_key" value="EMAIL_TO"/>
+            <column name="param_value" value="emirleroglu.ercan@gmail.com;ercan.emirleroglu@pinsoft.ist"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

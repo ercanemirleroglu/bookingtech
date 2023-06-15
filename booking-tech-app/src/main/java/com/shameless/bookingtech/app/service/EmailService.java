@@ -23,7 +23,7 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendMail(Object model, String emailTemplate) throws MessagingException {
+    public void sendMail(Object model, String to, String emailTemplate) throws MessagingException {
         Context context = new Context();
         context.setVariable("model", model);
 
@@ -32,20 +32,22 @@ public class EmailService {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        String to = "emirleroglu.ercan@gmail.com";
         String[] toList = to.split(";");
         helper.setTo(toList);
         helper.setSubject("Hotel Price Comparison");
         helper.setText(htmlContent, true);
         log.info("Sending E-mail...");
         try{
+            Thread.sleep(5000);
             javaMailSender.send(message);
+            log.info("E-mail sended.");
         }catch (MailAuthenticationException mae) {
             log.warn("Mail Auth Error");
         }catch (MailException me){
             log.warn("Mail Error!");
             me.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
     }
 }
