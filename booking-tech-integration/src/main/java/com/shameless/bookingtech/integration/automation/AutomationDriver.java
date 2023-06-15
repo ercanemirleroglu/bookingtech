@@ -1,7 +1,6 @@
 package com.shameless.bookingtech.integration.automation;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -46,7 +45,7 @@ public class AutomationDriver {
         log.info("{} page is opening", path);
         driver.manage().timeouts().pageLoadTimeout(1, TimeUnit.MINUTES);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        driver.manage().window().setSize(new Dimension(1440, 900));
+        //driver.manage().window().setSize(new Dimension(1440, 900));
         driver.get(path);
     }
 
