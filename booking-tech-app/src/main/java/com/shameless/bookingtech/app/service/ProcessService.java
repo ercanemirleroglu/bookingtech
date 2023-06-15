@@ -24,7 +24,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +56,14 @@ public class ProcessService {
                 .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
         List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
         PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto.getSearchCriteria());
-        emailService.sendMail(priceEmailModel, "emailTemplate");
+        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void testService() throws IOException, MessagingException, InterruptedException {
+        Map<Param, String> params = new HashMap<>();
+        List<ParamDto> allParams = paramService.getAllParams();
+        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
         Resource resource = new ClassPathResource("hotels.json");
         String filePath = resource.getFile().getAbsolutePath();
         SearchResultExtDto searchResultExtDto = (SearchResultExtDto) JsonUtil.getInstance().readFile(SearchResultExtDto.class, filePath, "hotels");
@@ -71,7 +73,7 @@ public class ProcessService {
                 .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
         List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
         PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto.getSearchCriteria());
-        emailService.sendMail(priceEmailModel, "emailTemplate");
+        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");
     }
 
     private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {
