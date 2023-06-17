@@ -1,5 +1,6 @@
 package com.shameless.bookingtech.integration.automation;
 
+import com.shameless.bookingtech.integration.automation.model.DeviceType;
 import com.shameless.bookingtech.integration.automation.model.ReturnAttitude;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -65,7 +67,13 @@ public class AutomationOperation extends AutomationDriver {
     }
 
     public List<WebElement> findElementsByCssSelector(String cssSelector) {
-        return driver.findElements(By.cssSelector(cssSelector));
+        List<WebElement> elements = driver.findElements(By.cssSelector(cssSelector));
+        if (elements.isEmpty()) {
+            log.warn("Element can not be found when fetching! Trying again execute script...");
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+            elements = (List<WebElement>) jsExecutor.executeScript("return document.querySelectorAll(\"" + cssSelector + "\")");
+        }
+        return elements;
     }
 
     public Optional<WebElement> findElementByCssSelector(String cssSelector, ReturnAttitude attitude) {
@@ -100,5 +108,20 @@ public class AutomationOperation extends AutomationDriver {
         }
     }
 
+    public Dimension getDim(){
+        return getDimensionInfo();
+    }
 
+    public Map<String, Object> getCap(){
+        return getChromeCapabilities();
+    }
+
+
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(DeviceType deviceType) {
+        this.deviceType = deviceType;
+    }
 }

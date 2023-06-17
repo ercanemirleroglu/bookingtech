@@ -9,11 +9,12 @@ import com.shameless.bookingtech.integration.automation.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.javamoney.moneta.Money;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.springframework.stereotype.Component;
 
 import javax.money.Monetary;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,13 +35,14 @@ public class BookingService {
         this.operation = operation;
     }
 
-    public SearchResultExtDto fetchBookingData(Map<Param, String> params) {
+    public SearchResultExtDto fetchBookingData(Map<Param, String> params) throws IOException {
         int tryCount = 1;
         boolean mustStart = true;
         while (tryCount <= 5) {
             try {
                 return manageOperation(params, mustStart);
             } catch (Exception e) {
+                //operation.screenShot();
                 log.error("Try count: " + tryCount + " Error message: " + e);
                 tryCount++;
                 if (e instanceof WebDriverException)
@@ -54,14 +56,17 @@ public class BookingService {
         throw new IllegalArgumentException("Oops! Automation is finished unsuccessfully!");
     }
 
-    private SearchResultExtDto manageOperation(Map<Param, String> params, boolean mustStart) throws InterruptedException, MalformedURLException {
+    private SearchResultExtDto manageOperation(Map<Param, String> params, boolean mustStart) throws InterruptedException, IOException {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
         SearchCriteriaExtDto criteria = new SearchCriteriaExtDto();
         if (mustStart) operation.start("https://www.booking.com/");
+        Map<String, Object> cap = operation.getCap();
+        cap.forEach((k, v) -> log.info("key: {}, value: {}", k, v));
         closeRegisterModal();
-        changeLanguage(params.get(Param.APP_LANGUAGE));
+        //changeLanguage(params.get(Param.APP_LANGUAGE));
         changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
         criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
+
         criteria.setLocation(params.get(Param.SEARCH_LOCATION));
         enterLocation(criteria.getLocation());
 
@@ -74,24 +79,59 @@ public class BookingService {
 
         clickSearchButton();
         //operation.timeout(20);
-        WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
-                .map(e -> e.findElements(By.cssSelector("[aria-live='assertive']")).stream().findFirst()
-                        .orElseGet(() -> {
-                            log.error("Property count title not found!");
-                            throw new NoSuchElementException("Property count title not found!");
-                        })).orElseGet(() -> {
-                    log.error("Property count title not found!");
-                    throw new NoSuchElementException("Property count title not found!");
-                });
-        log.info(title.getText());
-        int hotelCountTotal = Integer.parseInt(returnJustDigits(title.getText()));
+        scanHotelAndPriceDesktop(hotelPriceExtDtoList, params);
+        /*if (DeviceType.DESKTOP.equals(operation.getDeviceType())) {
+            scanHotelAndPriceDesktop(hotelPriceExtDtoList, params);
+        } else if (DeviceType.MOBILE.equals(operation.getDeviceType())) {
+            scanHotelAndPriceMobile(hotelPriceExtDtoList, params);
+        }*/
+        log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
+        printDtoOnLog(hotelPriceExtDtoList);
+        operation.finish();
+        return SearchResultExtDto.builder()
+                .searchCriteria(criteria)
+                .hotelPriceList(hotelPriceExtDtoList)
+                .build();
+    }
+
+    private void scanHotelAndPriceMobile(List<HotelPriceExtDto> hotelPriceExtDtoList, Map<Param, String> params) throws InterruptedException, IOException {
+        log.info(" >>>>>>> Scanning mobile screen...");
+        //operation.screenShot();
+        //operation.timeout(30);
+        List<WebElement> hotelDivList = getHotelDivList();
+        int page = 1;
+        boolean hasNextBtn = true;
+        while(hasNextBtn) {
+            hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, page, params.get(Param.APP_CURRENCY_UNIT)));
+            log.info("Fetching paginator...");
+            Optional<WebElement> paginator = operation.findElementByCssSelector("div.a96794a348", ReturnAttitude.EMPTY);
+            if (paginator.isPresent()) {
+                WebElement webElement = paginator.get();
+                log.info("Fetching found");
+                log.info("Fetching next button...");
+                List<WebElement> nextList = webElement.findElements(By.cssSelector("a.fc63351294.a822bdf511.d4b6b7a9e7.cfb238afa1.c334e6f658.f4605622ad"));
+                if (!nextList.isEmpty()) {
+                    WebElement nextBtn = nextList.get(0);
+                    log.info("Next button found");
+                    operation.click(nextBtn);
+                    page++;
+                    continue;
+                }
+                log.warn("Next button can not be found!");
+            }
+            log.warn("Paginator can not be found!");
+            hasNextBtn = false;
+        }
+    }
+
+    private void scanHotelAndPriceDesktop(List<HotelPriceExtDto> hotelPriceExtDtoList, Map<Param, String> params) {
+        String hotelCountTitle = getHotelCountTitle();
+        int hotelCountTotal = Integer.parseInt(returnJustDigits(hotelCountTitle));
         List<WebElement> hotelDivList = getHotelDivList();
         int hotelCountOnPage = hotelDivList.size();
         log.info("Hotel Div Count on this page: {}", hotelCountOnPage);
         if (hotelCountTotal > hotelCountOnPage) {
-            int divide = hotelCountTotal / hotelCountOnPage;
-            int mod = hotelCountTotal % hotelCountOnPage;
-            int pageCount = (mod > 0) ? (divide + 1) : divide;
+            int pageCount = calculatePageCount(hotelCountTotal, hotelCountOnPage);
             if (pageCount > 1) {
                 hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1, params.get(Param.APP_CURRENCY_UNIT)));
                 Optional<WebElement> pagination = operation.findElementByCssSelector("[data-testid='pagination']", ReturnAttitude.ERROR);
@@ -129,13 +169,34 @@ public class BookingService {
         } else {
             hotelPriceExtDtoList.addAll(fetchDataFromPage(hotelDivList, 1, params.get(Param.APP_CURRENCY_UNIT)));
         }
-        log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
-        printDtoOnLog(hotelPriceExtDtoList);
-        operation.finish();
-        return SearchResultExtDto.builder()
-                .searchCriteria(criteria)
-                .hotelPriceList(hotelPriceExtDtoList)
-                .build();
+    }
+
+    private String getHotelCountTitle(){
+        WebElement title = operation.findElementByCssSelector("[data-component='arp-header']", ReturnAttitude.ERROR)
+                .map(e -> e.findElements(By.cssSelector("[aria-live='assertive']")).stream().findFirst()
+                        .orElseGet(() -> {
+                            log.error("Property count title not found!");
+                            throw new NoSuchElementException("Property count title not found!");
+                        })).orElseGet(() -> {
+                    log.error("Property count title not found!");
+                    throw new NoSuchElementException("Property count title not found!");
+                });
+        String text = title.getText();
+        log.info(text);
+        return text;
+    }
+
+    private int calculatePageCount(int hotelCountTotal, int hotelCountOnPage){
+        int divide = hotelCountTotal / hotelCountOnPage;
+        int mod = hotelCountTotal % hotelCountOnPage;
+        return (mod > 0) ? (divide + 1) : divide;
+    }
+
+    private void openMobileHamburegerMenu() {
+        log.info("In Hambureger Operations");
+        Optional<WebElement> hamburgerButton = operation.findElementByCssSelector("[data-testid='header-mobile-menu-button']", ReturnAttitude.ERROR);
+        operation.click(hamburgerButton);
+        log.info("Hamburger Menu Opened!");
     }
 
     private void printDtoOnLog(List<HotelPriceExtDto> hotelPriceExtDtoList) {
@@ -146,8 +207,15 @@ public class BookingService {
     }
 
     private List<WebElement> getHotelDivList() {
+        String csPropertyCard = null;
+        /*if(DeviceType.MOBILE.equals(operation.getDeviceType())) {
+            csPropertyCard = "[data-testid='property-card-content']";
+        } else if (DeviceType.DESKTOP.equals(operation.getDeviceType())) {
+            csPropertyCard = "[data-testid='property-card']";
+        }*/
+        csPropertyCard = "[data-testid='property-card']";
         log.info("Hotel divs taking...");
-        List<WebElement> hotelDivList = operation.findElementsByCssSelector("[data-testid='property-card']");
+;        List<WebElement> hotelDivList = operation.findElementsByCssSelector(csPropertyCard);
         if (hotelDivList.isEmpty()) {
             log.error("Hotels not found!");
             throw new NoSuchElementException("Hotel not found!");
@@ -170,15 +238,25 @@ public class BookingService {
     }
 
     private void changeLanguage(String language) throws InterruptedException {
-        Optional<WebElement> languageModalButton = operation.findElementByCssSelector("[data-testid='header-language-picker-trigger']", ReturnAttitude.ERROR);
+        log.info(" >>>>>>> Starting: To change language...");
+        String csModalBtn = null;
+        String csElmList = "[data-testid='selection-item']";
+        String csSpan = "span.cf67405157";
+        if(DeviceType.MOBILE.equals(operation.getDeviceType())) {
+            openMobileHamburegerMenu();
+            csModalBtn = "[data-testid='header-mobile-menu-language-picker-menu-item']";
+        } else if (DeviceType.DESKTOP.equals(operation.getDeviceType())) {
+            csModalBtn = "[data-testid='header-language-picker-trigger']";
+        }
+        Optional<WebElement> languageModalButton = operation.findElementByCssSelector(csModalBtn, ReturnAttitude.ERROR);
         operation.click(languageModalButton);
-        List<WebElement> languageList = operation.findElementsByCssSelector("[data-testid='selection-item']");
+        List<WebElement> languageList = operation.findElementsByCssSelector(csElmList);
         if (languageList.isEmpty()) {
             log.error("Language List not found!");
             throw new NoSuchElementException("Language List not found!");
         }
         languageList.stream().flatMap(lang -> {
-            List<WebElement> elm = lang.findElements(By.cssSelector("span.cf67405157"));
+            List<WebElement> elm = lang.findElements(By.cssSelector(csSpan));
             if (!elm.isEmpty() && language.equalsIgnoreCase(elm.get(0).getText())) {
                 return Stream.of(lang);
             }
@@ -187,15 +265,25 @@ public class BookingService {
     }
 
     private void changeCurrency(String currency) {
-        Optional<WebElement> currencyModalButton = operation.findElementByCssSelector("[data-testid='header-currency-picker-trigger']", ReturnAttitude.ERROR);
+        log.info(" >>>>>>> Starting: To change currency...");
+        String csModalBtn = null;
+        String csElmList = "[data-testid='selection-item']";
+        String csDiv = "div.ea1163d21f";
+        if(DeviceType.MOBILE.equals(operation.getDeviceType())) {
+            openMobileHamburegerMenu();
+            csModalBtn = "[data-testid='header-mobile-menu-currency-picker-menu-item']";
+        } else if (DeviceType.DESKTOP.equals(operation.getDeviceType())) {
+            csModalBtn = "[data-testid='header-currency-picker-trigger']";
+        }
+        Optional<WebElement> currencyModalButton = operation.findElementByCssSelector(csModalBtn, ReturnAttitude.ERROR);
         operation.click(currencyModalButton);
-        List<WebElement> currencyList = operation.findElementsByCssSelector("[data-testid='selection-item']");
+        List<WebElement> currencyList = operation.findElementsByCssSelector(csElmList);
         if (currencyList.isEmpty()) {
             log.error("Currency List not found!");
             throw new NoSuchElementException("Currency List not found!");
         }
         currencyList.stream().flatMap(cur -> {
-            List<WebElement> elm = cur.findElements(By.cssSelector("div.ea1163d21f"));
+            List<WebElement> elm = cur.findElements(By.cssSelector(csDiv));
             if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
                 log.info("{} currency found successfully", currency);
                 return Stream.of(cur);
@@ -269,7 +357,8 @@ public class BookingService {
     }
 
     private void closeRegisterModal() throws InterruptedException {
-        for (int i = 10; i > 0; i--) {
+        log.info(" >>>>>>> Starting: To close register Modal...");
+        for (int i = 2; i > 0; i--) {
             log.info("Clicking close register modal x button...");
             List<WebElement> xButtonInRegisterModal = operation.findElementsByCssSelector("button.fc63351294.a822bdf511.e3c025e003.fa565176a8.f7db01295e.c334e6f658.ae1678b153");
             if (xButtonInRegisterModal.size() == 1) {
@@ -281,9 +370,11 @@ public class BookingService {
             log.warn("Not found register modal close button still. Trying again...");
             operation.timeout(2);
         }
+        log.info(" <<<<<<< Finished: To close register Modal...");
     }
 
     private void enterLocation(String location) {
+        log.info(" >>>>>>> Starting: To enter location...");
         Optional<WebElement> locationInput = operation.findElementById(":Ra9:");
         operation.click(locationInput);
         operation.sendKeys(location, locationInput);
@@ -303,8 +394,6 @@ public class BookingService {
                 }
                 calendar = operation.findElementByCssSelector("[data-testid='datepicker-tabs']", ReturnAttitude.EMPTY);
             }
-
-
         }, () -> {
             log.error("Hata");
             throw new NoSuchElementException("Hata");
@@ -319,7 +408,7 @@ public class BookingService {
         List<WebElement> dates = operation.findElementsByCssSelector("span.b21c1c6c83");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         goToDayOnCalendar(dateRange.getStartDate(), dates, formatter);
-        //goToDayOnCalendar(plusDays, dates, formatter);
+        goToDayOnCalendar(dateRange.getEndDate(), dates, formatter);
     }
 
     private void goToDayOnCalendar(LocalDate date, List<WebElement> dates, DateTimeFormatter formatter) {
@@ -398,8 +487,18 @@ public class BookingService {
     }
 
     private void clickSearchButton() {
+        log.info(" >>>>>>> Starting: To click Search Button...");
+        String btn;
+        Optional<WebElement> searchButton = Optional.empty();
+        if(DeviceType.MOBILE.equals(operation.getDeviceType())) {
+            btn = "submit_search";
+            searchButton = operation.findElementById(btn);
+        }
+        if (searchButton.isEmpty()) {
+            btn = "button.fc63351294.a822bdf511.d4b6b7a9e7.cfb238afa1.c938084447.f4605622ad.aa11d0d5cd";
+            searchButton = operation.findElementByCssSelector(btn, ReturnAttitude.ERROR);
+        }
         log.info("Clicking search button...");
-        Optional<WebElement> searchButton = operation.findElementByCssSelector("button.fc63351294.a822bdf511.d4b6b7a9e7.cfb238afa1.c938084447.f4605622ad.aa11d0d5cd", ReturnAttitude.ERROR);
         operation.click(searchButton);
         log.info("Clicked search button successfully");
     }

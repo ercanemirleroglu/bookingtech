@@ -44,8 +44,9 @@ public class ProcessService {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 34 9-21 * * ?")
-    public void checkServices() throws MessagingException, InterruptedException {
+    @Scheduled(cron = "0 35 9-21 * * ?")
+    //@Scheduled(fixedRate = 60 * 60 * 1000)
+    public void checkServices() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
