@@ -25,7 +25,7 @@ public class AutomationOperation extends AutomationDriver {
         log.info("{} page is opened. Now it's loading...", path);
     }
 
-    public void finish(){
+    public void finish() throws InterruptedException {
         log.info("Session is closing...");
         terminateDriver();
         log.info("Session is closed successfully");

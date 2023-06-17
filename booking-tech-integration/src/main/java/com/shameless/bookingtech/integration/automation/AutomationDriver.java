@@ -13,10 +13,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +30,8 @@ public class AutomationDriver {
     private String driverPath;
     @Value("${application.drivers.chromeDriverPath}")
     private String chromeDriverPath;
+    @Value("${application.commands.killCompletely}")
+    private boolean killCompletely;
     protected static WebDriver driver;
     protected static DeviceType deviceType;
 
@@ -40,8 +46,8 @@ public class AutomationDriver {
 
     private void setDeviceType() {
         //Dimension dimensionInfo = getDimensionInfo();
-        int width = 800;
-        int height = 600;
+        int width = 400;
+        int height = 300;
         log.info("Device width is : {}, height is : {}", width, height);
         deviceType = Arrays.stream(DeviceType.values())
                 .filter(d -> d.getDeviceTypeSpec().widthCompability(getDimensionInfo().width))
@@ -57,7 +63,7 @@ public class AutomationDriver {
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         //options.addArguments("--no-sandbox");
-        options.addArguments("--window-size=800,600");
+        options.addArguments("--window-size=400,300");
         return options;
     }
 
@@ -82,9 +88,17 @@ public class AutomationDriver {
         options.addArguments("user-agent=\\" + useragent);
     }
 
-    protected void terminateDriver() {
-        if (driver != null)
+    protected void terminateDriver() throws InterruptedException {
+        if (driver != null) {
+            driver.close();
+            timeoutDriver(5);
             driver.quit();
+            timeoutDriver(5);
+            driver = null;
+            killProcess("chromedriver");
+            killProcess("chrome");
+            killProcess("google-chrome");
+        }
         deviceType = null;
     }
 
@@ -92,7 +106,7 @@ public class AutomationDriver {
         Thread.sleep(second * 1000);
     }
 
-    public void refreshPage(String path) {
+    public void refreshPage(String path) throws InterruptedException {
         if (driver != null) {
             log.info("Refreshing page for {}", path);
             driver.get(path);
@@ -114,5 +128,31 @@ public class AutomationDriver {
     public void screenShot() throws IOException {
         File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         FileUtils.copyFile(scrFile, new File("/Users/ercanemirleroglu/Documents/Projects/screenshots/screenshot.png"));
+    }
+
+    private void killProcess(String processName){
+        if (killCompletely) {
+            log.info(">>>>>>> Starting kill process: {}", processName);
+            String findProcessCommand = "pgrep -f " + processName;
+            try {
+                Process process = Runtime.getRuntime().exec(findProcessCommand);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                List<Integer> processIds = new ArrayList<>();
+                while ((line = reader.readLine()) != null) {
+                    log.info("Line trim: {}", line.trim());
+                    processIds.add(Integer.parseInt(line.trim()));
+                }
+                reader.close();
+                process.waitFor();
+                for (int processId : processIds) {
+                    log.info("processId: {}", processId);
+                    Runtime.getRuntime().exec("kill " + processId);
+                }
+            } catch (IOException | InterruptedException e) {
+                log.error("killProcessError: {}", processName);
+                e.printStackTrace();
+            }
+        }
     }
 }

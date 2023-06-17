@@ -40,3 +40,5 @@ application:
   drivers:
     geckoDriverPath: /home/ec2-user/drivers/geckodriver
     chromeDriverPath: /usr/bin/chromedriver
+  commands:
+    killCompletely: true

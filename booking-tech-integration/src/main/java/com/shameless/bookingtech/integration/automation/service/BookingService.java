@@ -35,7 +35,7 @@ public class BookingService {
         this.operation = operation;
     }
 
-    public SearchResultExtDto fetchBookingData(Map<Param, String> params) throws IOException {
+    public SearchResultExtDto fetchBookingData(Map<Param, String> params) throws IOException, InterruptedException {
         int tryCount = 1;
         boolean mustStart = true;
         while (tryCount <= 5) {
@@ -64,8 +64,8 @@ public class BookingService {
         cap.forEach((k, v) -> log.info("key: {}, value: {}", k, v));
         closeRegisterModal();
         //changeLanguage(params.get(Param.APP_LANGUAGE));
-        changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
-        criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
+        //changeCurrency(params.get(Param.APP_CURRENCY_UNIT));
+        //criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
 
         criteria.setLocation(params.get(Param.SEARCH_LOCATION));
         enterLocation(criteria.getLocation());
@@ -77,9 +77,9 @@ public class BookingService {
         criteria.setCustomerCounts(customerSelectModels);
         enterCustomerTypeAndCount(customerSelectModels);
 
-        clickSearchButton();
+        //clickSearchButton();
         //operation.timeout(20);
-        scanHotelAndPriceDesktop(hotelPriceExtDtoList, params);
+        //scanHotelAndPriceDesktop(hotelPriceExtDtoList, params);
         /*if (DeviceType.DESKTOP.equals(operation.getDeviceType())) {
             scanHotelAndPriceDesktop(hotelPriceExtDtoList, params);
         } else if (DeviceType.MOBILE.equals(operation.getDeviceType())) {
