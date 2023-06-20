@@ -44,7 +44,7 @@ public class ProcessService {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 35 9-21 * * ?")
+    @Scheduled(cron = "0 45 9-21 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void checkServices() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();

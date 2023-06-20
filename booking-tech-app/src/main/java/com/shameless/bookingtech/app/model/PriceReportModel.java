@@ -5,7 +5,9 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class PriceReportModel {
@@ -16,7 +18,7 @@ public class PriceReportModel {
     private final String changeSymbol;
 
     public PriceReportModel(List<PriceModel> priceModelList) {
-        this.hotelPriceChangeList = priceModelList;
+        this.hotelPriceChangeList = priceModelList.stream().sorted(Comparator.comparing(PriceModel::getChangeValue)).collect(Collectors.toList());
         this.priceStatus = priceModelList.get(0).getPriceStatus();
         this.changeSymbol = priceModelList.get(0).getChangeSymbol();
         if (List.of(PriceStatus.DECREASED, PriceStatus.INCREASED).contains(this.priceStatus)) {
