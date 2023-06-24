@@ -106,7 +106,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>shameless-booking-tech</finalName>
+		<finalName>shameless-booking-tech-1</finalName>
 	</build>
 
 </project>

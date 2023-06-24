@@ -44,4 +44,4 @@ application:
     geckoDriverPath: /usr/local/bin/geckodriver
     chromeDriverPath: /usr/bin/chromedriver
   commands:
-    killCompletely: true
+    killCompletely: false

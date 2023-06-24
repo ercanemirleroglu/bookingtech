@@ -78,7 +78,7 @@ public class BookingService {
         enterCustomerTypeAndCount(customerSelectModels);
 
         clickSearchButton();
-        operation.timeout(20);
+        //operation.timeout(20);
         scanHotelAndPriceDesktop(hotelPriceExtDtoList, params);
         /*if (DeviceType.DESKTOP.equals(operation.getDeviceType())) {
             scanHotelAndPriceDesktop(hotelPriceExtDtoList, params);

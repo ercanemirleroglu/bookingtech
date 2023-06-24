@@ -46,8 +46,8 @@ public class AutomationDriver {
 
     private void setDeviceType() {
         //Dimension dimensionInfo = getDimensionInfo();
-        int width = 400;
-        int height = 300;
+        int width = 1440;
+        int height = 900;
         log.info("Device width is : {}, height is : {}", width, height);
         deviceType = Arrays.stream(DeviceType.values())
                 .filter(d -> d.getDeviceTypeSpec().widthCompability(getDimensionInfo().width))
@@ -63,7 +63,7 @@ public class AutomationDriver {
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         //options.addArguments("--no-sandbox");
-        options.addArguments("--window-size=400,300");
+        options.addArguments("--window-size=1440,900");
         return options;
     }
 
@@ -71,8 +71,9 @@ public class AutomationDriver {
         log.info("driver initializing...");
         driver = new ChromeDriver(options);
         log.info("{} page is opening", path);
-        driver.manage().timeouts().pageLoadTimeout(2, TimeUnit.MINUTES);
-        driver.manage().timeouts().implicitlyWait(45, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(45, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().setScriptTimeout(10, TimeUnit.SECONDS);
         driver.get(path);
         if (isMax) {
             setDeviceType();
