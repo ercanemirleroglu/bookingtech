@@ -6,6 +6,9 @@ spring:
     driverClassName: org.postgresql.Driver
     username: "postgres"
     password: "12345678"
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     show-sql: true
@@ -38,7 +41,7 @@ spring:
 
 application:
   drivers:
-    geckoDriverPath: /home/ec2-user/drivers/geckodriver
+    geckoDriverPath: /usr/local/bin/geckodriver
     chromeDriverPath: /usr/bin/chromedriver
   commands:
     killCompletely: true
