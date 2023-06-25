@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchResultExtDto {
-    private List<HotelPriceExtDto> hotelPriceList;
+    private List<PeriodicResultExtDto> periodicResult;
     private SearchCriteriaExtDto searchCriteria;
 
 }

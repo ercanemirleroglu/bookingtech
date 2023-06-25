@@ -16,7 +16,7 @@ import com.shameless.bookingtech.domain.service.ParamService;
 import com.shameless.bookingtech.integration.automation.model.HotelPriceExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
-import com.shameless.bookingtech.integration.automation.service.BookingService;
+import com.shameless.bookingtech.integration.automation.service.BookingProviderImpl;
 import jakarta.mail.MessagingException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -32,32 +32,32 @@ import java.util.stream.Collectors;
 @Component
 public class ProcessService {
 
-    private final BookingService bookingService;
+    private final BookingProviderImpl bookingProvider;
     private final HotelApplicationService hotelApplicationService;
     private final ParamService paramService;
     private final EmailService emailService;
 
-    public ProcessService(BookingService bookingService, HotelApplicationService hotelApplicationService, ParamService paramService, EmailService emailService) {
-        this.bookingService = bookingService;
+    public ProcessService(BookingProviderImpl bookingProvider, HotelApplicationService hotelApplicationService, ParamService paramService, EmailService emailService) {
+        this.bookingProvider = bookingProvider;
         this.hotelApplicationService = hotelApplicationService;
         this.paramService = paramService;
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 12 9-21 * * ?")
-    //@Scheduled(fixedRate = 60 * 60 * 1000)
+    //@Scheduled(cron = "0 12 9-21 * * ?")
+    @Scheduled(fixedRate = 5 * 60 * 1000)
     public void checkServices() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
-        SearchResultExtDto searchResultExtDto = bookingService.fetchBookingData(params);
-        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
+        SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, 3);
+/*        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
         Map<PriceStatus, List<PriceModel>> groupsByPriceStatus = priceDtoList.stream().map(PriceModel::new)
                 .filter(priceModel -> !PriceStatus.STATIC.equals(priceModel.getPriceStatus()))
                 .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
         List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
         PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto.getSearchCriteria());
-        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");
+        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");*/
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)
@@ -68,16 +68,16 @@ public class ProcessService {
         Resource resource = new ClassPathResource("hotels.json");
         String filePath = resource.getFile().getAbsolutePath();
         SearchResultExtDto searchResultExtDto = (SearchResultExtDto) JsonUtil.getInstance().readFile(SearchResultExtDto.class, filePath, "hotels");
-        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
+/*        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
         Map<PriceStatus, List<PriceModel>> groupsByPriceStatus = priceDtoList.stream().map(PriceModel::new)
                 .filter(priceModel -> !PriceStatus.STATIC.equals(priceModel.getPriceStatus()))
                 .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
         List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
         PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto.getSearchCriteria());
-        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");
+        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");*/
     }
 
-    private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {
+/*    private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {
         return BookingResultDto.builder()
                 .searchCriteria(mapSearchCriteria(searchResultExtDto.getSearchCriteria()))
                 .hotelPriceList(mapHotelPriceList(searchResultExtDto.getHotelPriceList()))
@@ -103,5 +103,5 @@ public class ProcessService {
                 .currency(searchCriteria.getCurrency())
                 .dateRange(searchCriteria.getDateRange())
                 .build();
-    }
+    }*/
 }

@@ -1,5 +1,7 @@
 server:
   port: 9090
+  servlet:
+    context-path: /booking
 spring:
   datasource:
     url: "jdbc:postgresql://shameless-booking-instance.ckwxuigzvke5.eu-north-1.rds.amazonaws.com:5432/booking"
