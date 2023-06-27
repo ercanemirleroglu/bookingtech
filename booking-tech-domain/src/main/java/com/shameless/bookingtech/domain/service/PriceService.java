@@ -1,9 +1,12 @@
 package com.shameless.bookingtech.domain.service;
 
+import com.shameless.bookingtech.common.util.model.DateRange;
+import com.shameless.bookingtech.domain.dto.PeriodicHotelPriceModel;
 import com.shameless.bookingtech.domain.dto.PriceDto;
 import com.shameless.bookingtech.domain.entity.HotelEntity;
 import com.shameless.bookingtech.domain.entity.PriceEntity;
 import com.shameless.bookingtech.domain.entity.SearchCriteriaEntity;
+import com.shameless.bookingtech.domain.entity.StoreType;
 import com.shameless.bookingtech.domain.factory.PriceFactory;
 import com.shameless.bookingtech.domain.mapper.PriceMapper;
 import com.shameless.bookingtech.domain.model.HotelPriceModel;
@@ -12,9 +15,9 @@ import com.shameless.bookingtech.domain.repository.PriceRepository;
 import com.shameless.bookingtech.domain.repository.SearchCriteriaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PriceService {
@@ -43,26 +46,62 @@ public class PriceService {
         return PriceMapper.INSTANCE.toDto(save);
     }
 
-    public List<PriceDto> setAllPrices(List<HotelPriceModel> hotelPriceModelList, Long searchCriteriaId){
+    public List<PriceDto> setAllPrices(List<PeriodicHotelPriceModel> periodicHotelPriceModelList, Long searchCriteriaId){
         SearchCriteriaEntity searchCriteriaEntity = searchCriteriaRepository.findById(searchCriteriaId)
                 .orElseThrow(() -> new IllegalArgumentException("Not found search criteria! Id: "
                         + searchCriteriaId));
         List<PriceDto> priceDtoList = new ArrayList<>();
-        hotelPriceModelList.forEach(hotelPriceModel -> {
-            HotelEntity hotelEntity = hotelRepository.findByName(hotelPriceModel.getHotelName())
-                    .orElseThrow(() -> new IllegalArgumentException("Not found hotel! Name: "
-                            + hotelPriceModel.getHotelName()));
-            Optional<PriceEntity> priceOpt = priceRepository.findFirstByHotelAndSearchCriteriaOrderByLastModifiedDateDesc(hotelEntity, searchCriteriaEntity);
-            PriceDto priceDto = PriceDto.builder()
-                    .currentPrice(hotelPriceModel.getPrice().getValue())
-                    .build();
-            if (priceOpt.isPresent()) {
-                PriceEntity oldPrice = priceOpt.get();
-                priceDtoList.add(updatePrice(priceDto, oldPrice));
-            } else {
-                priceDtoList.add(addPrice(priceDto, hotelEntity, searchCriteriaEntity));
-            }
-        });
+        StoreType storeType;
+        if (Objects.nonNull(periodicHotelPriceModelList) && periodicHotelPriceModelList.size() == 1) {
+            storeType = StoreType.HOURLY;
+            StoreType finalStoreType = storeType;
+            List<HotelPriceModel> hotelPriceList = periodicHotelPriceModelList.get(0).getHotelPriceList();
+            DateRange<LocalDate> dateRange = periodicHotelPriceModelList.get(0).getDateRange();
+            hotelPriceList.forEach(hotelPriceModel -> {
+                HotelEntity hotelEntity = hotelRepository.findByName(hotelPriceModel.getHotelName())
+                        .orElseThrow(() -> new IllegalArgumentException("Not found hotel! Name: "
+                                + hotelPriceModel.getHotelName()));
+                Optional<PriceEntity> priceOpt = priceRepository.findFirstByHotelAndSearchCriteriaAndStoreTypeOrderByLastModifiedDateDesc(hotelEntity, searchCriteriaEntity, finalStoreType);
+                PriceDto priceDto = PriceDto.builder()
+                        .currentPrice(hotelPriceModel.getPrice().getValue())
+                        .fromDate(dateRange.getStartDate())
+                        .toDate(dateRange.getEndDate())
+                        .storeType(finalStoreType.toDto())
+                        .build();
+                if (priceOpt.isPresent()) {
+                    PriceEntity oldPrice = priceOpt.get();
+                    priceDtoList.add(updatePrice(priceDto, oldPrice));
+                } else {
+                    priceDtoList.add(addPrice(priceDto, hotelEntity, searchCriteriaEntity));
+                }
+            });
+        }
+        else if (Objects.nonNull(periodicHotelPriceModelList) && periodicHotelPriceModelList.size() > 1) {
+            storeType = StoreType.PERIODIC;
+            StoreType finalStoreType = storeType;
+            periodicHotelPriceModelList.forEach(periodicHotelPriceModel -> {
+                DateRange<LocalDate> dateRange = periodicHotelPriceModel.getDateRange();
+                periodicHotelPriceModel.getHotelPriceList().forEach(hotelPriceModel -> {
+                    HotelEntity hotelEntity = hotelRepository.findByName(hotelPriceModel.getHotelName())
+                            .orElseThrow(() -> new IllegalArgumentException("Not found hotel! Name: "
+                                    + hotelPriceModel.getHotelName()));
+                    Optional<PriceEntity> priceOpt = priceRepository.findByDateRange(hotelEntity.getId(),
+                            searchCriteriaEntity.getId(), dateRange.getStartDate(), dateRange.getEndDate());
+                    PriceDto priceDto = PriceDto.builder()
+                            .currentPrice(hotelPriceModel.getPrice().getValue())
+                            .fromDate(dateRange.getStartDate())
+                            .toDate(dateRange.getEndDate())
+                            .storeType(finalStoreType.toDto())
+                            .build();
+                    if (priceOpt.isPresent()) {
+                        PriceEntity oldPrice = priceOpt.get();
+                        priceDtoList.add(updatePrice(priceDto, oldPrice));
+                    } else {
+                        priceDtoList.add(addPrice(priceDto, hotelEntity, searchCriteriaEntity));
+                    }
+                });
+            });
+        }
         return priceDtoList;
     }
 }

@@ -23,11 +23,4 @@ public class SearchCriteriaEntity extends AbstractEntity<Long> {
     private Integer paramRoom;
     private String paramLocation;
     private String paramCurrency;
-    private LocalDate fromDate;
-    private LocalDate toDate;
-
-    public void update(SearchCriteriaDto searchCriteriaDto) {
-        this.fromDate = searchCriteriaDto.getFromDate();
-        this.toDate = searchCriteriaDto.getToDate();
-    }
 }

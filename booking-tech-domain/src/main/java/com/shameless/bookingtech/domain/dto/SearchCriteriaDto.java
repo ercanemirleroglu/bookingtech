@@ -21,6 +21,4 @@ public class SearchCriteriaDto {
     private Integer paramRoom;
     private String paramLocation;
     private String paramCurrency;
-    private LocalDate fromDate;
-    private LocalDate toDate;
 }

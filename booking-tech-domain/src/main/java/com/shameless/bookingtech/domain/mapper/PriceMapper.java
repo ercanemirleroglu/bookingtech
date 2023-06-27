@@ -13,6 +13,9 @@ public class PriceMapper {
                 .lastModifiedDate(entity.getLastModifiedDate())
                 .currentPrice(entity.getCurrentValue())
                 .previousPrice(entity.getPreviousValue())
+                .fromDate(entity.getFromDate())
+                .toDate(entity.getToDate())
+                .storeType(entity.getStoreType().toDto())
                 .hotel(HotelMapper.INSTANCE.toDto(entity.getHotel()))
                 .searchCriteria(SearchCriteriaMapper.INSTANCE.toDto(entity.getSearchCriteria()))
                 .build();

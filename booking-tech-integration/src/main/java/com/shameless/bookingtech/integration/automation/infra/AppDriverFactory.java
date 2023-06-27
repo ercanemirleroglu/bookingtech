@@ -60,7 +60,7 @@ public class AppDriverFactory {
     private WebDriver setDriver(ChromeOptions options, String path, boolean isMax) {
         log.info("driver initializing...");
         WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().pageLoadTimeout(150, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(240, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         driver.manage().timeouts().setScriptTimeout(60, TimeUnit.SECONDS);
         driver.get(path);

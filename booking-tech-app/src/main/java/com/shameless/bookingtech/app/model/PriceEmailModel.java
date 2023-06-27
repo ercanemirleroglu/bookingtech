@@ -1,9 +1,12 @@
 package com.shameless.bookingtech.app.model;
 
 import com.shameless.bookingtech.common.util.StringUtil;
+import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
+import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -23,16 +26,18 @@ public class PriceEmailModel {
     private PriceReportModel decreasedTable;
     private PriceReportModel newTable;
 
-    public PriceEmailModel(List<PriceReportModel> priceReportModelList, SearchCriteriaExtDto searchResultExtDto) {
-        this.adult = searchResultExtDto.getAdult();
-        this.child = searchResultExtDto.getChild();
-        this.room = searchResultExtDto.getRoom();
-        this.location = searchResultExtDto.getLocation();
-        this.currency = searchResultExtDto.getCurrency();
-        this.currencySymbol = StringUtil.getCurrencySymbol(searchResultExtDto.getCurrency());
+    public PriceEmailModel(List<PriceReportModel> priceReportModelList, SearchResultExtDto searchResultExtDto) {
+        SearchCriteriaExtDto searchCriteria = searchResultExtDto.getSearchCriteria();
+        DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().get(0).getDateRange();
+        this.adult = searchCriteria.getAdult();
+        this.child = searchCriteria.getChild();
+        this.room = searchCriteria.getRoom();
+        this.location = searchCriteria.getLocation();
+        this.currency = searchCriteria.getCurrency();
+        this.currencySymbol = StringUtil.getCurrencySymbol(searchCriteria.getCurrency());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        this.fromDate = searchResultExtDto.getDateRange().getStartDate().format(dateTimeFormatter);
-        this.toDate = searchResultExtDto.getDateRange().getEndDate().format(dateTimeFormatter);
+        this.fromDate = dateRange.getStartDate().format(dateTimeFormatter);
+        this.toDate = dateRange.getEndDate().format(dateTimeFormatter);
         if (!priceReportModelList.isEmpty()) {
             this.increasedTable = priceReportModelList.stream().filter(prm -> PriceStatus.INCREASED.equals(prm.getPriceStatus()))
                     .findFirst().orElse(null);

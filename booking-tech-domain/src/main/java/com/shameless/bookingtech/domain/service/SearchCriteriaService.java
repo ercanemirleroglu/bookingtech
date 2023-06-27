@@ -32,13 +32,4 @@ public class SearchCriteriaService {
         SearchCriteriaEntity entityAfterSave = searchCriteriaRepository.save(entityBeforeSave);
         return SearchCriteriaMapper.INSTANCE.toDto(entityAfterSave);
     }
-
-    public SearchCriteriaDto update(SearchCriteriaDto searchCriteriaDto) {
-        SearchCriteriaEntity searchCriteriaEntity = searchCriteriaRepository.findById(searchCriteriaDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Search Criteria not found! Id: "
-                        + searchCriteriaDto.getId()));
-        searchCriteriaEntity.update(searchCriteriaDto);
-        SearchCriteriaEntity save = searchCriteriaRepository.save(searchCriteriaEntity);
-        return SearchCriteriaMapper.INSTANCE.toDto(save);
-    }
 }

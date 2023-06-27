@@ -1,5 +1,6 @@
 package com.shameless.bookingtech.integration.automation.service;
 
+import com.shameless.bookingtech.common.util.Constants;
 import com.shameless.bookingtech.common.util.JsonUtil;
 import com.shameless.bookingtech.common.util.model.AppMoney;
 import com.shameless.bookingtech.common.util.model.DateRange;
@@ -34,41 +35,47 @@ import static com.shameless.bookingtech.common.util.StringUtil.returnJustDigits;
 @Slf4j
 public class BookingProviderImpl {
     private final AppDriverFactory appDriverFactory;
-    private final CountDownLatch latch;
 
     public BookingProviderImpl(AppDriverFactory appDriverFactory) {
         this.appDriverFactory = appDriverFactory;
-        this.latch = new CountDownLatch(3);
     }
 
-    public SearchResultExtDto fetchBookingData(Map<Param, String> params, int driverSize) throws IOException, InterruptedException {
-        return manageOperation(params, driverSize);
+    public SearchResultExtDto fetchBookingData(Map<Param, String> params, boolean isPeriodic) throws IOException, InterruptedException {
+        return manageOperation(params, isPeriodic);
     }
 
-    private SearchResultExtDto manageOperation(Map<Param, String> params, int driverSize) throws InterruptedException, IOException {
-        ExecutorService executor = Executors.newFixedThreadPool(driverSize);
-        BookingProviderImpl obj = new BookingProviderImpl(appDriverFactory);
+    private SearchResultExtDto manageOperation(Map<Param, String> params, boolean isPeriodic) throws InterruptedException, IOException {
         List<PeriodicResultExtDto> periodicResultExtDtoList = new ArrayList<>();
         SearchCriteriaExtDto criteria = new SearchCriteriaExtDto();
         LocalDate today = LocalDate.now();
-        for (int i = 0; i < 3; i++) {
-            int finalI = i;
-            executor.execute(() -> {
-                obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, today.plusDays(finalI));
-                latch.countDown();
-            });
+        if (isPeriodic) {
+            ExecutorService executor = Executors.newFixedThreadPool(Constants.CONCURRENT_SIZE);
+            BookingProviderImpl obj = new BookingProviderImpl(appDriverFactory);
+            for (int j = 0; j < 2; j++) {
+                CountDownLatch innerLatch = new CountDownLatch(Constants.CONCURRENT_SIZE);
+                for (int i = 0; i < Constants.CONCURRENT_SIZE; i++) {
+                    int finalI = (j * Constants.CONCURRENT_SIZE) + i;
+                    executor.execute(() -> {
+                        obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, criteria, today.plusDays(finalI));
+                        innerLatch.countDown();
+                    });
+                }
+                innerLatch.await();
+            }
+            executor.shutdown();
         }
-        latch.await();
-        executor.shutdown();
+        else {
+            bookingScreenAutomationProcess(params, periodicResultExtDtoList, criteria, today);
+        }
+
         return SearchResultExtDto.builder()
                 .searchCriteria(criteria)
-                .periodicResult(periodicResultExtDtoList)
+                .periodicResultList(periodicResultExtDtoList)
                 .build();
     }
 
-    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, LocalDate start) {
+    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, SearchCriteriaExtDto criteria, LocalDate start) {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
-        SearchCriteriaExtDto criteria = new SearchCriteriaExtDto();
         DateRange<LocalDate> localDateDateRange = null;
         AppDriver driver = null;
         try {
@@ -81,13 +88,13 @@ public class BookingProviderImpl {
             criteria.setLocation(params.get(Param.SEARCH_LOCATION));
             enterLocation(driver, criteria.getLocation());
             localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
-            //criteria.setDateRange(localDateDateRange);
             List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
             criteria.setCustomerCounts(customerSelectModels);
             enterCustomerTypeAndCount(driver, customerSelectModels);
             clickSearchButton(driver);
             scanHotelAndPriceDesktop(driver, hotelPriceExtDtoList, params);
-        } catch (InterruptedException | MalformedURLException | StaleElementReferenceException e) {
+        } catch (InterruptedException | MalformedURLException | StaleElementReferenceException | NoSuchElementException e) {
+            log.error("error occured: ", e);
             e.printStackTrace();
         } finally {
             log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
@@ -101,7 +108,7 @@ public class BookingProviderImpl {
                 try {
                     driver.terminateDriver();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error("error occured: ", e);
                 }
             }
         }
@@ -215,26 +222,20 @@ public class BookingProviderImpl {
             int pageCount = calculatePageCount(hotelCountTotal, hotelCountOnPage);
             if (pageCount > 1) {
                 hotelPriceExtDtoList.addAll(fetchDataFromPage(driver, hotelDivList, 1, params.get(Param.APP_CURRENCY_UNIT)));
-                Optional<AppElement> pagination = driver.findOneElementByCssSelector("[data-testid='pagination']", driver.javaScriptExecutor());
                 for (int currentPage = 2; currentPage <= pageCount; currentPage++) {
+                    Optional<AppElement> pagination = driver.findOneElementByCssSelector("[data-testid='pagination']", driver.javaScriptExecutor());
                     int finalCurrentPage = currentPage;
                     pagination.ifPresentOrElse(page -> {
-                        page.findOneElementByCssSelector(("[aria-label=' " + finalCurrentPage + "'"), driver.javaScriptExecutor())
+                        page.findOneElementByCssSelector("[aria-label=' " + finalCurrentPage + "']", driver.javaScriptExecutor())
                                 .ifPresentOrElse(button -> {
                                     log.info("Page button count {}", finalCurrentPage);
                                     button.click(driver.javaScriptExecutor());
-                                    try {
-                                        driver.timeout(20);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
                                     List<AppElement> hotelDivListInside = getHotelDivList(driver);
                                     hotelPriceExtDtoList.addAll(fetchDataFromPage(driver, hotelDivListInside, finalCurrentPage, params.get(Param.APP_CURRENCY_UNIT)));
                                 }, () -> {
                                     log.error("Pagination not found!");
                                     throw new NoSuchElementException("Pagination not found!");
                                 });
-
                     }, () -> {
                         log.error("Pagination not found!");
                         throw new NoSuchElementException("Pagination not found!");
@@ -355,11 +356,7 @@ public class BookingProviderImpl {
             Optional<AppElement> calendar = Optional.empty();
             for (int i = 0; (i < 10 && (calendar.isEmpty() || !calendar.get().isDisplayed())); i++) {
                 e.click(driver.javaScriptExecutor());
-                try {
-                    driver.timeout(1);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
+                driver.timeout(1);
                 calendar = driver.findOneElementByCssSelector("[data-testid='datepicker-tabs']", driver.javaScriptExecutor());
             }
         }, () -> {

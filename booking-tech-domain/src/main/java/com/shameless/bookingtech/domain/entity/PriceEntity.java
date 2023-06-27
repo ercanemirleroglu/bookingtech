@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +21,10 @@ public class PriceEntity extends AbstractEntity<Long> {
     private Long id;
     private BigDecimal currentValue;
     private BigDecimal previousValue;
+    private LocalDate fromDate;
+    private LocalDate toDate;
+    @Enumerated(EnumType.STRING)
+    private StoreType storeType;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
@@ -32,5 +37,7 @@ public class PriceEntity extends AbstractEntity<Long> {
     public void update(PriceDto priceDto) {
         this.previousValue = priceDto.getPreviousPrice();
         this.currentValue = priceDto.getCurrentPrice();
+        this.fromDate = priceDto.getFromDate();
+        this.toDate = priceDto.getToDate();
     }
 }

@@ -98,9 +98,13 @@ public class AppDriver implements AppAutomation {
         FileUtils.copyFile(scrFile, new File("/Users/ercanemirleroglu/Documents/Projects/screenshots/screenshot.png"));
     }
 
-    public void timeout(int seconds) throws InterruptedException {
-        log.info("Timeout: {} seconds", seconds);
-        Thread.sleep(seconds * 1000L);
+    public void timeout(int seconds) {
+        try {
+            log.info("Timeout: {} seconds", seconds);
+            Thread.sleep(seconds * 1000L);
+        }catch (InterruptedException e) {
+            log.error("Interrupted Exeption: ", e);
+        }
     }
 
     public void get(String url) {

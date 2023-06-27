@@ -49,7 +49,6 @@ class HotelApplicationServiceTest {
         // Verify the expected method calls
         verify(searchCriteriaService, times(1)).findByParams(any(SearchCriteriaDto.class));
         verify(searchCriteriaService, times(1)).add(any(SearchCriteriaDto.class));
-        verify(searchCriteriaService, never()).update(any(SearchCriteriaDto.class));
         verify(locationService, times(1)).addBulk(anyList());
         verify(hotelService, times(1)).addBulk(anyList());
     }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="20230626205900-1" author="ercan">
+        <addColumn tableName="price">
+            <column name="from_date" type="DATE"/>
+            <column name="to_date" type="DATE"/>
+            <column name="store_type" type="VARCHAR2(20)" defaultValue="HOURLY"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="20230626205900-2" author="ercan">
+        <dropColumn tableName="search_criteria">
+            <column name="from_date"/>
+            <column name="to_date"/>
+        </dropColumn>
+    </changeSet>
+</databaseChangeLog>
