@@ -17,4 +17,16 @@
             <column name="to_date"/>
         </dropColumn>
     </changeSet>
+    <changeSet author="ercan" id="20230628092700-1">
+        <update tableName="price">
+            <column name="from_date" valueComputed="CURRENT_DATE" />
+            <column name="to_date" valueComputed="CURRENT_DATE + 1" />
+            <where>store_type = 'HOURLY'</where>
+        </update>
+    </changeSet>
+    <changeSet id="20230628092700-2" author="ercan">
+        <addColumn tableName="search_criteria">
+            <column name="day_range" type="INTEGER" defaultValueNumeric="1" />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

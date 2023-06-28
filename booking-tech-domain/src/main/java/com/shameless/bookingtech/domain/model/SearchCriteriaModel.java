@@ -18,5 +18,5 @@ public class SearchCriteriaModel {
     private int child;
     private String location;
     private String currency;
-    private DateRange<LocalDate> dateRange;
+    private int dayRange;
 }

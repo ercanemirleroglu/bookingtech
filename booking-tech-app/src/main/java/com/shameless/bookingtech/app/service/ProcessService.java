@@ -46,7 +46,7 @@ public class ProcessService {
         this.emailService = emailService;
     }
 
-    //@Scheduled(cron = "0 12 9-21 * * ?")
+    @Scheduled(cron = "0 58 9-21 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void hourlyJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
@@ -63,13 +63,13 @@ public class ProcessService {
     }
 
     //@Scheduled(cron = "0 0 22 * * ?")
-    @Scheduled(fixedRate = 60 * 60 * 1000)
+    //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void periodicJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
         SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true);
-        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
+        //List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
         System.out.println("Bitti");
     }
 
@@ -81,13 +81,13 @@ public class ProcessService {
         Resource resource = new ClassPathResource("hotels.json");
         String filePath = resource.getFile().getAbsolutePath();
         SearchResultExtDto searchResultExtDto = (SearchResultExtDto) JsonUtil.getInstance().readFile(SearchResultExtDto.class, filePath, "hotels");
-/*        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
+        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
         Map<PriceStatus, List<PriceModel>> groupsByPriceStatus = priceDtoList.stream().map(PriceModel::new)
                 .filter(priceModel -> !PriceStatus.STATIC.equals(priceModel.getPriceStatus()))
                 .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
         List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
-        PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto.getSearchCriteria());
-        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");*/
+        PriceEmailModel priceEmailModel = new PriceEmailModel(priceReportModelList, searchResultExtDto);
+        emailService.sendMail(priceEmailModel, params.get(Param.EMAIL_TO), "emailTemplate");
     }
 
     private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {
@@ -122,6 +122,7 @@ public class ProcessService {
                 .room(searchCriteria.getRoom())
                 .location(searchCriteria.getLocation())
                 .currency(searchCriteria.getCurrency())
+                .dayRange(searchCriteria.getDayRange())
                 .build();
     }
 }

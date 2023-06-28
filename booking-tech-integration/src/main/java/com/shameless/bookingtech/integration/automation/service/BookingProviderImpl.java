@@ -47,6 +47,11 @@ public class BookingProviderImpl {
     private SearchResultExtDto manageOperation(Map<Param, String> params, boolean isPeriodic) throws InterruptedException, IOException {
         List<PeriodicResultExtDto> periodicResultExtDtoList = new ArrayList<>();
         SearchCriteriaExtDto criteria = new SearchCriteriaExtDto();
+        criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
+        criteria.setLocation(params.get(Param.SEARCH_LOCATION));
+        List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
+        criteria.setCustomerCounts(customerSelectModels);
+        criteria.setDayRange(Integer.parseInt(params.get(Param.SEARCH_DATE_RANGE)));
         LocalDate today = LocalDate.now();
         if (isPeriodic) {
             ExecutorService executor = Executors.newFixedThreadPool(Constants.CONCURRENT_SIZE);
@@ -56,7 +61,7 @@ public class BookingProviderImpl {
                 for (int i = 0; i < Constants.CONCURRENT_SIZE; i++) {
                     int finalI = (j * Constants.CONCURRENT_SIZE) + i;
                     executor.execute(() -> {
-                        obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, criteria, today.plusDays(finalI));
+                        obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, today.plusDays(finalI));
                         innerLatch.countDown();
                     });
                 }
@@ -65,7 +70,7 @@ public class BookingProviderImpl {
             executor.shutdown();
         }
         else {
-            bookingScreenAutomationProcess(params, periodicResultExtDtoList, criteria, today);
+            bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, today);
         }
 
         return SearchResultExtDto.builder()
@@ -74,7 +79,7 @@ public class BookingProviderImpl {
                 .build();
     }
 
-    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, SearchCriteriaExtDto criteria, LocalDate start) {
+    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, List<CustomerSelectModel> customerSelectModels, LocalDate start) {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
         DateRange<LocalDate> localDateDateRange = null;
         AppDriver driver = null;
@@ -84,12 +89,9 @@ public class BookingProviderImpl {
             log.info(" +++++ Start Date : {}", start.toString());
             closeRegisterModal(driver);
             changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
-            criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
-            criteria.setLocation(params.get(Param.SEARCH_LOCATION));
-            enterLocation(driver, criteria.getLocation());
+            driver.timeout(10);
+            enterLocation(driver, params.get(Param.SEARCH_LOCATION));
             localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
-            List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
-            criteria.setCustomerCounts(customerSelectModels);
             enterCustomerTypeAndCount(driver, customerSelectModels);
             clickSearchButton(driver);
             scanHotelAndPriceDesktop(driver, hotelPriceExtDtoList, params);
@@ -230,6 +232,7 @@ public class BookingProviderImpl {
                                 .ifPresentOrElse(button -> {
                                     log.info("Page button count {}", finalCurrentPage);
                                     button.click(driver.javaScriptExecutor());
+                                    driver.timeout(10);
                                     List<AppElement> hotelDivListInside = getHotelDivList(driver);
                                     hotelPriceExtDtoList.addAll(fetchDataFromPage(driver, hotelDivListInside, finalCurrentPage, params.get(Param.APP_CURRENCY_UNIT)));
                                 }, () -> {

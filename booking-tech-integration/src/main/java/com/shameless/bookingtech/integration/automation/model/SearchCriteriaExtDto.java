@@ -19,6 +19,7 @@ public class SearchCriteriaExtDto {
     private int child;
     private String location;
     private String currency;
+    private int dayRange;
 
     public void setCustomerCounts(List<CustomerSelectModel> customerSelectModels) {
         customerSelectModels.forEach(selectModel -> {

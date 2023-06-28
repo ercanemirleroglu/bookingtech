@@ -16,6 +16,7 @@ public class SearchCriteriaMapper {
                 .paramRoom(entity.getParamRoom())
                 .paramLocation(entity.getParamLocation())
                 .paramCurrency(entity.getParamCurrency())
+                .dayRange(entity.getDayRange())
                 .build();
     }
 }
