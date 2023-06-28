@@ -21,10 +21,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,8 +85,8 @@ public class BookingProviderImpl {
             log.info(" +++++ Start Driver : {}", driver.getId().toString());
             log.info(" +++++ Start Date : {}", start.toString());
             closeRegisterModal(driver);
-            changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
-            driver.timeout(10);
+            boolean isChanged = changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
+            if (!isChanged) throw new NoSuchElementException("Currency has not changed!");
             enterLocation(driver, params.get(Param.SEARCH_LOCATION));
             localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
             enterCustomerTypeAndCount(driver, customerSelectModels);
@@ -407,32 +404,44 @@ public class BookingProviderImpl {
         log.info("Hamburger Menu Opened!");
     }
 
-    private void changeCurrency(AppDriver driver, String currency) {
+    private boolean changeCurrency(AppDriver driver, String currency) {
         log.info(" >>>>>>> Starting: To change currency...");
-        String csModalBtn = null;
-        String csElmList = "[data-testid='selection-item']";
-        String csDiv = "div.ea1163d21f";
-        if (DeviceType.MOBILE.equals(driver.getDeviceType())) {
-            openMobileHamburegerMenu(driver);
-            csModalBtn = "[data-testid='header-mobile-menu-currency-picker-menu-item']";
-        } else if (DeviceType.DESKTOP.equals(driver.getDeviceType())) {
-            csModalBtn = "[data-testid='header-currency-picker-trigger']";
-        }
-        Optional<AppElement> currencyModalButton = driver.findOneElementByCssSelector(csModalBtn, driver.javaScriptExecutor());
-        currencyModalButton.ifPresent(e -> e.click(driver.javaScriptExecutor()));
-        List<AppElement> currencyList = driver.findAllElementsByCssSelector(csElmList, driver.javaScriptExecutor());
-        if (currencyList.isEmpty()) {
-            log.error("Currency List not found!");
-            throw new NoSuchElementException("Currency List not found!");
-        }
-        currencyList.stream().flatMap(cur -> {
-            List<AppElement> elm = cur.findAllElementsByCssSelector(csDiv, driver.javaScriptExecutor());
-            if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
-                log.info("{} currency found successfully", currency);
-                return Stream.of(cur);
+        boolean hasChangedCorrectly;
+        int cnt = 1;
+        do {
+            log.info("change currency counter {}", cnt);
+            String csModalBtn = null;
+            String csElmList = "[data-testid='selection-item']";
+            String csDiv = "div.ea1163d21f";
+            if (DeviceType.MOBILE.equals(driver.getDeviceType())) {
+                openMobileHamburegerMenu(driver);
+                csModalBtn = "[data-testid='header-mobile-menu-currency-picker-menu-item']";
+            } else if (DeviceType.DESKTOP.equals(driver.getDeviceType())) {
+                csModalBtn = "[data-testid='header-currency-picker-trigger']";
             }
-            return Stream.empty();
-        }).findFirst().ifPresent(e -> e.click(driver.javaScriptExecutor()));
+            Optional<AppElement> currencyModalButton = driver.findOneElementByCssSelector(csModalBtn, driver.javaScriptExecutor());
+            currencyModalButton.ifPresent(e -> e.click(driver.javaScriptExecutor()));
+            List<AppElement> currencyList = driver.findAllElementsByCssSelector(csElmList, driver.javaScriptExecutor());
+            if (currencyList.isEmpty()) {
+                log.error("Currency List not found!");
+                throw new NoSuchElementException("Currency List not found!");
+            }
+            currencyList.stream().flatMap(cur -> {
+                List<AppElement> elm = cur.findAllElementsByCssSelector(csDiv, driver.javaScriptExecutor());
+                if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
+                    log.info("{} currency found successfully", currency);
+                    return Stream.of(cur);
+                }
+                return Stream.empty();
+            }).findFirst().ifPresent(e -> e.click(driver.javaScriptExecutor()));
+            driver.timeout(10);
+            hasChangedCorrectly = driver.findOneElementByCssSelector(csModalBtn, driver.javaScriptExecutor())
+                    .flatMap(btn -> btn.findOneElementByCssSelector("span.e57ffa4eb5", driver.javaScriptExecutor()))
+                    .map(spn -> Objects.equals(currency, spn.getText()))
+                    .orElse(Boolean.FALSE);
+            cnt++;
+        } while (!hasChangedCorrectly && cnt <= 5);
+        return hasChangedCorrectly;
     }
 
     private void closeRegisterModal(AppDriver driver) throws InterruptedException {

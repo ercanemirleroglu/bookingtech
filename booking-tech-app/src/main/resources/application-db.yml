@@ -24,10 +24,10 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   mail:
-    host: "smtp.gmail.com"
+    host: smtp.gmail.com
     port: 587
-    username: "sbookingtech.info@gmail.com"
-    password: "wigvwsaqhzzzcshi"
+    username: sbookingtech.info@gmail.com
+    password: emuydbkydncdzund
     properties:
       mail:
         smtp:
@@ -37,6 +37,9 @@ spring:
           writetimeout: 60000
           starttls:
             enable: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
 
 application:
   drivers:
