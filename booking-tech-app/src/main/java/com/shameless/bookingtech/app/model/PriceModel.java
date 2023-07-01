@@ -9,14 +9,23 @@ import java.math.RoundingMode;
 @Getter
 public class PriceModel {
     private final String hotelName;
-    private final Double rating;
-    private final String location;
-    private final BigDecimal currentValue;
-    private final BigDecimal previousValue;
+    private Double rating;
+    private String location;
+    private BigDecimal currentValue;
+    private BigDecimal previousValue;
     private PriceStatus priceStatus;
     private BigDecimal changeValue;
     private BigDecimal changePercent;
     private String changeSymbol;
+
+    public String getChangeSymbol(){
+        return changeSymbol == null ? "" : changeSymbol;
+    }
+
+    public PriceModel(String hotelName) {
+        this.hotelName = hotelName;
+        this.priceStatus = PriceStatus.STATIC;
+    }
 
     public PriceModel(PriceDto priceDto) {
         this.hotelName = priceDto.getHotel().getName();

@@ -3,6 +3,7 @@ package com.shameless.bookingtech.domain.service;
 import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.domain.dto.PeriodicHotelPriceModel;
 import com.shameless.bookingtech.domain.dto.PriceDto;
+import com.shameless.bookingtech.domain.dto.StoreTypeDto;
 import com.shameless.bookingtech.domain.entity.HotelEntity;
 import com.shameless.bookingtech.domain.entity.PriceEntity;
 import com.shameless.bookingtech.domain.entity.SearchCriteriaEntity;
@@ -31,6 +32,13 @@ public class PriceService {
         this.searchCriteriaRepository = searchCriteriaRepository;
         this.hotelRepository = hotelRepository;
         this.priceFactory = priceFactory;
+    }
+
+    public List<PriceDto> findAllForReport(Long scId, StoreTypeDto storeType, DateRange<LocalDate> dateRange){
+        return priceRepository.findAllForReport(scId, StoreType.valueOf(storeType.name()),
+                dateRange.getStartDate(), dateRange.getEndDate())
+                .stream().map(PriceMapper.INSTANCE::toDto)
+                .collect(Collectors.toList());
     }
 
     private PriceDto addPrice(PriceDto priceDto, HotelEntity hotel, SearchCriteriaEntity searchCriteria) {
