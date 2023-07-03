@@ -53,7 +53,7 @@ public class BookingProviderImpl {
         if (isPeriodic) {
             ExecutorService executor = Executors.newFixedThreadPool(Constants.CONCURRENT_SIZE);
             BookingProviderImpl obj = new BookingProviderImpl(appDriverFactory);
-            for (int j = 0; j < 4; j++) {
+            for (int j = 0; j < Constants.CONCURRENT_COUNT; j++) {
                 CountDownLatch innerLatch = new CountDownLatch(Constants.CONCURRENT_SIZE);
                 for (int i = 0; i < Constants.CONCURRENT_SIZE; i++) {
                     int finalI = (j * Constants.CONCURRENT_SIZE) + i;

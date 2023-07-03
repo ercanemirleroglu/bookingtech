@@ -43,7 +43,7 @@ public class ProcessService {
         this.priceService = priceService;
     }
 
-    @Scheduled(cron = "0 40 9-21 * * ?")
+    @Scheduled(cron = "0 0 10-21 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void hourlyJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
@@ -55,7 +55,7 @@ public class ProcessService {
         emailService.sendMail(hourlyReport, params.get(Param.EMAIL_TO), "emailTemplate");
     }
 
-    @Scheduled(cron = "0 10 22 * * ?")
+    @Scheduled(cron = "0 0 9 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void periodicJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
