@@ -2,89 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Hotel Price Comparison (Long Term)</title>
-  <style>
-    .compressed {
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      margin: 5px;
-      padding: 5px;
-      background-color: #f2f2f2
-    }
-
-    .periodic-table th,
-    .periodic-table td {
-      text-align: left;
-      padding: 4px;
-      font-family: Arial, sans-serif
-    }
-
-    .periodic-table th {
-      background-color: #f2f2f2;
-      font-size: 12px;
-      font-weight: normal;
-    }
-
-    h1,
-    h2 {
-      font-family: Arial, sans-serif;
-      font-size: 16px
-    }
-
-    .periodic-table {
-      font-size: 12px;
-      margin: 0;
-      border-collapse: collapse;
-    }
-
-    .increased,
-    .decreased {
-      font-size: 12px;
-      text-align: center;
-      padding: 7px;
-      font-family: Arial, sans-serif
-    }
-
-    .periodic-table td.increased {
-      background-color: #a6ffb5;
-    }
-
-    .periodic-table td.decreased {
-      background-color: #ffb5b5;
-    }
-
-    .periodic-table td.static,
-    .periodic-table td.new {
-    }
-
-    .periodic-table td {
-      font-size: 12px
-    }
-
-    .bold {
-      font-weight: bold;
-    }
-
-    .border-r1 {
-      border-right: 1px solid gray;
-    }
-
-    .border-r2 {
-      border-right: 2px solid black;
-    }
-
-    .odd {
-      background-color: #f9f9f9;
-    }
-
-    .even {
-      background-color: #f2f2f2;
-    }
-  </style>
 </head>
 <body>
 <div style="margin: 30px auto; overflow-x: scroll;">
   <h1>Hotel Price Comparison (Long Term)</h1>
-  <p class="compressed">
+  <p style="font-family: Arial, sans-serif;
+      font-size: 12px;
+      margin: 5px;
+      padding: 5px;
+      background-color: #f2f2f2">
     FromDate: [[${model.emailParam?.fromDate}]] |
     ToDate: [[${model.emailParam?.toDate}]] |
     Adult: [[${model.emailParam?.adult}]] |
@@ -95,38 +21,37 @@
     Report Datetime: [[${model.emailParam?.reportDateTime}]]
   </p>
   <h2>Hotels with Price Changes in Long Term</h2>
-  <table class="periodic-table">
+  <table style="font-size: 12px;margin: 0;border-collapse: collapse;">
     <tr>
-      <th class="bold border-r2" style="width: 400px;">Hotel Name</th>
-      <th class="border-r2" style="width: 225px;text-align: center;" colspan="3" th:each="column : ${model.columns}">
-        <span class="bold" th:text="${#temporals.format(column.startDate, 'dd.MM.yy')}"></span>
+      <th style="width: 1000px;border-right: 1.5px solid black;font-weight: bold;">Hotel Name</th>
+      <th style="width: 300px;text-align: center;border-right: 1.5px solid black;" colspan="3" th:each="column : ${model.columns}">
+        <span style="font-weight:bold;" th:text="${#temporals.format(column.startDate, 'dd.MM.yy')}"></span>
       </th>
     </tr>
     <tr>
-      <th class="border-r2"></th>
+      <th style="border-right: 1.5px solid black;"></th>
       <th:block th:each="column : ${model.columns}">
-        <th class="border-r1">Prev</th>
-        <th class="border-r1">Curr</th>
-        <th class="border-r2">Chng</th>
+        <th style="border-right: 1px solid lightgray;">Prev</th>
+        <th style="border-right: 1px solid lightgray;">Curr</th>
+        <th style="border-right: 1.5px solid black;">Chng</th>
       </th:block>
     </tr>
     <!-- Dynamic hotel rows -->
-    <tr th:each="row, itr : ${model.rows}" th:class="${itr.even ? 'even': 'odd'}">
-      <td class="bold border-r2" th:text="${row.hotelName}" style="width: 400px;"></td>
+    <tr th:each="row, itr : ${model.rows}" th:style="${'background-color:' + (itr.even ? '#f2f2f2': '#f9f9f9')}">
+      <td th:text="${row.hotelName}" style="width: 1000px;border-right: 1.5px solid black;font-weight: bold;"></td>
       <th:block th:each="price : ${row.prices}">
         <td th:text="${price?.price?.previousValue != null ? (model.emailParam.currencySymbol + price?.price?.previousValue) : ''}"
-            th:class="${price?.price?.priceStatus?.name().toLowerCase() + ' border-r1'}"
-            style="width: 75px;"></td>
+            style="font-size: 12px;text-align: center;padding: 7px;font-family: Arial, sans-serif;width: 100px;border-right: 1px solid lightgray;"
+            th:styleappend="${'background-color:' + price?.price?.priceStatus?.backgroundColor}"></td>
         <td th:text="${price?.price?.currentValue != null ? (model.emailParam.currencySymbol + price?.price?.currentValue) : ''}"
-            th:class="${price?.price?.priceStatus?.name().toLowerCase() + ' border-r1'}"
-            style="width: 75px;"></td>
+            style="font-size: 12px;text-align: center;padding: 7px;font-family: Arial, sans-serif;width: 100px;border-right: 1px solid lightgray;"
+            th:styleappend="${'background-color:' + price?.price?.priceStatus?.backgroundColor}"></td>
         <td th:text="${price?.price?.changeValue != null ? (price?.price?.changeSymbol + model.emailParam.currencySymbol + price?.price?.changeValue) : ''}"
-            th:class="${price?.price?.priceStatus?.name().toLowerCase() + ' border-r2'}"
-            style="width: 75px;"></td>
+            style="font-size: 12px;text-align: center;padding: 7px;font-family: Arial, sans-serif;width: 100px;border-right: 1.5px solid black;"
+            th:styleappend="${'background-color:' + price?.price?.priceStatus?.backgroundColor}"></td>
       </th:block>
     </tr>
   </table>
-
 </div>
 </body>
 </html>
