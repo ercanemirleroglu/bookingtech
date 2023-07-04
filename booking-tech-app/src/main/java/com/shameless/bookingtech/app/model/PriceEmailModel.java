@@ -1,38 +1,24 @@
 package com.shameless.bookingtech.app.model;
 
-import com.shameless.bookingtech.common.util.StringUtil;
+import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
+import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 public class PriceEmailModel {
-    private final Integer adult;
-    private final Integer child;
-    private final Integer room;
-    private final String location;
-    private final String currency;
-    private final String currencySymbol;
-    private final String fromDate;
-    private final String toDate;
-    private final String reportDateTime;
+    private final EmailParamModel emailParam;
     private PriceReportModel increasedTable;
     private PriceReportModel decreasedTable;
     private PriceReportModel newTable;
 
-    public PriceEmailModel(List<PriceReportModel> priceReportModelList, SearchCriteriaExtDto searchResultExtDto) {
-        this.adult = searchResultExtDto.getAdult();
-        this.child = searchResultExtDto.getChild();
-        this.room = searchResultExtDto.getRoom();
-        this.location = searchResultExtDto.getLocation();
-        this.currency = searchResultExtDto.getCurrency();
-        this.currencySymbol = StringUtil.getCurrencySymbol(searchResultExtDto.getCurrency());
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        this.fromDate = searchResultExtDto.getDateRange().getStartDate().format(dateTimeFormatter);
-        this.toDate = searchResultExtDto.getDateRange().getEndDate().format(dateTimeFormatter);
+    public PriceEmailModel(List<PriceReportModel> priceReportModelList, SearchResultExtDto searchResultExtDto) {
+        SearchCriteriaExtDto searchCriteria = searchResultExtDto.getSearchCriteria();
+        DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().get(0).getDateRange();
+        this.emailParam = new EmailParamModel(searchCriteria, dateRange);
         if (!priceReportModelList.isEmpty()) {
             this.increasedTable = priceReportModelList.stream().filter(prm -> PriceStatus.INCREASED.equals(prm.getPriceStatus()))
                     .findFirst().orElse(null);
@@ -41,7 +27,5 @@ public class PriceEmailModel {
             this.newTable = priceReportModelList.stream().filter(prm -> PriceStatus.NEW.equals(prm.getPriceStatus()))
                     .findFirst().orElse(null);
         }
-        dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss");
-        this.reportDateTime = LocalDateTime.now().format(dateTimeFormatter);
     }
 }

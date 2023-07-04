@@ -101,7 +101,16 @@
 <body>
 <div style="max-width: 816px; margin: 30px auto;">
   <h1>Hotel Price Comparison</h1>
-  <p class="compressed">FromDate: [[${model.fromDate}]] | ToDate: [[${model.toDate}]] | Adult: [[${model.adult}]] | Child: [[${model.child}]] | Room: [[${model.room}]] | Location: [[${model.location}]] | Currency: [[${model.currency}]] | Report Datetime: [[${model.reportDateTime}]]</p>
+  <p class="compressed">
+    FromDate: [[${model.emailParam?.fromDate}]] |
+    ToDate: [[${model.emailParam?.toDate}]] |
+    Adult: [[${model.emailParam?.adult}]] |
+    Child: [[${model.emailParam?.child}]] |
+    Room: [[${model.emailParam?.room}]] |
+    Location: [[${model.emailParam?.location}]] |
+    Currency: [[${model.emailParam?.currency}]] |
+    Report Datetime: [[${model.emailParam?.reportDateTime}]]
+  </p>
   <h2>Hotels with Price Increase</h2>
   <table th:if="${model.increasedTable != null && !model.increasedTable.hotelPriceChangeList?.isEmpty()}" class="increase-table">
     <tr>
@@ -117,14 +126,14 @@
       <td th:text="${priceModel.hotelName}"></td>
       <td th:text="${priceModel.location}"></td>
       <td th:text="${priceModel.rating}"></td>
-      <td th:text="${model.currencySymbol + priceModel.previousValue}"></td>
-      <td th:text="${model.currencySymbol + priceModel.currentValue}"></td>
-      <td th:text="${model.increasedTable.changeSymbol + ' ' + model.currencySymbol + priceModel.changeValue}"></td>
+      <td th:text="${model.emailParam.currencySymbol + priceModel.previousValue}"></td>
+      <td th:text="${model.emailParam.currencySymbol + priceModel.currentValue}"></td>
+      <td th:text="${model.increasedTable.changeSymbol + ' ' + model.emailParam.currencySymbol + priceModel.changeValue}"></td>
       <td th:text="${model.increasedTable.changeSymbol + ' ' + priceModel.changePercent + '%'}"></td>
     </tr>
     <tr>
       <td colspan="5" class="total-increase">Average Price Increase</td>
-      <td th:text="${model.increasedTable.changeSymbol + ' ' + model.currencySymbol + model.increasedTable.averageChangeValue}"></td>
+      <td th:text="${model.increasedTable.changeSymbol + ' ' + model.emailParam.currencySymbol + model.increasedTable.averageChangeValue}"></td>
       <td th:text="${model.increasedTable.changeSymbol + ' ' + model.increasedTable.averageChangePercent + '%'}"></td>
     </tr>
   </table>
@@ -144,14 +153,14 @@
       <td th:text="${priceModel.hotelName}"></td>
       <td th:text="${priceModel.location}"></td>
       <td th:text="${priceModel.rating}"></td>
-      <td th:text="${model.currencySymbol + priceModel.previousValue}"></td>
-      <td th:text="${model.currencySymbol + priceModel.currentValue}"></td>
-      <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.currencySymbol + priceModel.changeValue}"></td>
+      <td th:text="${model.emailParam.currencySymbol + priceModel.previousValue}"></td>
+      <td th:text="${model.emailParam.currencySymbol + priceModel.currentValue}"></td>
+      <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.emailParam.currencySymbol + priceModel.changeValue}"></td>
       <td th:text="${model.decreasedTable.changeSymbol + ' ' + priceModel.changePercent + '%'}"></td>
     </tr>
     <tr>
       <td colspan="5" class="total-decrease">Average Price Decrease</td>
-      <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.currencySymbol + model.decreasedTable.averageChangeValue}"></td>
+      <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.emailParam.currencySymbol + model.decreasedTable.averageChangeValue}"></td>
       <td th:text="${model.decreasedTable.changeSymbol + ' ' + model.decreasedTable.averageChangePercent + '%'}"></td>
     </tr>
   </table>
@@ -169,7 +178,7 @@
       <td th:text="${priceModel.hotelName}"></td>
       <td th:text="${priceModel.location}"></td>
       <td th:text="${priceModel.rating}"></td>
-      <td th:text="${priceModel.currentValue}"></td>
+      <td th:text="${model.emailParam.currencySymbol + priceModel.currentValue}"></td>
     </tr>
   </table>
   <h3 th:if="${model.newTable == null || model.newTable.hotelPriceChangeList?.isEmpty()}">There is no new hotel in this session!</h3>

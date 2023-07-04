@@ -1,5 +1,7 @@
 server:
   port: 9090
+  servlet:
+    context-path: /booking
 spring:
   datasource:
     url: "jdbc:postgresql://localhost:5432/booking"
@@ -22,10 +24,10 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   mail:
-    host: "smtp.gmail.com"
+    host: smtp.gmail.com
     port: 587
-    username: "ercanemirleroglu@gmail.com"
-    password: "pjoylhcgmraluqnp"
+    username: sbookingtech.info@gmail.com
+    password: emuydbkydncdzund
     properties:
       mail:
         smtp:
@@ -35,6 +37,9 @@ spring:
           writetimeout: 60000
           starttls:
             enable: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
 
 application:
   drivers:

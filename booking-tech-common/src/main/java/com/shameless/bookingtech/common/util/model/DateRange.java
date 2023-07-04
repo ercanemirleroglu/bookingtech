@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.EqualsAndHashCode;
 
 import java.time.temporal.Temporal;
 
@@ -11,8 +12,8 @@ import java.time.temporal.Temporal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class DateRange<T extends Temporal> {
     private T startDate;
     private T endDate;
-
 }

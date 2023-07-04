@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Hotel Price Comparison (Long Term)</title>
+</head>
+<body>
+<div style="margin: 30px auto; overflow-x: scroll;">
+  <h1>Hotel Price Comparison (Long Term)</h1>
+  <p style="font-family: Arial, sans-serif;
+      font-size: 12px;
+      margin: 5px;
+      padding: 5px;
+      background-color: #f2f2f2">
+    FromDate: [[${model.emailParam?.fromDate}]] |
+    ToDate: [[${model.emailParam?.toDate}]] |
+    Adult: [[${model.emailParam?.adult}]] |
+    Child: [[${model.emailParam?.child}]] |
+    Room: [[${model.emailParam?.room}]] |
+    Location: [[${model.emailParam?.location}]] |
+    Currency: [[${model.emailParam?.currency}]] |
+    Report Datetime: [[${model.emailParam?.reportDateTime}]]
+  </p>
+  <h2>Hotels with Price Changes in Long Term</h2>
+  <table style="font-size: 12px;margin: 0;border-collapse: collapse;">
+    <tr>
+      <th style="width: 1000px;border-right: 1.5px solid black;font-weight: bold;">Hotel Name</th>
+      <th style="width: 300px;text-align: center;border-right: 1.5px solid black;" colspan="3" th:each="column : ${model.columns}">
+        <span style="font-weight:bold;" th:text="${#temporals.format(column.startDate, 'dd.MM.yy')}"></span>
+      </th>
+    </tr>
+    <tr>
+      <th style="border-right: 1.5px solid black;"></th>
+      <th:block th:each="column : ${model.columns}">
+        <th style="border-right: 1px solid lightgray;">Prev</th>
+        <th style="border-right: 1px solid lightgray;">Curr</th>
+        <th style="border-right: 1.5px solid black;">Chng</th>
+      </th:block>
+    </tr>
+    <!-- Dynamic hotel rows -->
+    <tr th:each="row, itr : ${model.rows}" th:style="${'background-color:' + (itr.even ? '#f2f2f2': '#f9f9f9')}">
+      <td th:text="${row.hotelName}" style="width: 1000px;border-right: 1.5px solid black;font-weight: bold;"></td>
+      <th:block th:each="price : ${row.prices}">
+        <td th:text="${price?.price?.previousValue != null ? (model.emailParam.currencySymbol + price?.price?.previousValue) : ''}"
+            style="font-size: 12px;text-align: center;padding: 7px;font-family: Arial, sans-serif;width: 100px;border-right: 1px solid lightgray;"
+            th:styleappend="${'background-color:' + price?.price?.priceStatus?.backgroundColor}"></td>
+        <td th:text="${price?.price?.currentValue != null ? (model.emailParam.currencySymbol + price?.price?.currentValue) : ''}"
+            style="font-size: 12px;text-align: center;padding: 7px;font-family: Arial, sans-serif;width: 100px;border-right: 1px solid lightgray;"
+            th:styleappend="${'background-color:' + price?.price?.priceStatus?.backgroundColor}"></td>
+        <td th:text="${price?.price?.changeValue != null ? (price?.price?.changeSymbol + model.emailParam.currencySymbol + price?.price?.changeValue) : ''}"
+            style="font-size: 12px;text-align: center;padding: 7px;font-family: Arial, sans-serif;width: 100px;border-right: 1.5px solid black;"
+            th:styleappend="${'background-color:' + price?.price?.priceStatus?.backgroundColor}"></td>
+      </th:block>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
