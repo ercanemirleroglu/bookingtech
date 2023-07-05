@@ -2,6 +2,7 @@ package com.shameless.bookingtech.app.service;
 
 import com.shameless.bookingtech.app.model.PriceEmailModel;
 import com.shameless.bookingtech.app.model.periodic.PeriodicMailReport;
+import com.shameless.bookingtech.common.util.Constants;
 import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.common.util.model.Param;
 import com.shameless.bookingtech.domain.dto.*;
@@ -72,20 +73,19 @@ public class ProcessService {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
+        LocalDate today = LocalDate.now();
         List<PriceDto> allForReport = priceService.findAllForReport(1L, StoreTypeDto.HOURLY,
-                new DateRange<>(LocalDate.of(2023, 6, 26),
-                        LocalDate.of(2023, 7, 4)));
+                new DateRange<>(today, today.plusDays(1)));
         SearchCriteriaExtDto searchCriteria = SearchCriteriaExtDto.builder()
-                .adult(2)
-                .location("Norwich, United Kingdom")
-                .child(0)
-                .room(1)
-                .currency("GBP")
-                .dayRange(1)
+                .adult(Integer.parseInt(params.get(Param.SEARCH_ADULT)))
+                .location(params.get(Param.SEARCH_LOCATION))
+                .child(Integer.parseInt(params.get(Param.SEARCH_CHILD)))
+                .room(Integer.parseInt(params.get(Param.SEARCH_ROOM)))
+                .currency(params.get(Param.APP_CURRENCY_UNIT))
+                .dayRange(Integer.parseInt(params.get(Param.SEARCH_DATE_RANGE)))
                 .build();
         PeriodicResultExtDto periodicResultExtDto = PeriodicResultExtDto.builder()
-                .dateRange(new DateRange<>(LocalDate.of(2023, 6, 28),
-                        LocalDate.of(2023, 6, 29)))
+                .dateRange(new DateRange<>(today, today.plusDays(1)))
                 .build();
         SearchResultExtDto searchResultExtDto = SearchResultExtDto.builder()
                 .searchCriteria(searchCriteria)
@@ -100,16 +100,16 @@ public class ProcessService {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
+        LocalDate today = LocalDate.now();
         List<PriceDto> allForReport = priceService.findAllForReport(1L, StoreTypeDto.PERIODIC,
-                new DateRange<>(LocalDate.of(2023, 6, 26),
-                        LocalDate.of(2023, 7, 4)));
+                new DateRange<>(today, today.plusDays(Constants.CONCURRENT_COUNT * Constants.CONCURRENT_SIZE)));
         SearchCriteriaExtDto searchCriteria = SearchCriteriaExtDto.builder()
-                .adult(2)
-                .location("Norwich, United Kingdom")
-                .child(0)
-                .room(1)
-                .currency("GBP")
-                .dayRange(1)
+                .adult(Integer.parseInt(params.get(Param.SEARCH_ADULT)))
+                .location(params.get(Param.SEARCH_LOCATION))
+                .child(Integer.parseInt(params.get(Param.SEARCH_CHILD)))
+                .room(Integer.parseInt(params.get(Param.SEARCH_ROOM)))
+                .currency(params.get(Param.APP_CURRENCY_UNIT))
+                .dayRange(Integer.parseInt(params.get(Param.SEARCH_DATE_RANGE)))
                 .build();
         PeriodicMailReport periodicReport = reportService.getPeriodicReport(allForReport, searchCriteria);
         emailService.sendMail(periodicReport, params.get(Param.EMAIL_TO), "periodicEmailTemplate");
