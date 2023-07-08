@@ -12,7 +12,6 @@ import java.util.TimeZone;
 @SpringBootApplication(scanBasePackages = "com.shameless.bookingtech")
 @EntityScan(basePackages= {"com.shameless.bookingtech.domain.entity"})
 @EnableJpaRepositories("com.shameless.bookingtech.domain.repository")
-@EnableScheduling
 @EnableJpaAuditing
 public class BookingtechApplication {
 

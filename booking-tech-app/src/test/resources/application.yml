@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;"
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: false
+  liquibase:
+    enabled: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sbookingtech.info@gmail.com
+    password: emuydbkydncdzund
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 60000
+          timeout: 60000
+          writetimeout: 60000
+          starttls:
+            enable: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
