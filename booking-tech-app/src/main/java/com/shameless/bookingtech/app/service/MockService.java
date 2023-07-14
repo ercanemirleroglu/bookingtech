@@ -1,26 +1,30 @@
 package com.shameless.bookingtech.app.service;
 
-import com.shameless.bookingtech.common.util.model.AppMoney;
+import com.shameless.bookingtech.common.util.JsonUtil;
 import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.integration.automation.model.HotelPriceExtDto;
 import com.shameless.bookingtech.integration.automation.model.PeriodicResultExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
-import org.javamoney.moneta.Money;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import javax.money.Monetary;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Component
 public class MockService {
 
     private static final String CURRENCY = "GBP";
-    private static final String LOCATION = "Norwich";
 
-    public SearchResultExtDto createSearchResultExtDtoMock() {
+    public SearchResultExtDto createSearchResultExtDtoMock() throws IOException {
         SearchCriteriaExtDto searchCriteriaExtDto = SearchCriteriaExtDto.builder()
                 .dayRange(1)
                 .currency(CURRENCY)
@@ -32,41 +36,27 @@ public class MockService {
 
         LocalDate today = LocalDate.now();
 
-        Money money = Money.of(64, Monetary.getCurrency(CURRENCY));
-        AppMoney price = new AppMoney(money);
-        HotelPriceExtDto hotelPriceExtDto1 = HotelPriceExtDto.builder()
-                .hotelName("Hotel California")
-                .location(LOCATION)
-                .rating(6.5)
-                .price(price)
-                .build();
-
-        money = Money.of(55, Monetary.getCurrency(CURRENCY));
-        price = new AppMoney(money);
-        HotelPriceExtDto hotelPriceExtDto2 = HotelPriceExtDto.builder()
-                .hotelName("Kardeshler Hotel")
-                .location(LOCATION)
-                .rating(8.2)
-                .price(price)
-                .build();
-
-        money = Money.of(92, Monetary.getCurrency(CURRENCY));
-        price = new AppMoney(money);
-        HotelPriceExtDto hotelPriceExtDto3 = HotelPriceExtDto.builder()
-                .hotelName("Yeni Hotel")
-                .location(LOCATION)
-                .rating(8.9)
-                .price(price)
-                .build();
+        Resource resource = new ClassPathResource("hotels.json");
+        String filePath = resource.getFile().getAbsolutePath();
+        HotelPriceExtDtoScope hotelPriceExtDtoScope = (HotelPriceExtDtoScope) JsonUtil.getInstance()
+                .readFile(HotelPriceExtDtoScope.class, filePath, "hotels");
 
         PeriodicResultExtDto periodicResultExtDto = PeriodicResultExtDto.builder()
                 .dateRange(new DateRange<>(today, today.plusDays(1)))
-                .hotelPriceList(Arrays.asList(hotelPriceExtDto1, hotelPriceExtDto3))
+                .hotelPriceList(hotelPriceExtDtoScope.getHotelPrices())
                 .build();
 
         return SearchResultExtDto.builder()
                 .searchCriteria(searchCriteriaExtDto)
                 .periodicResultList(Collections.singletonList(periodicResultExtDto))
                 .build();
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class HotelPriceExtDtoScope {
+        private List<HotelPriceExtDto> hotelPrices;
     }
 }

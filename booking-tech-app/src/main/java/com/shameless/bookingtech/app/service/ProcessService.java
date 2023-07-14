@@ -16,6 +16,7 @@ import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtD
 import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
 import com.shameless.bookingtech.integration.automation.service.BookingProviderImpl;
 import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class ProcessService {
 
     private final BookingProviderImpl bookingProvider;
@@ -49,9 +51,7 @@ public class ProcessService {
     @Scheduled(cron = "0 0 10-15,17-22 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void hourlyJob() throws MessagingException, InterruptedException, IOException {
-        Map<Param, String> params = new HashMap<>();
-        List<ParamDto> allParams = paramService.getAllParams();
-        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
+        Map<Param, String> params = getAllParamsMap();
         SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false);
         hotelApplicationService.save(toDto(searchResultExtDto));
         DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().get(0).getDateRange();
@@ -62,9 +62,7 @@ public class ProcessService {
     @Scheduled(cron = "0 0 9,16 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void periodicJob() throws MessagingException, InterruptedException, IOException {
-        Map<Param, String> params = new HashMap<>();
-        List<ParamDto> allParams = paramService.getAllParams();
-        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
+        Map<Param, String> params = getAllParamsMap();
         SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true);
         DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().stream()
                 .map(PeriodicResultExtDto::getDateRange)
@@ -75,13 +73,15 @@ public class ProcessService {
         emailService.sendMail(periodicReport, "periodicEmailTemplate");
     }
 
-    //@Scheduled(cron = "0 0 23,0-8 * * ?")
+    @Scheduled(cron = "0 0 23,0-8 * * ?")
+    //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void dontSleepJob(){
-
+        Map<Param, String> params = getAllParamsMap();
+        log.info(params.toString());
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)
-    public void testHourly() throws MessagingException {
+    public void testHourly() throws MessagingException, IOException {
         SearchResultExtDto searchResultExtDto = mockService.createSearchResultExtDtoMock();
         hotelApplicationService.save(toDto(searchResultExtDto));
         LocalDate today = LocalDate.now();
@@ -96,6 +96,13 @@ public class ProcessService {
                 today.plusDays(Constants.CONCURRENT_COUNT * Constants.CONCURRENT_SIZE));
         PeriodicMailReport periodicReport = reportService.getPeriodicReport(dateRange);
         emailService.sendMail(periodicReport, "periodicEmailTemplate");
+    }
+
+    private Map<Param, String> getAllParamsMap(){
+        Map<Param, String> params = new HashMap<>();
+        List<ParamDto> allParams = paramService.getAllParams();
+        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
+        return params;
     }
 
     private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {
