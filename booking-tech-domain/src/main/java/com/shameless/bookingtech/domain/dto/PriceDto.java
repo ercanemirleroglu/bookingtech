@@ -24,4 +24,6 @@ public class PriceDto {
     private StoreTypeDto storeType;
     private HotelDto hotel;
     private SearchCriteriaDto searchCriteria;
+    private Long version;
+    private LocalDateTime processDateTime;
 }

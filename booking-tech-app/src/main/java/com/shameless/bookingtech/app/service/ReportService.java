@@ -7,8 +7,10 @@ import com.shameless.bookingtech.app.model.periodic.PriceByDateRangeModel;
 import com.shameless.bookingtech.app.model.periodic.PricesByDateRange;
 import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.domain.dto.PriceDto;
-import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
-import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
+import com.shameless.bookingtech.domain.dto.SearchCriteriaDto;
+import com.shameless.bookingtech.domain.dto.StoreTypeDto;
+import com.shameless.bookingtech.domain.service.PriceService;
+import com.shameless.bookingtech.domain.service.SearchCriteriaService;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Component;
 
@@ -22,20 +24,35 @@ import java.util.stream.Collectors;
 @Component
 public class ReportService {
 
-    public PriceEmailModel getHourlyReport(List<PriceDto> priceDtoList, SearchResultExtDto searchResultExtDto) {
+    private final SearchCriteriaService searchCriteriaService;
+    private final PriceService priceService;
+
+    public ReportService(SearchCriteriaService searchCriteriaService, PriceService priceService) {
+        this.searchCriteriaService = searchCriteriaService;
+        this.priceService = priceService;
+    }
+
+    public PriceEmailModel getHourlyReport(DateRange<LocalDate> dateRange) {
+        SearchCriteriaDto criteriaByParams = searchCriteriaService.getCriteriaByParams();
+        List<PriceDto> priceDtoList = priceService.findAllByLastProcessDateTime(criteriaByParams.getId(),
+                StoreTypeDto.HOURLY, dateRange);
         Map<PriceStatus, List<PriceModel>> groupsByPriceStatus = priceDtoList.stream().map(PriceModel::new)
                 .filter(priceModel -> !PriceStatus.STATIC.equals(priceModel.getPriceStatus()))
                 .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
-        List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream().map(PriceReportModel::new).collect(Collectors.toList());
-        return new PriceEmailModel(priceReportModelList, searchResultExtDto);
+        List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream()
+                .map(PriceReportModel::new).collect(Collectors.toList());
+        return new PriceEmailModel(priceReportModelList, criteriaByParams, dateRange);
     }
 
-    public PeriodicMailReport getPeriodicReport(List<PriceDto> priceDtoList, SearchCriteriaExtDto searchCriteria) {
+    public PeriodicMailReport getPeriodicReport(DateRange<LocalDate> dateRange) {
+        SearchCriteriaDto criteriaByParams = searchCriteriaService.getCriteriaByParams();
+        List<PriceDto> priceDtoList = priceService.findAllForReport(criteriaByParams.getId(),
+                StoreTypeDto.PERIODIC, dateRange);
         List<PricesByDateRange> pricesByDateRangeList = getPricesByDateRange(priceDtoList);
         List<String> hotelNames = getHotelNames(pricesByDateRangeList);
         List<DateRange<LocalDate>> dateRanges = getDateRanges(pricesByDateRangeList);
         PeriodicMailReport periodicMailReport = new PeriodicMailReport();
-        periodicMailReport.setEmailParam(new EmailParamModel(searchCriteria,
+        periodicMailReport.setEmailParam(new EmailParamModel(criteriaByParams,
                 new DateRange<>(dateRanges.get(0).getStartDate(),
                         dateRanges.get(dateRanges.size() - 1).getEndDate())));
         periodicMailReport.setColumns(dateRanges);
@@ -44,9 +61,9 @@ public class ReportService {
             HotelPricePeriodicModel hotelPricePeriodicModel = new HotelPricePeriodicModel();
             hotelPricePeriodicModel.setHotelName(hotel);
             hotelPricePeriodicModel.setPrices(Lists.newArrayList());
-            dateRanges.forEach(dateRange -> {
+            dateRanges.forEach(dr -> {
                 PriceByDateRangeModel priceByDateRangeModel = new PriceByDateRangeModel();
-                Optional<PriceModel> first = pricesByDateRangeList.stream().filter(p -> dateRange.equals(p.getDateRange()))
+                Optional<PriceModel> first = pricesByDateRangeList.stream().filter(p -> dr.equals(p.getDateRange()))
                         .flatMap(p -> p.getPrices().stream())
                         .filter(p -> hotel.equals(p.getHotelName()))
                         .findFirst();
@@ -56,7 +73,7 @@ public class ReportService {
                 } else {
                     priceModel = first.get();
                 }
-                priceByDateRangeModel.setDateRange(dateRange);
+                priceByDateRangeModel.setDateRange(dr);
                 priceByDateRangeModel.setPrice(priceModel);
                 hotelPricePeriodicModel.getPrices().add(priceByDateRangeModel);
             });

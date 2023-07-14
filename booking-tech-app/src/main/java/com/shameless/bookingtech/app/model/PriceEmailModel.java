@@ -1,8 +1,7 @@
 package com.shameless.bookingtech.app.model;
 
 import com.shameless.bookingtech.common.util.model.DateRange;
-import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
-import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
+import com.shameless.bookingtech.domain.dto.SearchCriteriaDto;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -15,9 +14,7 @@ public class PriceEmailModel {
     private PriceReportModel decreasedTable;
     private PriceReportModel newTable;
 
-    public PriceEmailModel(List<PriceReportModel> priceReportModelList, SearchResultExtDto searchResultExtDto) {
-        SearchCriteriaExtDto searchCriteria = searchResultExtDto.getSearchCriteria();
-        DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().get(0).getDateRange();
+    public PriceEmailModel(List<PriceReportModel> priceReportModelList, SearchCriteriaDto searchCriteria, DateRange<LocalDate> dateRange) {
         this.emailParam = new EmailParamModel(searchCriteria, dateRange);
         if (!priceReportModelList.isEmpty()) {
             this.increasedTable = priceReportModelList.stream().filter(prm -> PriceStatus.INCREASED.equals(prm.getPriceStatus()))

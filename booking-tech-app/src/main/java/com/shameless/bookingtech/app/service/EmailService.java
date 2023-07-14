@@ -1,5 +1,7 @@
 package com.shameless.bookingtech.app.service;
 
+import com.shameless.bookingtech.domain.dto.ParamDto;
+import com.shameless.bookingtech.domain.service.ParamService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +19,16 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
+    private final ParamService paramService;
 
-    public EmailService(JavaMailSender javaMailSender, TemplateEngine templateEngine) {
+    public EmailService(JavaMailSender javaMailSender, TemplateEngine templateEngine,
+                        ParamService paramService) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
+        this.paramService = paramService;
     }
 
-    public void sendMail(Object model, String to, String emailTemplate) throws MessagingException {
+    public void sendMail(Object model, String emailTemplate) throws MessagingException {
         Context context = new Context();
         context.setVariable("model", model);
 
@@ -31,8 +36,8 @@ public class EmailService {
 
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-        String[] toList = to.split(";");
+        ParamDto emailToParam = paramService.getEmailToParam();
+        String[] toList = emailToParam.getValue().split(";");
         helper.setTo(toList);
         helper.setSubject("Hotel Price Comparison");
         helper.setText(htmlContent, true);

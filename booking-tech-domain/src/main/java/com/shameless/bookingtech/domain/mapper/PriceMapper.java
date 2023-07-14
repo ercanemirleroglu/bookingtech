@@ -18,6 +18,8 @@ public class PriceMapper {
                 .storeType(entity.getStoreType().toDto())
                 .hotel(HotelMapper.INSTANCE.toDto(entity.getHotel()))
                 .searchCriteria(SearchCriteriaMapper.INSTANCE.toDto(entity.getSearchCriteria()))
+                .version(entity.getVersion())
+                .processDateTime(entity.getProcessDateTime())
                 .build();
     }
 }

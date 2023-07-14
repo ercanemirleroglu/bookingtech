@@ -32,6 +32,7 @@ public class HotelApplicationService {
                 .paramRoom(bookingResultDto.getSearchCriteria().getRoom())
                 .paramLocation(bookingResultDto.getSearchCriteria().getLocation())
                 .paramCurrency(bookingResultDto.getSearchCriteria().getCurrency())
+                .dayRange(bookingResultDto.getSearchCriteria().getDayRange())
                 .build();
 
         SearchCriteriaDto byParams = searchCriteriaService.findByParams(searchCriteriaDto);

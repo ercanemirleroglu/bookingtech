@@ -29,4 +29,10 @@
             <column name="day_range" type="INTEGER" defaultValueNumeric="1" />
         </addColumn>
     </changeSet>
+    <changeSet id="20230714224400-1" author="ercan">
+        <addColumn tableName="price">
+            <column name="version" type="BIGINT" defaultValueNumeric="0" />
+            <column name="process_date_time" type="TIMESTAMP" />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

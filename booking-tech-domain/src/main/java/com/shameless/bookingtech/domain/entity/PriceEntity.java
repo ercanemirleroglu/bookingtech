@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +24,8 @@ public class PriceEntity extends AbstractEntity<Long> {
     private BigDecimal previousValue;
     private LocalDate fromDate;
     private LocalDate toDate;
+    private LocalDateTime processDateTime;
+
     @Enumerated(EnumType.STRING)
     private StoreType storeType;
 
@@ -34,10 +37,14 @@ public class PriceEntity extends AbstractEntity<Long> {
     @JoinColumn(name = "search_criteria_id")
     private SearchCriteriaEntity searchCriteria;
 
+    @Version
+    private Long version;
+
     public void update(PriceDto priceDto) {
         this.previousValue = priceDto.getPreviousPrice();
         this.currentValue = priceDto.getCurrentPrice();
         this.fromDate = priceDto.getFromDate();
         this.toDate = priceDto.getToDate();
+        this.processDateTime = priceDto.getProcessDateTime();
     }
 }

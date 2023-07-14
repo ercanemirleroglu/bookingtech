@@ -17,6 +17,7 @@ import com.shameless.bookingtech.domain.repository.SearchCriteriaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,15 @@ public class PriceService {
                 .collect(Collectors.toList());
     }
 
+    public List<PriceDto> findAllByLastProcessDateTime(Long scId, StoreTypeDto storeType,
+                                                       DateRange<LocalDate> dateRange) {
+        LocalDateTime lastProcessDateTime = priceRepository.findLastProcessDateTime();
+        return priceRepository.findAllByProcessDateTime(scId, StoreType.valueOf(storeType.name()),
+                dateRange.getStartDate(), dateRange.getEndDate(), lastProcessDateTime)
+                .stream().map(PriceMapper.INSTANCE::toDto)
+                .collect(Collectors.toList());
+    }
+
     private PriceDto addPrice(PriceDto priceDto, HotelEntity hotel, SearchCriteriaEntity searchCriteria) {
         PriceEntity from = priceFactory.from(priceDto, hotel, searchCriteria);
         PriceEntity save = priceRepository.save(from);
@@ -55,6 +65,7 @@ public class PriceService {
     }
 
     public List<PriceDto> setAllPrices(List<PeriodicHotelPriceModel> periodicHotelPriceModelList, Long searchCriteriaId){
+        LocalDateTime processDateTime = LocalDateTime.now();
         SearchCriteriaEntity searchCriteriaEntity = searchCriteriaRepository.findById(searchCriteriaId)
                 .orElseThrow(() -> new IllegalArgumentException("Not found search criteria! Id: "
                         + searchCriteriaId));
@@ -75,6 +86,7 @@ public class PriceService {
                         .fromDate(dateRange.getStartDate())
                         .toDate(dateRange.getEndDate())
                         .storeType(finalStoreType.toDto())
+                        .processDateTime(processDateTime)
                         .build();
                 if (priceOpt.isPresent()) {
                     PriceEntity oldPrice = priceOpt.get();

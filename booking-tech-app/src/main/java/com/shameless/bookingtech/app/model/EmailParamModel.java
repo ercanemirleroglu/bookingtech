@@ -2,7 +2,7 @@ package com.shameless.bookingtech.app.model;
 
 import com.shameless.bookingtech.common.util.StringUtil;
 import com.shameless.bookingtech.common.util.model.DateRange;
-import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
+import com.shameless.bookingtech.domain.dto.SearchCriteriaDto;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -21,13 +21,13 @@ public class EmailParamModel {
     private final String toDate;
     private final String reportDateTime;
 
-    public EmailParamModel(SearchCriteriaExtDto searchCriteria, DateRange<LocalDate> dateRange){
-        this.adult = searchCriteria.getAdult();
-        this.child = searchCriteria.getChild();
-        this.room = searchCriteria.getRoom();
-        this.location = searchCriteria.getLocation();
-        this.currency = searchCriteria.getCurrency();
-        this.currencySymbol = StringUtil.getCurrencySymbol(searchCriteria.getCurrency());
+    public EmailParamModel(SearchCriteriaDto searchCriteria, DateRange<LocalDate> dateRange){
+        this.adult = searchCriteria.getParamAdult();
+        this.child = searchCriteria.getParamChild();
+        this.room = searchCriteria.getParamChild();
+        this.location = searchCriteria.getParamLocation();
+        this.currency = searchCriteria.getParamCurrency();
+        this.currencySymbol = StringUtil.getCurrencySymbol(searchCriteria.getParamCurrency());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         this.fromDate = dateRange.getStartDate().format(dateTimeFormatter);
         this.toDate = dateRange.getEndDate().format(dateTimeFormatter);

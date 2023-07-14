@@ -10,7 +10,6 @@ import com.shameless.bookingtech.domain.model.HotelPriceModel;
 import com.shameless.bookingtech.domain.model.SearchCriteriaModel;
 import com.shameless.bookingtech.domain.service.HotelApplicationService;
 import com.shameless.bookingtech.domain.service.ParamService;
-import com.shameless.bookingtech.domain.service.PriceService;
 import com.shameless.bookingtech.integration.automation.model.HotelPriceExtDto;
 import com.shameless.bookingtech.integration.automation.model.PeriodicResultExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
@@ -33,86 +32,70 @@ public class ProcessService {
     private final ParamService paramService;
     private final EmailService emailService;
     private final ReportService reportService;
-    private final PriceService priceService;
+    private final MockService mockService;
 
-    public ProcessService(BookingProviderImpl bookingProvider, HotelApplicationService hotelApplicationService, ParamService paramService, EmailService emailService, ReportService reportService, PriceService priceService) {
+    public ProcessService(BookingProviderImpl bookingProvider,
+                          HotelApplicationService hotelApplicationService,
+                          ParamService paramService, EmailService emailService,
+                          ReportService reportService, MockService mockService) {
         this.bookingProvider = bookingProvider;
         this.hotelApplicationService = hotelApplicationService;
         this.paramService = paramService;
         this.emailService = emailService;
         this.reportService = reportService;
-        this.priceService = priceService;
+        this.mockService = mockService;
     }
 
-    @Scheduled(cron = "0 0 10-21 * * ?")
+    @Scheduled(cron = "0 0 10-15,17-22 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void hourlyJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
         SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false);
-        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
-        PriceEmailModel hourlyReport = reportService.getHourlyReport(priceDtoList, searchResultExtDto);
-        emailService.sendMail(hourlyReport, params.get(Param.EMAIL_TO), "emailTemplate");
+        hotelApplicationService.save(toDto(searchResultExtDto));
+        DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().get(0).getDateRange();
+        PriceEmailModel hourlyReport = reportService.getHourlyReport(dateRange);
+        emailService.sendMail(hourlyReport, "emailTemplate");
     }
 
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "0 0 9,16 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void periodicJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = new HashMap<>();
         List<ParamDto> allParams = paramService.getAllParams();
         allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
         SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true);
-        List<PriceDto> priceDtoList = hotelApplicationService.save(toDto(searchResultExtDto));
-        PeriodicMailReport periodicReport = reportService.getPeriodicReport(priceDtoList, searchResultExtDto.getSearchCriteria());
-        emailService.sendMail(periodicReport, params.get(Param.EMAIL_TO), "periodicEmailTemplate");
+        DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().stream()
+                .map(PeriodicResultExtDto::getDateRange)
+                .min(Comparator.comparing(DateRange::getStartDate))
+                .orElseThrow(() -> new IllegalArgumentException("Somethings went wrong!"));
+        hotelApplicationService.save(toDto(searchResultExtDto));
+        PeriodicMailReport periodicReport = reportService.getPeriodicReport(dateRange);
+        emailService.sendMail(periodicReport, "periodicEmailTemplate");
+    }
+
+    //@Scheduled(cron = "0 0 23,0-8 * * ?")
+    public void dontSleepJob(){
+
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)
-    public void testHourly() throws IOException, MessagingException, InterruptedException {
-        Map<Param, String> params = new HashMap<>();
-        List<ParamDto> allParams = paramService.getAllParams();
-        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
+    public void testHourly() throws MessagingException {
+        SearchResultExtDto searchResultExtDto = mockService.createSearchResultExtDtoMock();
+        hotelApplicationService.save(toDto(searchResultExtDto));
         LocalDate today = LocalDate.now();
-        List<PriceDto> allForReport = priceService.findAllForReport(1L, StoreTypeDto.HOURLY,
-                new DateRange<>(today, today.plusDays(1)));
-        SearchCriteriaExtDto searchCriteria = SearchCriteriaExtDto.builder()
-                .adult(Integer.parseInt(params.get(Param.SEARCH_ADULT)))
-                .location(params.get(Param.SEARCH_LOCATION))
-                .child(Integer.parseInt(params.get(Param.SEARCH_CHILD)))
-                .room(Integer.parseInt(params.get(Param.SEARCH_ROOM)))
-                .currency(params.get(Param.APP_CURRENCY_UNIT))
-                .dayRange(Integer.parseInt(params.get(Param.SEARCH_DATE_RANGE)))
-                .build();
-        PeriodicResultExtDto periodicResultExtDto = PeriodicResultExtDto.builder()
-                .dateRange(new DateRange<>(today, today.plusDays(1)))
-                .build();
-        SearchResultExtDto searchResultExtDto = SearchResultExtDto.builder()
-                .searchCriteria(searchCriteria)
-                .periodicResultList(List.of(periodicResultExtDto))
-                .build();
-        PriceEmailModel hourlyReport = reportService.getHourlyReport(allForReport, searchResultExtDto);
-        emailService.sendMail(hourlyReport, params.get(Param.EMAIL_TO), "emailTemplate");
+        PriceEmailModel hourlyReport = reportService.getHourlyReport(new DateRange<>(today, today.plusDays(1)));
+        emailService.sendMail(hourlyReport, "emailTemplate");
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void testPeriodic() throws IOException, MessagingException, InterruptedException {
-        Map<Param, String> params = new HashMap<>();
-        List<ParamDto> allParams = paramService.getAllParams();
-        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
         LocalDate today = LocalDate.now();
-        List<PriceDto> allForReport = priceService.findAllForReport(1L, StoreTypeDto.PERIODIC,
-                new DateRange<>(today, today.plusDays(Constants.CONCURRENT_COUNT * Constants.CONCURRENT_SIZE)));
-        SearchCriteriaExtDto searchCriteria = SearchCriteriaExtDto.builder()
-                .adult(Integer.parseInt(params.get(Param.SEARCH_ADULT)))
-                .location(params.get(Param.SEARCH_LOCATION))
-                .child(Integer.parseInt(params.get(Param.SEARCH_CHILD)))
-                .room(Integer.parseInt(params.get(Param.SEARCH_ROOM)))
-                .currency(params.get(Param.APP_CURRENCY_UNIT))
-                .dayRange(Integer.parseInt(params.get(Param.SEARCH_DATE_RANGE)))
-                .build();
-        PeriodicMailReport periodicReport = reportService.getPeriodicReport(allForReport, searchCriteria);
-        emailService.sendMail(periodicReport, params.get(Param.EMAIL_TO), "periodicEmailTemplate");
+        DateRange<LocalDate> dateRange = new DateRange<>(today,
+                today.plusDays(Constants.CONCURRENT_COUNT * Constants.CONCURRENT_SIZE));
+        PeriodicMailReport periodicReport = reportService.getPeriodicReport(dateRange);
+        emailService.sendMail(periodicReport, "periodicEmailTemplate");
     }
 
     private BookingResultDto toDto(SearchResultExtDto searchResultExtDto) {

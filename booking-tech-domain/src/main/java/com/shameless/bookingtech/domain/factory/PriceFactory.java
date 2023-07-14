@@ -21,6 +21,7 @@ public class PriceFactory {
                 .toDate(dto.getToDate())
                 .storeType(StoreType.valueOf(dto.getStoreType().name()))
                 .searchCriteria(searchCriteria)
+                .processDateTime(dto.getProcessDateTime())
                 .build();
     }
 }
