@@ -21,7 +21,8 @@ public class EmailParamModel {
     private final String toDate;
     private final String reportDateTime;
 
-    public EmailParamModel(SearchCriteriaDto searchCriteria, DateRange<LocalDate> dateRange){
+    public EmailParamModel(SearchCriteriaDto searchCriteria, DateRange<LocalDate> dateRange,
+                           LocalDateTime processDateTime){
         this.adult = searchCriteria.getParamAdult();
         this.child = searchCriteria.getParamChild();
         this.room = searchCriteria.getParamChild();
@@ -32,6 +33,6 @@ public class EmailParamModel {
         this.fromDate = dateRange.getStartDate().format(dateTimeFormatter);
         this.toDate = dateRange.getEndDate().format(dateTimeFormatter);
         dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        this.reportDateTime = LocalDateTime.now().format(dateTimeFormatter);
+        this.reportDateTime = processDateTime.format(dateTimeFormatter);
     }
 }

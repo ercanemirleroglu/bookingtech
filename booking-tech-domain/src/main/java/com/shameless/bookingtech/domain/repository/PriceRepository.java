@@ -25,12 +25,12 @@ public interface PriceRepository extends JpaRepository<PriceEntity, Long> {
     List<PriceEntity> findAllForReport(Long scId, StoreType storeType, LocalDate fromDate,
                                        LocalDate toDate);
 
-    @Query("select max(pe.processDateTime) from PriceEntity pe")
-    LocalDateTime findLastProcessDateTime();
+    @Query("select max(pe.processDateTime) from PriceEntity pe " +
+            "where pe.storeType = ?1 ")
+    LocalDateTime findLastProcessDateTime(StoreType storeType);
 
     @Query("select p from PriceEntity p where p.searchCriteria.id = ?1 " +
-            " and p.storeType = ?2 and p.fromDate >= ?3 and p.toDate <= ?4 " +
-            " and p.processDateTime = ?5 ")
-    List<PriceEntity> findAllByProcessDateTime(Long scId, StoreType storeType, LocalDate fromDate,
-                                               LocalDate toDate, LocalDateTime processDateTime);
+            " and p.storeType = ?2 " +
+            " and p.processDateTime = ?3 ")
+    List<PriceEntity> findAllByProcessDateTime(Long scId, StoreType storeType, LocalDateTime processDateTime);
 }

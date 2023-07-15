@@ -42,17 +42,24 @@ public class EmailService {
         helper.setSubject("Hotel Price Comparison");
         helper.setText(htmlContent, true);
         log.info("Sending E-mail...");
-        try{
-            Thread.sleep(5000);
-            javaMailSender.send(message);
-            log.info("E-mail sended.");
-        }catch (MailAuthenticationException mae) {
-            log.warn("Mail Auth Error");
-        }catch (MailException me){
-            log.warn("Mail Error!");
-            me.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        int cnt = 1;
+        boolean sended = false;
+        while (!sended && cnt <= 5) {
+            try {
+                log.info("Try count: {}", cnt);
+                Thread.sleep(5000);
+                javaMailSender.send(message);
+                log.info("E-mail sended.");
+                sended = true;
+            } catch (MailAuthenticationException mae) {
+                log.warn("Mail Auth Error!", mae);
+            } catch (MailException me) {
+                log.warn("Mail Error!", me);
+            } catch (InterruptedException e) {
+                log.warn("Mail Interrupted Error!", e);
+            }
+            cnt++;
         }
+        if (!sended) throw new IllegalArgumentException("A problem occured when sending email!");
     }
 }

@@ -2,8 +2,6 @@ package com.shameless.bookingtech.app.service;
 
 import com.shameless.bookingtech.app.model.PriceEmailModel;
 import com.shameless.bookingtech.app.model.periodic.PeriodicMailReport;
-import com.shameless.bookingtech.common.util.Constants;
-import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.common.util.model.Param;
 import com.shameless.bookingtech.domain.dto.*;
 import com.shameless.bookingtech.domain.model.HotelPriceModel;
@@ -21,7 +19,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,8 +51,7 @@ public class ProcessService {
         Map<Param, String> params = getAllParamsMap();
         SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false);
         hotelApplicationService.save(toDto(searchResultExtDto));
-        DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().get(0).getDateRange();
-        PriceEmailModel hourlyReport = reportService.getHourlyReport(dateRange);
+        PriceEmailModel hourlyReport = reportService.getHourlyReport();
         emailService.sendMail(hourlyReport, "emailTemplate");
     }
 
@@ -64,12 +60,8 @@ public class ProcessService {
     public void periodicJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = getAllParamsMap();
         SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true);
-        DateRange<LocalDate> dateRange = searchResultExtDto.getPeriodicResultList().stream()
-                .map(PeriodicResultExtDto::getDateRange)
-                .min(Comparator.comparing(DateRange::getStartDate))
-                .orElseThrow(() -> new IllegalArgumentException("Somethings went wrong!"));
         hotelApplicationService.save(toDto(searchResultExtDto));
-        PeriodicMailReport periodicReport = reportService.getPeriodicReport(dateRange);
+        PeriodicMailReport periodicReport = reportService.getPeriodicReport();
         emailService.sendMail(periodicReport, "periodicEmailTemplate");
     }
 
@@ -84,17 +76,13 @@ public class ProcessService {
     public void testHourly() throws MessagingException, IOException {
         SearchResultExtDto searchResultExtDto = mockService.createSearchResultExtDtoMock();
         hotelApplicationService.save(toDto(searchResultExtDto));
-        LocalDate today = LocalDate.now();
-        PriceEmailModel hourlyReport = reportService.getHourlyReport(new DateRange<>(today, today.plusDays(1)));
+        PriceEmailModel hourlyReport = reportService.getHourlyReport();
         emailService.sendMail(hourlyReport, "emailTemplate");
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void testPeriodic() throws IOException, MessagingException, InterruptedException {
-        LocalDate today = LocalDate.now();
-        DateRange<LocalDate> dateRange = new DateRange<>(today,
-                today.plusDays(Constants.CONCURRENT_COUNT * Constants.CONCURRENT_SIZE));
-        PeriodicMailReport periodicReport = reportService.getPeriodicReport(dateRange);
+        PeriodicMailReport periodicReport = reportService.getPeriodicReport();
         emailService.sendMail(periodicReport, "periodicEmailTemplate");
     }
 

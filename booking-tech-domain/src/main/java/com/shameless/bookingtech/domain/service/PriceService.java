@@ -42,11 +42,10 @@ public class PriceService {
                 .collect(Collectors.toList());
     }
 
-    public List<PriceDto> findAllByLastProcessDateTime(Long scId, StoreTypeDto storeType,
-                                                       DateRange<LocalDate> dateRange) {
-        LocalDateTime lastProcessDateTime = priceRepository.findLastProcessDateTime();
+    public List<PriceDto> findAllByLastProcessDateTime(Long scId, StoreTypeDto storeType) {
+        LocalDateTime lastProcessDateTime = priceRepository.findLastProcessDateTime(StoreType.valueOf(storeType.name()));
         return priceRepository.findAllByProcessDateTime(scId, StoreType.valueOf(storeType.name()),
-                dateRange.getStartDate(), dateRange.getEndDate(), lastProcessDateTime)
+                 lastProcessDateTime)
                 .stream().map(PriceMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
     }
@@ -112,6 +111,7 @@ public class PriceService {
                             .fromDate(dateRange.getStartDate())
                             .toDate(dateRange.getEndDate())
                             .storeType(finalStoreType.toDto())
+                            .processDateTime(processDateTime)
                             .build();
                     if (priceOpt.isPresent()) {
                         PriceEntity oldPrice = priceOpt.get();

@@ -32,29 +32,39 @@ public class ReportService {
         this.priceService = priceService;
     }
 
-    public PriceEmailModel getHourlyReport(DateRange<LocalDate> dateRange) {
+    public PriceEmailModel getHourlyReport() {
         SearchCriteriaDto criteriaByParams = searchCriteriaService.getCriteriaByParams();
         List<PriceDto> priceDtoList = priceService.findAllByLastProcessDateTime(criteriaByParams.getId(),
-                StoreTypeDto.HOURLY, dateRange);
+                StoreTypeDto.HOURLY);
+        if (priceDtoList.isEmpty())
+            throw new IllegalArgumentException("Price not found!");
+        PriceDto referencePrice = priceDtoList.get(0);
+        DateRange<LocalDate> dateRange = new DateRange<>(referencePrice.getFromDate(),
+                referencePrice.getToDate());
         Map<PriceStatus, List<PriceModel>> groupsByPriceStatus = priceDtoList.stream().map(PriceModel::new)
                 .filter(priceModel -> !PriceStatus.STATIC.equals(priceModel.getPriceStatus()))
                 .collect(Collectors.groupingBy(PriceModel::getPriceStatus));
         List<PriceReportModel> priceReportModelList = groupsByPriceStatus.values().stream()
                 .map(PriceReportModel::new).collect(Collectors.toList());
-        return new PriceEmailModel(priceReportModelList, criteriaByParams, dateRange);
+        return new PriceEmailModel(priceReportModelList, criteriaByParams,
+                dateRange, referencePrice.getProcessDateTime());
     }
 
-    public PeriodicMailReport getPeriodicReport(DateRange<LocalDate> dateRange) {
+    public PeriodicMailReport getPeriodicReport() {
         SearchCriteriaDto criteriaByParams = searchCriteriaService.getCriteriaByParams();
-        List<PriceDto> priceDtoList = priceService.findAllForReport(criteriaByParams.getId(),
-                StoreTypeDto.PERIODIC, dateRange);
+        List<PriceDto> priceDtoList = priceService.findAllByLastProcessDateTime(criteriaByParams.getId(),
+                StoreTypeDto.PERIODIC);
+        if (priceDtoList.isEmpty())
+            throw new IllegalArgumentException("Price not found!");
+        PriceDto referencePrice = priceDtoList.get(0);
         List<PricesByDateRange> pricesByDateRangeList = getPricesByDateRange(priceDtoList);
         List<String> hotelNames = getHotelNames(pricesByDateRangeList);
         List<DateRange<LocalDate>> dateRanges = getDateRanges(pricesByDateRangeList);
         PeriodicMailReport periodicMailReport = new PeriodicMailReport();
         periodicMailReport.setEmailParam(new EmailParamModel(criteriaByParams,
                 new DateRange<>(dateRanges.get(0).getStartDate(),
-                        dateRanges.get(dateRanges.size() - 1).getEndDate())));
+                        dateRanges.get(dateRanges.size() - 1).getEndDate()),
+                referencePrice.getProcessDateTime()));
         periodicMailReport.setColumns(dateRanges);
         periodicMailReport.setRows(Lists.newArrayList());
         hotelNames.forEach(hotel -> {
