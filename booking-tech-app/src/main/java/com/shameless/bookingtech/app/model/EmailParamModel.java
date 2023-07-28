@@ -25,7 +25,7 @@ public class EmailParamModel {
                            LocalDateTime processDateTime){
         this.adult = searchCriteria.getParamAdult();
         this.child = searchCriteria.getParamChild();
-        this.room = searchCriteria.getParamChild();
+        this.room = searchCriteria.getParamRoom();
         this.location = searchCriteria.getParamLocation();
         this.currency = searchCriteria.getParamCurrency();
         this.currencySymbol = StringUtil.getCurrencySymbol(searchCriteria.getParamCurrency());
