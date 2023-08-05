@@ -41,6 +41,12 @@ public class BookingProviderImpl {
         return manageOperation(params, isPeriodic);
     }
 
+
+    public void dummyBrowser() throws MalformedURLException, InterruptedException {
+        AppDriver driver = appDriverFactory.createDriver("https://www.booking.com/");
+        driver.terminateDriver();
+    }
+
     private SearchResultExtDto manageOperation(Map<Param, String> params, boolean isPeriodic) throws InterruptedException, IOException {
         List<PeriodicResultExtDto> periodicResultExtDtoList = new ArrayList<>();
         SearchCriteriaExtDto criteria = new SearchCriteriaExtDto();
@@ -387,12 +393,17 @@ public class BookingProviderImpl {
 
     private void enterLocation(AppDriver driver, String location) {
         log.info(" >>>>>>> Starting: To enter location...");
-        Optional<AppElement> locationInput = driver.findElementById(":Ra9:");
-        if (locationInput.isEmpty()) {
+        Optional<AppElement> locationDiv = driver.findOneElementByCssSelector("div.d4e829796c", driver.javaScriptExecutor());
+        if (locationDiv.isEmpty()) {
+            log.error("Location div not found!");
+            throw new NoSuchElementException("Location div not found!");
+        }
+        Optional<AppElement> input = locationDiv.get().findOneElementByCssSelector("input", driver.javaScriptExecutor());
+        if (input.isEmpty()) {
             log.error("Location input not found!");
             throw new NoSuchElementException("Location input not found!");
         }
-        AppElement appElement = locationInput.get();
+        AppElement appElement = input.get();
         appElement.click(driver.javaScriptExecutor());
         appElement.sendKeys(location);
     }
