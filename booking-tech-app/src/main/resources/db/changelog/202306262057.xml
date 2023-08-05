@@ -35,4 +35,10 @@
             <column name="process_date_time" type="TIMESTAMP" />
         </addColumn>
     </changeSet>
+    <changeSet id="20230805184900-1" author="ercan">
+        <modifyDataType
+                columnName="name"
+                newDataType="varchar(255)"
+                tableName="hotel"/>
+    </changeSet>
 </databaseChangeLog>
