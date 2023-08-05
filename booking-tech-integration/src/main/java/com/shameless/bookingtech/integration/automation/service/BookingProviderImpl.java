@@ -44,6 +44,7 @@ public class BookingProviderImpl {
 
     public void dummyBrowser() throws MalformedURLException, InterruptedException {
         AppDriver driver = appDriverFactory.createDriver("https://www.booking.com/");
+        log.info("Dummy browser! Hey server, do not sleep!");
         driver.terminateDriver();
     }
 
