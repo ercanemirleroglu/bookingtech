@@ -7,7 +7,7 @@ spring:
     url: "jdbc:postgresql://localhost:5432/booking"
     driverClassName: org.postgresql.Driver
     username: postgres
-    password: 123456
+    password: ENC(rpaSXatbR6LtwuedDmu8+g==)
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     show-sql: true
@@ -18,16 +18,13 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
-  security:
-    user:
-      password: password
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   mail:
     host: smtp.gmail.com
     port: 587
     username: sbookingtech.info@gmail.com
-    password: emuydbkydncdzund
+    password: ENC(kC3wlYGxuMmInHPp3BGspoCo5u+pPNrmrzi3jajXD14=)
     properties:
       mail:
         smtp:
@@ -44,3 +41,6 @@ application:
     chromeDriverPath: /Users/ercanemirleroglu/Documents/Projects/drivers/chromedriver
   commands:
     killCompletely: false
+  security:
+    encryption:
+      passwordFilePath: /Users/ercanemirleroglu/Documents/Projects/certs/new-kp.pem

@@ -7,7 +7,7 @@ spring:
     url: "jdbc:postgresql://shameless-booking-instance.ckwxuigzvke5.eu-north-1.rds.amazonaws.com:5432/booking"
     driverClassName: org.postgresql.Driver
     username: "postgres"
-    password: "12345678"
+    password: ENC(9gJCckJT6MjwEM7q+Z5ZEaeCcMfjjaco)
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
@@ -21,16 +21,13 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
-  security:
-    user:
-      password: "wUFQrH56tGTmUg2eoZOF"
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   mail:
     host: smtp.gmail.com
     port: 587
     username: sbookingtech.info@gmail.com
-    password: emuydbkydncdzund
+    password: ENC(kC3wlYGxuMmInHPp3BGspoCo5u+pPNrmrzi3jajXD14=)
     properties:
       mail:
         smtp:
@@ -50,3 +47,6 @@ application:
     chromeDriverPath: /usr/bin/chromedriver
   commands:
     killCompletely: false
+  security:
+    encryption:
+      passwordFilePath: /home/ec2-user/certs/new-kp.pem

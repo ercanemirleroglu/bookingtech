@@ -36,3 +36,7 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
+application:
+  security:
+    encryption:
+      passwordFilePath: /Users/ercanemirleroglu/Documents/Projects/certs/new-kp.pem
