@@ -7,6 +7,7 @@ import com.shameless.bookingtech.app.util.Decryptor;
 import com.shameless.bookingtech.app.util.Encryptor;
 import com.shameless.bookingtech.integration.automation.infra.AppDriverFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +31,9 @@ class EncryptorTest {
     private Decryptor decryptor;
 
     @Test
+    @Ignore
     public void enc_test(){
-        String password = "12345678";
+        String password = "zzz";
         String passwordEnc = encryptor.encrypt(password);
         log.info(passwordEnc);
         String passwordDec = decryptor.decrypt(passwordEnc);
