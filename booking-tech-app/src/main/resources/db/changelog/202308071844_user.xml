@@ -38,7 +38,7 @@
             <column name="id" valueSequenceNext="customer_id_seq"/>
             <column name="created_date" valueDate="${now}"/>
             <column name="username" value="sergen"/>
-            <column name="password" value="$2a$12$JS/Vnu/jTBl1ciz7gpHim.MjmV.hJ0rwkUxPXytW2NErfW1vs5r6W"/>
+            <column name="password" value="$2a$10$PdORXAZp/e4rsiCQGcEz4.TZ.ghLPjtGoUdB12ZLjcJoaWnOR3TLm"/>
             <column name="email" value="esergenb@gmail.com"/>
         </insert>
     </changeSet>
