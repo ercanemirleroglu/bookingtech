@@ -34,6 +34,9 @@ spring:
           writetimeout: 120000
           starttls:
             enable: true
+rsa:
+  private-key: "classpath:certs/private.pem"
+  public-key: "classpath:certs/public.pem"
 
 application:
   drivers:

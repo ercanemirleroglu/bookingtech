@@ -40,7 +40,9 @@ spring:
           socketFactory:
             port: 465
             class: javax.net.ssl.SSLSocketFactory
-
+rsa:
+  private-key: "classpath:certs/private.pem"
+  public-key: "classpath:certs/public.pem"
 application:
   drivers:
     geckoDriverPath: /usr/local/bin/geckodriver
