@@ -1,15 +1,11 @@
-package com.shameless.bookingtech.domain.util;
+package com.shameless.bookingtech.domain.user;
 
 import com.shameless.bookingtech.app.BookingtechApplication;
-import com.shameless.bookingtech.app.config.EncryptionConfig;
 import com.shameless.bookingtech.app.service.ProcessService;
-import com.shameless.bookingtech.app.util.Decryptor;
-import com.shameless.bookingtech.app.util.Encryptor;
+import com.shameless.bookingtech.app.user.PasswordEncoder;
 import com.shameless.bookingtech.integration.automation.infra.AppDriverFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,21 +17,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @ContextConfiguration(classes = {BookingtechApplication.class})
 @MockBean(classes = {ProcessService.class, AppDriverFactory.class})
-@Slf4j
-class EncryptorTest {
-
+public class EncodeTest {
     @Autowired
-    private Encryptor encryptor;
-
-    @Autowired
-    private Decryptor decryptor;
+    private PasswordEncoder underTest;
 
     @Test
-    public void enc_test(){
+    @Ignore
+    public void encode(){
         String password = "zzz";
-        String passwordEnc = encryptor.encrypt(password);
-        log.info(passwordEnc);
-        String passwordDec = decryptor.decrypt(passwordEnc);
-        Assertions.assertEquals(password, passwordDec);
+        String encode = underTest.encode(password);
+        System.out.println(encode);
     }
 }
