@@ -31,7 +31,7 @@ public class CustomerDto implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("hotel_owner");
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("CUSTOMER");
         return List.of(grantedAuthority);
     }
 
