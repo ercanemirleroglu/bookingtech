@@ -37,8 +37,8 @@ public class BookingProviderImpl {
         this.appDriverFactory = appDriverFactory;
     }
 
-    public SearchResultExtDto fetchBookingData(Map<Param, String> params, boolean isPeriodic) throws IOException, InterruptedException {
-        return manageOperation(params, isPeriodic);
+    public SearchResultExtDto fetchBookingData(Map<Param, String> params, boolean isPeriodic, LocalDate date) throws IOException, InterruptedException {
+        return manageOperation(params, isPeriodic, date);
     }
 
 
@@ -48,7 +48,7 @@ public class BookingProviderImpl {
         driver.terminateDriver();
     }
 
-    private SearchResultExtDto manageOperation(Map<Param, String> params, boolean isPeriodic) throws InterruptedException, IOException {
+    private SearchResultExtDto manageOperation(Map<Param, String> params, boolean isPeriodic, LocalDate date) throws InterruptedException, IOException {
         List<PeriodicResultExtDto> periodicResultExtDtoList = new ArrayList<>();
         SearchCriteriaExtDto criteria = new SearchCriteriaExtDto();
         criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
@@ -56,7 +56,6 @@ public class BookingProviderImpl {
         List<CustomerSelectModel> customerSelectModels = CustomerSelectModel.toModel(params);
         criteria.setCustomerCounts(customerSelectModels);
         criteria.setDayRange(Integer.parseInt(params.get(Param.SEARCH_DATE_RANGE)));
-        LocalDate today = LocalDate.now();
         if (isPeriodic) {
             ExecutorService executor = Executors.newFixedThreadPool(Constants.CONCURRENT_SIZE);
             BookingProviderImpl obj = new BookingProviderImpl(appDriverFactory);
@@ -65,7 +64,7 @@ public class BookingProviderImpl {
                 for (int i = 0; i < Constants.CONCURRENT_SIZE; i++) {
                     int finalI = (j * Constants.CONCURRENT_SIZE) + i;
                     executor.execute(() -> {
-                        obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, today.plusDays(finalI));
+                        obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date.plusDays(finalI));
                         innerLatch.countDown();
                     });
                 }
@@ -74,7 +73,7 @@ public class BookingProviderImpl {
             executor.shutdown();
         }
         else {
-            bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, today);
+            bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date);
         }
 
         return SearchResultExtDto.builder()
@@ -98,6 +97,7 @@ public class BookingProviderImpl {
             localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
             enterCustomerTypeAndCount(driver, customerSelectModels);
             clickSearchButton(driver);
+            driver.timeout(20);
             scanHotelAndPriceDesktop(driver, hotelPriceExtDtoList, params);
         } catch (InterruptedException | MalformedURLException | StaleElementReferenceException | NoSuchElementException e) {
             log.error("error occured: ", e);

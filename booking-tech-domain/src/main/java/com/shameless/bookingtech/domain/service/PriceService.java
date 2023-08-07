@@ -3,6 +3,7 @@ package com.shameless.bookingtech.domain.service;
 import com.shameless.bookingtech.common.util.model.DateRange;
 import com.shameless.bookingtech.domain.dto.PeriodicHotelPriceModel;
 import com.shameless.bookingtech.domain.dto.PriceDto;
+import com.shameless.bookingtech.domain.dto.ReportDto;
 import com.shameless.bookingtech.domain.dto.StoreTypeDto;
 import com.shameless.bookingtech.domain.entity.HotelEntity;
 import com.shameless.bookingtech.domain.entity.PriceEntity;
@@ -27,12 +28,14 @@ public class PriceService {
     private final SearchCriteriaRepository searchCriteriaRepository;
     private final HotelRepository hotelRepository;
     private final PriceFactory priceFactory;
+    private final ReportService reportService;
 
-    public PriceService(PriceRepository priceRepository, SearchCriteriaRepository searchCriteriaRepository, HotelRepository hotelRepository, PriceFactory priceFactory) {
+    public PriceService(PriceRepository priceRepository, SearchCriteriaRepository searchCriteriaRepository, HotelRepository hotelRepository, PriceFactory priceFactory, ReportService reportService) {
         this.priceRepository = priceRepository;
         this.searchCriteriaRepository = searchCriteriaRepository;
         this.hotelRepository = hotelRepository;
         this.priceFactory = priceFactory;
+        this.reportService = reportService;
     }
 
     public List<PriceDto> findAllForReport(Long scId, StoreTypeDto storeType, DateRange<LocalDate> dateRange){
@@ -46,6 +49,13 @@ public class PriceService {
         LocalDateTime lastProcessDateTime = priceRepository.findLastProcessDateTime(StoreType.valueOf(storeType.name()));
         return priceRepository.findAllByProcessDateTime(scId, StoreType.valueOf(storeType.name()),
                  lastProcessDateTime)
+                .stream().map(PriceMapper.INSTANCE::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<PriceDto> findAllByReportDateTime(Long scId, StoreTypeDto storeType, LocalDateTime reportDateTime) {
+        return priceRepository.findAllByProcessDateTime(scId, StoreType.valueOf(storeType.name()),
+                        reportDateTime)
                 .stream().map(PriceMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
     }
@@ -69,7 +79,7 @@ public class PriceService {
                 .orElseThrow(() -> new IllegalArgumentException("Not found search criteria! Id: "
                         + searchCriteriaId));
         List<PriceDto> priceDtoList = new ArrayList<>();
-        StoreType storeType;
+        StoreType storeType = null;
         if (Objects.nonNull(periodicHotelPriceModelList) && periodicHotelPriceModelList.size() == 1) {
             storeType = StoreType.HOURLY;
             StoreType finalStoreType = storeType;
@@ -122,6 +132,22 @@ public class PriceService {
                 });
             });
         }
+        ReportDto reportDto = ReportDto.builder()
+                .day(processDateTime.toLocalDate())
+                .lastReportDate(processDateTime)
+                .reportType(storeType.toDto())
+                .build();
+        if (StoreType.PERIODIC.equals(storeType) && !priceDtoList.isEmpty())
+            priceDtoList.stream()
+                    .max(Comparator.comparing(PriceDto::getFromDate))
+                    .map(PriceDto::getFromDate)
+                    .ifPresent(reportDto::setLastPriceDay);
+        if (StoreType.HOURLY.equals(storeType)) {
+            DateRange<LocalDate> dateRange = periodicHotelPriceModelList.get(0).getDateRange();
+            reportDto.setFromDate(dateRange.getStartDate());
+            reportDto.setToDate(dateRange.getEndDate());
+        }
+        reportService.createOrUpdateReport(reportDto);
         return priceDtoList;
     }
 }

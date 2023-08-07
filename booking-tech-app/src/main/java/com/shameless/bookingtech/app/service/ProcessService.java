@@ -8,6 +8,7 @@ import com.shameless.bookingtech.domain.model.HotelPriceModel;
 import com.shameless.bookingtech.domain.model.SearchCriteriaModel;
 import com.shameless.bookingtech.domain.service.HotelApplicationService;
 import com.shameless.bookingtech.domain.service.ParamService;
+import com.shameless.bookingtech.domain.service.ReportService;
 import com.shameless.bookingtech.integration.automation.model.HotelPriceExtDto;
 import com.shameless.bookingtech.integration.automation.model.PeriodicResultExtDto;
 import com.shameless.bookingtech.integration.automation.model.SearchCriteriaExtDto;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,38 +33,42 @@ public class ProcessService {
     private final HotelApplicationService hotelApplicationService;
     private final ParamService paramService;
     private final EmailService emailService;
-    private final ReportService reportService;
+    private final ReportApplicationService reportApplicationService;
     private final MockService mockService;
+    private final ReportService reportService;
 
     public ProcessService(BookingProviderImpl bookingProvider,
                           HotelApplicationService hotelApplicationService,
                           ParamService paramService, EmailService emailService,
-                          ReportService reportService, MockService mockService) {
+                          ReportApplicationService reportApplicationService, MockService mockService, ReportService reportService) {
         this.bookingProvider = bookingProvider;
         this.hotelApplicationService = hotelApplicationService;
         this.paramService = paramService;
         this.emailService = emailService;
-        this.reportService = reportService;
+        this.reportApplicationService = reportApplicationService;
         this.mockService = mockService;
+        this.reportService = reportService;
     }
 
-    @Scheduled(cron = "0 0 10-15,17-22 * * ?")
+    @Scheduled(cron = "0 0 10,11,13,14,16,17,19,20,22 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void hourlyJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = getAllParamsMap();
-        SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false);
+        SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false, LocalDate.now());
         hotelApplicationService.save(toDto(searchResultExtDto));
-        PriceEmailModel hourlyReport = reportService.getHourlyReport();
+        PriceEmailModel hourlyReport = reportApplicationService.getHourlyReport();
         emailService.sendMail(hourlyReport, "emailTemplate");
     }
 
-    @Scheduled(cron = "0 0 9,16 * * ?")
+    @Scheduled(cron = "0 0 9,12,15,18,21 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void periodicJob() throws MessagingException, InterruptedException, IOException {
         Map<Param, String> params = getAllParamsMap();
-        SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true);
+        Optional<ReportDto> reportOpt = reportService.getReportByTypeAndDate(StoreTypeDto.PERIODIC, LocalDate.now());
+        LocalDate date = reportOpt.map(reportDto -> reportDto.getLastPriceDay().plusDays(1)).orElseGet(LocalDate::now);
+        SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true, date);
         hotelApplicationService.save(toDto(searchResultExtDto));
-        PeriodicMailReport periodicReport = reportService.getPeriodicReport();
+        PeriodicMailReport periodicReport = reportApplicationService.getPeriodicReport();
         emailService.sendMail(periodicReport, "periodicEmailTemplate");
     }
 
@@ -78,13 +84,13 @@ public class ProcessService {
     public void testHourly() throws MessagingException, IOException {
         SearchResultExtDto searchResultExtDto = mockService.createSearchResultExtDtoMock();
         hotelApplicationService.save(toDto(searchResultExtDto));
-        PriceEmailModel hourlyReport = reportService.getHourlyReport();
+        PriceEmailModel hourlyReport = reportApplicationService.getHourlyReport();
         emailService.sendMail(hourlyReport, "emailTemplate");
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void testPeriodic() throws IOException, MessagingException, InterruptedException {
-        PeriodicMailReport periodicReport = reportService.getPeriodicReport();
+        PeriodicMailReport periodicReport = reportApplicationService.getPeriodicReport();
         emailService.sendMail(periodicReport, "periodicEmailTemplate");
     }
 

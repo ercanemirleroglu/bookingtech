@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="20230807214800-1" author="ercan">
+        <createTable tableName="report">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_report"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP"/>
+            <column name="report_type" type="VARCHAR2(20)"/>
+            <column name="day" type="DATE"/>
+            <column name="last_report_date" type="TIMESTAMP"/>
+            <column name="last_price_day" type="DATE"/>
+            <column name="from_date" type="DATE"/>
+            <column name="to_date" type="DATE"/>
+        </createTable>
+        <createSequence sequenceName="report_id_seq"/>
+    </changeSet>
+</databaseChangeLog>
