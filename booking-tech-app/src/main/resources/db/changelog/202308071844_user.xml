@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="20230807184500-1" author="ercan">
+        <createTable tableName="customer">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_customer"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="TIMESTAMP"/>
+            <column name="username" type="VARCHAR2(255)"/>
+            <column name="password" type="VARCHAR2(255)"/>
+            <column name="name" type="VARCHAR2(255)"/>
+            <column name="surname" type="VARCHAR2(255)"/>
+            <column name="email" type="VARCHAR2(255)"/>
+            <column name="phone" type="VARCHAR2(255)"/>
+            <column name="hotel_id" type="BIGINT"/>
+        </createTable>
+        <createSequence sequenceName="customer_id_seq"/>
+    </changeSet>
+    <changeSet id="20230807184500-2" author="ercan">
+        <addForeignKeyConstraint baseTableName="customer"
+                                 baseColumnNames="hotel_id"
+                                 constraintName="fk_customer_hotel_id"
+                                 referencedTableName="hotel"
+                                 referencedColumnNames="id"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+        />
+    </changeSet>
+    <changeSet author="ercan" id="20230807184500-3" dbms="h2, postgresql">
+        <insert tableName="customer">
+            <column name="id" valueSequenceNext="customer_id_seq"/>
+            <column name="created_date" valueDate="${now}"/>
+            <column name="username" value="sergen"/>
+            <column name="password" value="$2a$12$JS/Vnu/jTBl1ciz7gpHim.MjmV.hJ0rwkUxPXytW2NErfW1vs5r6W"/>
+            <column name="email" value="esergenb@gmail.com"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
