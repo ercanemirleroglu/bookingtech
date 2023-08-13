@@ -71,6 +71,19 @@ public class BookingProviderImpl {
                 innerLatch.await();
             }
             executor.shutdown();
+            try {
+                if (!executor.awaitTermination(60L, TimeUnit.SECONDS)) {
+                    log.info("Executor await!");
+                    return SearchResultExtDto.builder()
+                            .searchCriteria(criteria)
+                            .periodicResultList(periodicResultExtDtoList)
+                            .build();
+                } else {
+                    log.info("Executor shut down!");
+                }
+            } catch (InterruptedException e) {
+                log.error("Executor await timeout error ", e);
+            }
         }
         else {
             bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date);
