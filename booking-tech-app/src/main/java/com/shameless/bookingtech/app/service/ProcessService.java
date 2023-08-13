@@ -51,33 +51,92 @@ public class ProcessService {
     }
 
     @Scheduled(cron = "0 0 10,11,13,14,16,17,19,20,22 * * ?")
-    //@Scheduled(fixedRate = 60 * 60 * 1000)
-    public void hourlyJob() throws MessagingException, InterruptedException, IOException {
-        Map<Param, String> params = getAllParamsMap();
-        SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false, LocalDate.now());
-        hotelApplicationService.save(toDto(searchResultExtDto));
-        PriceEmailModel hourlyReport = reportApplicationService.getHourlyReport();
-        emailService.sendMail(hourlyReport, "emailTemplate");
+    //@Scheduled(fixedRate = 5 * 60 * 1000)
+    public void hourlyJob() {
+        log.info("Hourly Job: it is starting...");
+        try{
+            log.info("Hourly Job: Params are fetching");
+            Map<Param, String> params = getAllParamsMap();
+            log.info("Hourly Job: Params fetched: {}", params);
+
+            log.info("Hourly Job: Booking data is fetching...");
+            SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false, LocalDate.now());
+            log.info("Hourly Job: Booking data fetched");
+
+            log.info("Hourly Job: Booking data is saving...");
+            hotelApplicationService.save(toDto(searchResultExtDto));
+            log.info("Hourly Job: Booking data saved");
+
+            log.info("Hourly Job: Report is generating...");
+            PriceEmailModel hourlyReport = reportApplicationService.getHourlyReport();
+            log.info("Hourly Job: report generated");
+
+            log.info("Hourly Job: Mail is sending...");
+            emailService.sendMail(hourlyReport, "emailTemplate");
+            log.info("Hourly Job: Mail sent");
+        } catch (Exception e) {
+            log.error("Hourly Job: An error occurred: ", e);
+        } finally {
+            log.info("Hourly Job: It is finished");
+        }
+
     }
 
     @Scheduled(cron = "0 0 9,12,15,18,21 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
-    public void periodicJob() throws MessagingException, InterruptedException, IOException {
-        Map<Param, String> params = getAllParamsMap();
-        Optional<ReportDto> reportOpt = reportService.getReportByTypeAndDate(StoreTypeDto.PERIODIC, LocalDate.now());
-        LocalDate date = reportOpt.map(reportDto -> reportDto.getLastPriceDay().plusDays(1)).orElseGet(LocalDate::now);
-        SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true, date);
-        hotelApplicationService.save(toDto(searchResultExtDto));
-        PeriodicMailReport periodicReport = reportApplicationService.getPeriodicReport();
-        emailService.sendMail(periodicReport, "periodicEmailTemplate");
+    public void periodicJob() {
+        log.info("Periodic Job: it is starting...");
+        try {
+            log.info("Periodic Job: Params are fetching");
+            Map<Param, String> params = getAllParamsMap();
+            log.info("Periodic Job: Params fetched: {}", params);
+
+            log.info("Periodic Job: Report Info and Date is fetching...");
+            Optional<ReportDto> reportOpt = reportService.getReportByTypeAndDate(StoreTypeDto.PERIODIC, LocalDate.now());
+            LocalDate date = reportOpt.map(reportDto -> reportDto.getLastPriceDay().plusDays(1)).orElseGet(LocalDate::now);
+            log.info("Periodic Job: Report Info and Date fetched");
+
+            log.info("Periodic Job: Booking data is fetching...");
+            SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true, date);
+            log.info("Periodic Job: Booking data fetched");
+
+            log.info("Periodic Job: Booking data is saving...");
+            hotelApplicationService.save(toDto(searchResultExtDto));
+            log.info("Periodic Job: Booking data saved");
+
+            log.info("Periodic Job: Report is generating...");
+            PeriodicMailReport periodicReport = reportApplicationService.getPeriodicReport();
+            log.info("Periodic Job: report generated");
+
+            log.info("Periodic Job: Mail is sending...");
+            emailService.sendMail(periodicReport, "periodicEmailTemplate");
+            log.info("Periodic Job: Mail sent");
+        } catch (Exception e) {
+            log.error("Periodic Job: An error occurred: ", e);
+        } finally {
+            log.info("Periodic Job: It is finished");
+        }
+
     }
 
     @Scheduled(cron = "0 0 23,0-8 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void dontSleepJob() throws MalformedURLException, InterruptedException {
-        Map<Param, String> params = getAllParamsMap();
-        bookingProvider.dummyBrowser();
-        log.info(params.toString());
+        log.info("Dummy Job: it is starting...");
+        try{
+            log.info("Dummy Job: Params are fetching");
+            Map<Param, String> params = getAllParamsMap();
+            log.info("Dummy Job: Params fetched: {}", params);
+
+            log.info("Dummy Job: browser is opening...");
+            bookingProvider.dummyBrowser();
+            log.info("Dummy Job: browser opened and closed");
+        }catch (Exception e) {
+            log.error("Dummy Job: An error occurred: ", e);
+        } finally {
+            log.info("Dummy Job: It is finished");
+        }
+
     }
 
     //@Scheduled(fixedRate = 60 * 60 * 1000)

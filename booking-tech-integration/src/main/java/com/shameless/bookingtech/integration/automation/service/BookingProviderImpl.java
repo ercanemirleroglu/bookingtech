@@ -100,8 +100,7 @@ public class BookingProviderImpl {
             driver.timeout(20);
             scanHotelAndPriceDesktop(driver, hotelPriceExtDtoList, params);
         } catch (InterruptedException | MalformedURLException | StaleElementReferenceException | NoSuchElementException e) {
-            log.error("error occured: ", e);
-            e.printStackTrace();
+            log.error("error occurred: ", e);
         } finally {
             log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
             printDtoOnLog(hotelPriceExtDtoList);
@@ -181,7 +180,7 @@ public class BookingProviderImpl {
             log.warn("Rating div not found!");
             return null;
         }
-        Optional<AppElement> ratingDiv = reviewScore.get().findOneElementByCssSelector("div.b5cd09854e.d10a6220b4", driver.javaScriptExecutor());
+        Optional<AppElement> ratingDiv = reviewScore.get().findOneElementByCssSelector("div.a3b8729ab1.d86cee9b25", driver.javaScriptExecutor());
         if (ratingDiv.isEmpty()) {
             log.warn("Ratings not found!");
             return null;
