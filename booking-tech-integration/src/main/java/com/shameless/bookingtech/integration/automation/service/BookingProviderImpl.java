@@ -64,56 +64,43 @@ public class BookingProviderImpl {
                 for (int i = 0; i < Constants.CONCURRENT_SIZE; i++) {
                     int finalI = (j * Constants.CONCURRENT_SIZE) + i;
                     executor.execute(() -> {
-                        obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date.plusDays(finalI));
+                        try {
+                            obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date.plusDays(finalI));
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("Error occured: ", e);
+                        }
                         innerLatch.countDown();
                     });
                 }
                 innerLatch.await();
             }
             executor.shutdown();
-            try {
-                if (!executor.awaitTermination(60L, TimeUnit.SECONDS)) {
-                    log.info("Executor await!");
-                    return SearchResultExtDto.builder()
-                            .searchCriteria(criteria)
-                            .periodicResultList(periodicResultExtDtoList)
-                            .build();
-                } else {
-                    log.info("Executor shut down!");
-                }
-            } catch (InterruptedException e) {
-                log.error("Executor await timeout error ", e);
-            }
         }
         else {
             bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date);
         }
-
         return SearchResultExtDto.builder()
                 .searchCriteria(criteria)
                 .periodicResultList(periodicResultExtDtoList)
                 .build();
     }
 
-    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, List<CustomerSelectModel> customerSelectModels, LocalDate start) {
+    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, List<CustomerSelectModel> customerSelectModels, LocalDate start) throws InterruptedException, MalformedURLException {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
-        DateRange<LocalDate> localDateDateRange = null;
-        AppDriver driver = null;
+        AppDriver driver = appDriverFactory.createDriver("https://www.booking.com/");
+        log.info(" +++++ Start Driver : {}", driver.getId().toString());
+        log.info(" +++++ Start Date : {}", start.toString());
+        closeRegisterModal(driver);
+        changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
+        enterLocation(driver, params.get(Param.SEARCH_LOCATION));
+        DateRange<LocalDate> localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
+        enterCustomerTypeAndCount(driver, customerSelectModels);
+        clickSearchButton(driver);
+        driver.timeout(20);
         try {
-            driver = appDriverFactory.createDriver("https://www.booking.com/");
-            log.info(" +++++ Start Driver : {}", driver.getId().toString());
-            log.info(" +++++ Start Date : {}", start.toString());
-            closeRegisterModal(driver);
-            boolean isChanged = changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
-            if (!isChanged) throw new NoSuchElementException("Currency has not changed!");
-            enterLocation(driver, params.get(Param.SEARCH_LOCATION));
-            localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
-            enterCustomerTypeAndCount(driver, customerSelectModels);
-            clickSearchButton(driver);
-            driver.timeout(20);
             scanHotelAndPriceDesktop(driver, hotelPriceExtDtoList, params);
-        } catch (InterruptedException | MalformedURLException | StaleElementReferenceException | NoSuchElementException e) {
-            log.error("error occurred: ", e);
+        } catch (Exception e) {
+            log.error("error occurred. But still continue: ", e);
         } finally {
             log.info("Total {} hotel and price fetched!", hotelPriceExtDtoList.size());
             printDtoOnLog(hotelPriceExtDtoList);
@@ -122,25 +109,20 @@ public class BookingProviderImpl {
                     .dateRange(localDateDateRange)
                     .build();
             periodicResultExtDtoList.add(build);
-            if(driver != null) {
-                try {
-                    driver.terminateDriver();
-                } catch (InterruptedException e) {
-                    log.error("error occured: ", e);
-                }
-            }
+            driver.terminateDriver();
         }
     }
 
     private String getHotelCountTitle(AppDriver driver) {
         AppElement title = driver.findOneElementByCssSelector("[data-component='arp-header']", driver.javaScriptExecutor())
-                .map(e -> e.findOneElementByCssSelector("[aria-live='assertive']", driver.javaScriptExecutor()))
+                .map(e -> e.findOneElementByCssSelector("[aria-live='assertive']", driver.javaScriptExecutor())
+                        .orElseGet(() -> {
+                            log.error("Property count title not found!");
+                            throw new NoSuchElementException("Property count title not found!");
+                        }))
                 .orElseGet(() -> {
-                    log.error("Property count title not found!");
-                    throw new NoSuchElementException("Property count title not found!");
-                }).orElseGet(() -> {
-                    log.error("Property count title not found!");
-                    throw new NoSuchElementException("Property count title not found!");
+                    log.error("Arp header not found! You should control search button also!");
+                    throw new NoSuchElementException("Arp header not found! You should control search button also!");
                 });
         String text = title.getText();
         log.info(text);
@@ -297,7 +279,7 @@ public class BookingProviderImpl {
             searchButton = driver.findElementById(btn);
         }
         if (searchButton.isEmpty()) {
-            btn = "button.fc63351294.a822bdf511.d4b6b7a9e7.cfb238afa1.c938084447.f4605622ad.aa11d0d5cd";
+            btn = "button.a83ed08757.c21c56c305.a4c1805887.f671049264.d2529514af.c082d89982.aa11d0d5cd";
             searchButton = driver.findOneElementByCssSelector(btn, driver.javaScriptExecutor());
         }
         log.info("Clicking search button...");
@@ -308,10 +290,16 @@ public class BookingProviderImpl {
     private void enterCustomerTypeAndCount(AppDriver driver, List<CustomerSelectModel> customerSelectModels) throws InterruptedException {
         Optional<AppElement> elementByCssSelector = driver.findOneElementByCssSelector("div.d67edddcf0", driver.javaScriptExecutor());
         elementByCssSelector.ifPresent(e -> e.click(driver.javaScriptExecutor()));
-        List<AppElement> customerTypeAndCountDivList = driver.findAllElementsByCssSelector("div.b2b5147b20", driver.javaScriptExecutor());
+        Optional<AppElement> occupancyPopup = driver.findOneElementByCssSelector("[data-testid='occupancy-popup']", driver.javaScriptExecutor());
+        if (occupancyPopup.isEmpty()) {
+            log.error("Occupancy Popup not found!");
+            throw new NoSuchElementException("Occupancy Popup not found!");
+        }
+        List<AppElement> customerTypeAndCountDivList = occupancyPopup.get()
+                .findAllElementsByCssSelector("div.a7a72174b8", driver.javaScriptExecutor());
         outerLoop:
         for (AppElement customerTypeAndCountDiv : customerTypeAndCountDivList) {
-            List<AppElement> customerTypeAndCountLabelList = customerTypeAndCountDiv.findAllElementsByCssSelector("label.a68a7ee8ee", driver.javaScriptExecutor());
+            List<AppElement> customerTypeAndCountLabelList = customerTypeAndCountDiv.findAllElementsByCssSelector("label.a984a491d9", driver.javaScriptExecutor());
             if (customerTypeAndCountLabelList.isEmpty()) {
                 log.error("customerTypeAndCount Label not found!");
                 throw new NoSuchElementException("customerTypeAndCountDiv not found!");
@@ -327,7 +315,7 @@ public class BookingProviderImpl {
 
     private boolean chooseCustomerTypeAndCount(AppDriver driver, CustomerSelectModel selectModel, String forGroup, AppElement customerTypeAndCountDiv) throws InterruptedException {
         if (selectModel.getType().getForGroup().equals(forGroup)) {
-            Optional<AppElement> customerCountSpanList = customerTypeAndCountDiv.findOneElementByCssSelector("span.e615eb5e43", driver.javaScriptExecutor());
+            Optional<AppElement> customerCountSpanList = customerTypeAndCountDiv.findOneElementByCssSelector("span.d723d73d5f", driver.javaScriptExecutor());
             if (customerCountSpanList.isEmpty()) {
                 log.error("customerCountSpan not found!");
                 throw new NoSuchElementException("customerCountSpan not found!");
@@ -388,7 +376,7 @@ public class BookingProviderImpl {
     }
 
     private void selectDateRangeFromCalendar(AppDriver driver, DateRange<LocalDate> dateRange) throws InterruptedException {
-        List<AppElement> dates = driver.findAllElementsByCssSelector("span.b21c1c6c83", driver.javaScriptExecutor());
+        List<AppElement> dates = driver.findAllElementsByCssSelector("span.cf06f772fa", driver.javaScriptExecutor());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         goToDayOnCalendar(driver, dateRange.getStartDate(), dates, formatter);
         goToDayOnCalendar(driver, dateRange.getEndDate(), dates, formatter);
@@ -406,7 +394,7 @@ public class BookingProviderImpl {
 
     private void enterLocation(AppDriver driver, String location) {
         log.info(" >>>>>>> Starting: To enter location...");
-        Optional<AppElement> locationDiv = driver.findOneElementByCssSelector("div.d4e829796c", driver.javaScriptExecutor());
+        Optional<AppElement> locationDiv = driver.findOneElementByCssSelector("div.a5761ae4af", driver.javaScriptExecutor());
         if (locationDiv.isEmpty()) {
             log.error("Location div not found!");
             throw new NoSuchElementException("Location div not found!");
@@ -428,51 +416,39 @@ public class BookingProviderImpl {
         log.info("Hamburger Menu Opened!");
     }
 
-    private boolean changeCurrency(AppDriver driver, String currency) {
+    private void changeCurrency(AppDriver driver, String currency) {
         log.info(" >>>>>>> Starting: To change currency...");
-        boolean hasChangedCorrectly;
-        int cnt = 1;
-        do {
-            log.info("change currency counter {}", cnt);
-            String csModalBtn = null;
-            String csElmList = "[data-testid='selection-item']";
-            String csDiv = "div.ea1163d21f";
-            if (DeviceType.MOBILE.equals(driver.getDeviceType())) {
-                openMobileHamburegerMenu(driver);
-                csModalBtn = "[data-testid='header-mobile-menu-currency-picker-menu-item']";
-            } else if (DeviceType.DESKTOP.equals(driver.getDeviceType())) {
-                csModalBtn = "[data-testid='header-currency-picker-trigger']";
+        String csModalBtn = null;
+        String csElmList = "[data-testid='selection-item']";
+        String csDiv = "div.ea1163d21f";
+        if (DeviceType.MOBILE.equals(driver.getDeviceType())) {
+            openMobileHamburegerMenu(driver);
+            csModalBtn = "[data-testid='header-mobile-menu-currency-picker-menu-item']";
+        } else if (DeviceType.DESKTOP.equals(driver.getDeviceType())) {
+            csModalBtn = "[data-testid='header-currency-picker-trigger']";
+        }
+        Optional<AppElement> currencyModalButton = driver.findOneElementByCssSelector(csModalBtn, driver.javaScriptExecutor());
+        currencyModalButton.ifPresent(e -> e.click(driver.javaScriptExecutor()));
+        List<AppElement> currencyList = driver.findAllElementsByCssSelector(csElmList, driver.javaScriptExecutor());
+        if (currencyList.isEmpty()) {
+            log.error("Currency List not found!");
+            throw new NoSuchElementException("Currency List not found!");
+        }
+        currencyList.stream().flatMap(cur -> {
+            List<AppElement> elm = cur.findAllElementsByCssSelector(csDiv, driver.javaScriptExecutor());
+            if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
+                log.info("{} currency found successfully", currency);
+                return Stream.of(cur);
             }
-            Optional<AppElement> currencyModalButton = driver.findOneElementByCssSelector(csModalBtn, driver.javaScriptExecutor());
-            currencyModalButton.ifPresent(e -> e.click(driver.javaScriptExecutor()));
-            List<AppElement> currencyList = driver.findAllElementsByCssSelector(csElmList, driver.javaScriptExecutor());
-            if (currencyList.isEmpty()) {
-                log.error("Currency List not found!");
-                throw new NoSuchElementException("Currency List not found!");
-            }
-            currencyList.stream().flatMap(cur -> {
-                List<AppElement> elm = cur.findAllElementsByCssSelector(csDiv, driver.javaScriptExecutor());
-                if (!elm.isEmpty() && currency.equalsIgnoreCase(elm.get(0).getText())) {
-                    log.info("{} currency found successfully", currency);
-                    return Stream.of(cur);
-                }
-                return Stream.empty();
-            }).findFirst().ifPresent(e -> e.click(driver.javaScriptExecutor()));
-            driver.timeout(10);
-            hasChangedCorrectly = driver.findOneElementByCssSelector(csModalBtn, driver.javaScriptExecutor())
-                    .flatMap(btn -> btn.findOneElementByCssSelector("span.e57ffa4eb5", driver.javaScriptExecutor()))
-                    .map(spn -> Objects.equals(currency, spn.getText()))
-                    .orElse(Boolean.FALSE);
-            cnt++;
-        } while (!hasChangedCorrectly && cnt <= 5);
-        return hasChangedCorrectly;
+            return Stream.empty();
+        }).findFirst().ifPresent(e -> e.click(driver.javaScriptExecutor()));
     }
 
     private void closeRegisterModal(AppDriver driver) throws InterruptedException {
         log.info(" >>>>>>> Starting: To close register Modal...");
         for (int i = 2; i > 0; i--) {
             log.info("Clicking close register modal x button...");
-            Optional<AppElement> xButtonInRegisterModal = driver.findOneElementByCssSelector("button.fc63351294.a822bdf511.e3c025e003.fa565176a8.f7db01295e.c334e6f658.ae1678b153", driver.javaScriptExecutor());
+            Optional<AppElement> xButtonInRegisterModal = driver.findOneElementByCssSelector("button.a83ed08757.c21c56c305.f38b6daa18.d691166b09.ab98298258.deab83296e.f4552b6561", driver.javaScriptExecutor());
             if (xButtonInRegisterModal.isPresent()) {
                 log.info("Close register modal x button found successfully...");
                 xButtonInRegisterModal.get().click(driver.javaScriptExecutor());
