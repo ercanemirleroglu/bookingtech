@@ -65,7 +65,8 @@ public class BookingProviderImpl {
                         try {
                             obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date.plusDays(finalI));
                         } catch (Exception e) {
-                            throw new IllegalArgumentException("Error occurred: ", e);
+                            log.error("Error occurred: ", e);
+                            throw new IllegalArgumentException("Error occurred!");
                         } finally {
                             innerLatch.countDown();
                         }
@@ -90,7 +91,7 @@ public class BookingProviderImpl {
 
     private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, List<CustomerSelectModel> customerSelectModels, LocalDate start) {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
-        AppDriver driver;
+        AppDriver driver = null;
         DateRange<LocalDate> localDateDateRange;
         try {
             driver = startDriver(start);
@@ -102,7 +103,10 @@ public class BookingProviderImpl {
             clickSearchButton(driver);
         }
          catch (Exception e) {
-            throw new IllegalArgumentException("Unexpected error when automoation: ", e);
+            log.error("Unexpected error when automation: ", e);
+            if (driver != null)
+                driver.terminateDriver();
+            throw new IllegalArgumentException("Unexpected error when automation!");
         }
         try {
             scanHotelAndPriceDesktop(driver, hotelPriceExtDtoList, params);
@@ -116,11 +120,7 @@ public class BookingProviderImpl {
                     .dateRange(localDateDateRange)
                     .build();
             periodicResultExtDtoList.add(build);
-            try {
-                driver.terminateDriver();
-            } catch (InterruptedException e) {
-                log.error("Driver could not terminate: ", e);
-            }
+            driver.terminateDriver();
         }
     }
 
@@ -314,6 +314,7 @@ public class BookingProviderImpl {
     private void enterCustomerTypeAndCount(AppDriver driver, List<CustomerSelectModel> customerSelectModels) {
         Optional<AppElement> elementByCssSelector = driver.findOneElementByCssSelector("div.d67edddcf0", driver.javaScriptExecutor());
         elementByCssSelector.ifPresent(e -> e.click(driver.javaScriptExecutor()));
+        driver.timeout(3);
         Optional<AppElement> occupancyPopup = driver.findOneElementByCssSelector("[data-testid='occupancy-popup']", driver.javaScriptExecutor());
         if (occupancyPopup.isEmpty()) {
             log.error("Occupancy Popup not found!");
@@ -402,18 +403,38 @@ public class BookingProviderImpl {
     private void selectDateRangeFromCalendar(AppDriver driver, DateRange<LocalDate> dateRange) {
         List<AppElement> dates = driver.findAllElementsByCssSelector("span.cf06f772fa", driver.javaScriptExecutor());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        goToDayOnCalendar(driver, dateRange.getStartDate(), dates, formatter);
+        dates = goToDayOnCalendar(driver, dateRange.getStartDate(), dates, formatter);
         goToDayOnCalendar(driver, dateRange.getEndDate(), dates, formatter);
     }
 
-    private void goToDayOnCalendar(AppDriver driver, LocalDate date, List<AppElement> dates, DateTimeFormatter formatter) {
+    private List<AppElement> goToDayOnCalendar(AppDriver driver, LocalDate date, List<AppElement> dates, DateTimeFormatter formatter) {
         String today = date.format(formatter);
-        dates.stream()
-                .filter(e -> today.equals(e.getAttribute("data-date"))).findFirst()
-                .ifPresentOrElse(e -> e.click(driver.javaScriptExecutor()), () -> {
-                    log.error("Date not found");
-                    throw new NoSuchElementException("Date not found!");
+        int cnt = 0;
+        boolean found = false;
+        do {
+            cnt++;
+            if (cnt > 1)
+                dates = driver.findAllElementsByCssSelector("span.cf06f772fa", driver.javaScriptExecutor());
+            Optional<AppElement> dateOpt = dates.stream().filter(e -> today.equals(e.getAttribute("data-date"))).findFirst();
+            if (dateOpt.isPresent()) {
+                found = true;
+                dateOpt.get().click(driver.javaScriptExecutor());
+            } else {
+                driver.findOneElementByCssSelector("button.a83ed08757.c21c56c305.f38b6daa18.d691166b09.f671049264.deab83296e.f4552b6561.dc72a8413c.f073249358",
+                        driver.javaScriptExecutor()).ifPresentOrElse(nextBtn -> {
+                    nextBtn.click(driver.javaScriptExecutor());
+                    driver.timeout(1);
+                }, () -> {
+                    log.error("Next button not found in date Range Popup");
+                    throw new NoSuchElementException("Next button not found in date Range Popup");
                 });
+            }
+        } while (!found && cnt <=3);
+        if (!found) {
+            log.error("Date not found");
+            throw new NoSuchElementException("Date not found!");
+        }
+        return dates;
     }
 
     private void enterLocation(AppDriver driver, String location) {

@@ -68,7 +68,7 @@ public class AppDriver implements AppAutomation {
         return Optional.of(driver.findElement(By.id(id))).map(e -> AppElement.builder().element((WebElement) e).build());
     }
 
-    public void terminateDriver() throws InterruptedException {
+    public void terminateDriver() {
         if (driver != null) {
             driver.close();
             timeoutDriver(5);
@@ -79,8 +79,12 @@ public class AppDriver implements AppAutomation {
         deviceType = null;
     }
 
-    protected void timeoutDriver(long second) throws InterruptedException {
-        Thread.sleep(second * 1000);
+    protected void timeoutDriver(long second) {
+        try {
+            Thread.sleep(second * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void refreshPage(String path) throws InterruptedException {
