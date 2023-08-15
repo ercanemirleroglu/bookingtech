@@ -12,11 +12,9 @@ import com.shameless.bookingtech.integration.automation.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.javamoney.moneta.Money;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.springframework.stereotype.Component;
 
 import javax.money.Monetary;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
@@ -37,7 +35,7 @@ public class BookingProviderImpl {
         this.appDriverFactory = appDriverFactory;
     }
 
-    public SearchResultExtDto fetchBookingData(Map<Param, String> params, boolean isPeriodic, LocalDate date) throws IOException, InterruptedException {
+    public SearchResultExtDto fetchBookingData(Map<Param, String> params, boolean isPeriodic, LocalDate date) {
         return manageOperation(params, isPeriodic, date);
     }
 
@@ -48,7 +46,7 @@ public class BookingProviderImpl {
         driver.terminateDriver();
     }
 
-    private SearchResultExtDto manageOperation(Map<Param, String> params, boolean isPeriodic, LocalDate date) throws InterruptedException, IOException {
+    private SearchResultExtDto manageOperation(Map<Param, String> params, boolean isPeriodic, LocalDate date) {
         List<PeriodicResultExtDto> periodicResultExtDtoList = new ArrayList<>();
         SearchCriteriaExtDto criteria = new SearchCriteriaExtDto();
         criteria.setCurrency(params.get(Param.APP_CURRENCY_UNIT));
@@ -67,12 +65,17 @@ public class BookingProviderImpl {
                         try {
                             obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date.plusDays(finalI));
                         } catch (Exception e) {
-                            throw new IllegalArgumentException("Error occured: ", e);
+                            throw new IllegalArgumentException("Error occurred: ", e);
+                        } finally {
+                            innerLatch.countDown();
                         }
-                        innerLatch.countDown();
                     });
                 }
-                innerLatch.await();
+                try {
+                    innerLatch.await();
+                } catch (InterruptedException e) {
+                    log.error("Inner Latch Error: ", e);
+                }
             }
             executor.shutdown();
         }
@@ -85,18 +88,22 @@ public class BookingProviderImpl {
                 .build();
     }
 
-    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, List<CustomerSelectModel> customerSelectModels, LocalDate start) throws InterruptedException, MalformedURLException {
+    private void bookingScreenAutomationProcess(Map<Param, String> params, List<PeriodicResultExtDto> periodicResultExtDtoList, List<CustomerSelectModel> customerSelectModels, LocalDate start) {
         List<HotelPriceExtDto> hotelPriceExtDtoList = new ArrayList<>();
-        AppDriver driver = appDriverFactory.createDriver("https://www.booking.com/");
-        log.info(" +++++ Start Driver : {}", driver.getId().toString());
-        log.info(" +++++ Start Date : {}", start.toString());
-        closeRegisterModal(driver);
-        changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
-        enterLocation(driver, params.get(Param.SEARCH_LOCATION));
-        DateRange<LocalDate> localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
-        enterCustomerTypeAndCount(driver, customerSelectModels);
-        clickSearchButton(driver);
-        driver.timeout(20);
+        AppDriver driver;
+        DateRange<LocalDate> localDateDateRange;
+        try {
+            driver = startDriver(start);
+            closeRegisterModal(driver);
+            changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
+            enterLocation(driver, params.get(Param.SEARCH_LOCATION));
+            localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
+            enterCustomerTypeAndCount(driver, customerSelectModels);
+            clickSearchButton(driver);
+        }
+         catch (Exception e) {
+            throw new IllegalArgumentException("Unexpected error when automoation: ", e);
+        }
         try {
             scanHotelAndPriceDesktop(driver, hotelPriceExtDtoList, params);
         } catch (Exception e) {
@@ -109,8 +116,24 @@ public class BookingProviderImpl {
                     .dateRange(localDateDateRange)
                     .build();
             periodicResultExtDtoList.add(build);
-            driver.terminateDriver();
+            try {
+                driver.terminateDriver();
+            } catch (InterruptedException e) {
+                log.error("Driver could not terminate: ", e);
+            }
         }
+    }
+
+    private AppDriver startDriver(LocalDate start) {
+        AppDriver driver;
+        try {
+            driver = appDriverFactory.createDriver("https://www.booking.com/");
+        } catch (MalformedURLException | InterruptedException e) {
+            throw new IllegalArgumentException("Error occurred when driver start: ", e);
+        }
+        log.info(" +++++ Start Driver : {}", driver.getId().toString());
+        log.info(" +++++ Start Date : {}", start.toString());
+        return driver;
     }
 
     private String getHotelCountTitle(AppDriver driver) {
@@ -285,9 +308,10 @@ public class BookingProviderImpl {
         log.info("Clicking search button...");
         searchButton.ifPresent(e -> e.click(driver.javaScriptExecutor()));
         log.info("Clicked search button successfully");
+        driver.timeout(20);
     }
 
-    private void enterCustomerTypeAndCount(AppDriver driver, List<CustomerSelectModel> customerSelectModels) throws InterruptedException {
+    private void enterCustomerTypeAndCount(AppDriver driver, List<CustomerSelectModel> customerSelectModels) {
         Optional<AppElement> elementByCssSelector = driver.findOneElementByCssSelector("div.d67edddcf0", driver.javaScriptExecutor());
         elementByCssSelector.ifPresent(e -> e.click(driver.javaScriptExecutor()));
         Optional<AppElement> occupancyPopup = driver.findOneElementByCssSelector("[data-testid='occupancy-popup']", driver.javaScriptExecutor());
@@ -313,7 +337,7 @@ public class BookingProviderImpl {
         }
     }
 
-    private boolean chooseCustomerTypeAndCount(AppDriver driver, CustomerSelectModel selectModel, String forGroup, AppElement customerTypeAndCountDiv) throws InterruptedException {
+    private boolean chooseCustomerTypeAndCount(AppDriver driver, CustomerSelectModel selectModel, String forGroup, AppElement customerTypeAndCountDiv) {
         if (selectModel.getType().getForGroup().equals(forGroup)) {
             Optional<AppElement> customerCountSpanList = customerTypeAndCountDiv.findOneElementByCssSelector("span.d723d73d5f", driver.javaScriptExecutor());
             if (customerCountSpanList.isEmpty()) {
@@ -345,7 +369,7 @@ public class BookingProviderImpl {
         return false;
     }
 
-    private void pressButton(AppDriver driver, AppElement customerTypeAndCountDiv, int clickCount, ButtonType buttonType) throws InterruptedException {
+    private void pressButton(AppDriver driver, AppElement customerTypeAndCountDiv, int clickCount, ButtonType buttonType) {
         for (int i = 0; i < clickCount; i++) {
             Optional<AppElement> button = customerTypeAndCountDiv.findOneElementByCssSelector(buttonType.getSelector(), driver.javaScriptExecutor());
             if (button.isEmpty()) {
@@ -357,7 +381,7 @@ public class BookingProviderImpl {
         }
     }
 
-    private DateRange<LocalDate> enterDateByDayRange(AppDriver driver, String day, LocalDate start) throws InterruptedException {
+    private DateRange<LocalDate> enterDateByDayRange(AppDriver driver, String day, LocalDate start) {
         Optional<AppElement> dateRangeInput = driver.findOneElementByCssSelector("[data-testid='searchbox-dates-container']", driver.javaScriptExecutor());
         dateRangeInput.ifPresentOrElse(e -> {
             Optional<AppElement> calendar = Optional.empty();
@@ -367,15 +391,15 @@ public class BookingProviderImpl {
                 calendar = driver.findOneElementByCssSelector("[data-testid='datepicker-tabs']", driver.javaScriptExecutor());
             }
         }, () -> {
-            log.error("Hata");
-            throw new NoSuchElementException("Hata");
+            log.error("Date Range Input not found!");
+            throw new NoSuchElementException("Date Range Input not found!");
         });
         DateRange<LocalDate> dateRange = new DateRange<>(start, start.plusDays(Long.parseLong(day)));
         selectDateRangeFromCalendar(driver, dateRange);
         return dateRange;
     }
 
-    private void selectDateRangeFromCalendar(AppDriver driver, DateRange<LocalDate> dateRange) throws InterruptedException {
+    private void selectDateRangeFromCalendar(AppDriver driver, DateRange<LocalDate> dateRange) {
         List<AppElement> dates = driver.findAllElementsByCssSelector("span.cf06f772fa", driver.javaScriptExecutor());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         goToDayOnCalendar(driver, dateRange.getStartDate(), dates, formatter);
@@ -444,7 +468,7 @@ public class BookingProviderImpl {
         }).findFirst().ifPresent(e -> e.click(driver.javaScriptExecutor()));
     }
 
-    private void closeRegisterModal(AppDriver driver) throws InterruptedException {
+    private void closeRegisterModal(AppDriver driver) {
         log.info(" >>>>>>> Starting: To close register Modal...");
         for (int i = 2; i > 0; i--) {
             log.info("Clicking close register modal x button...");

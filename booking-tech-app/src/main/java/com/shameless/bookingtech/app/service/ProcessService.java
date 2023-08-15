@@ -20,7 +20,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,7 +120,7 @@ public class ProcessService {
 
     @Scheduled(cron = "0 0 23,0-8 * * ?")
     //@Scheduled(fixedRate = 60 * 60 * 1000)
-    public void dontSleepJob() throws MalformedURLException, InterruptedException {
+    public void dontSleepJob() {
         log.info("Dummy Job: it is starting...");
         try{
             log.info("Dummy Job: Params are fetching");
