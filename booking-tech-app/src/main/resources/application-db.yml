@@ -47,3 +47,9 @@ application:
   security:
     encryption:
       passwordFilePath: /Users/ercanemirleroglu/Documents/Projects/certs/new-kp.pem
+  automation:
+    path: "https://www.booking.com/"
+    pageLoadTimeout: 240
+    implicitlyWait: 60
+    setScriptTimeout: 60
+    closeRegisterModalEvent: true

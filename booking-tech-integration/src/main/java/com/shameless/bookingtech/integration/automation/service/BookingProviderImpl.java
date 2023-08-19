@@ -12,6 +12,7 @@ import com.shameless.bookingtech.integration.automation.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.javamoney.moneta.Money;
 import org.openqa.selenium.NoSuchElementException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.money.Monetary;
@@ -30,6 +31,10 @@ import static com.shameless.bookingtech.common.util.StringUtil.returnJustDigits;
 @Slf4j
 public class BookingProviderImpl {
     private final AppDriverFactory appDriverFactory;
+    @Value("${application.automation.path}")
+    private String path;
+    @Value("${application.automation.closeRegisterModalEvent}")
+    private boolean closeRegisterModalEvent;
 
     public BookingProviderImpl(AppDriverFactory appDriverFactory) {
         this.appDriverFactory = appDriverFactory;
@@ -41,7 +46,7 @@ public class BookingProviderImpl {
 
 
     public void dummyBrowser() throws MalformedURLException, InterruptedException {
-        AppDriver driver = appDriverFactory.createDriver("https://www.booking.com/");
+        AppDriver driver = appDriverFactory.createDriver(path);
         log.info("Dummy browser! Hey server, do not sleep!");
         driver.terminateDriver();
     }
@@ -95,7 +100,8 @@ public class BookingProviderImpl {
         DateRange<LocalDate> localDateDateRange;
         try {
             driver = startDriver(start);
-            closeRegisterModal(driver);
+            if (closeRegisterModalEvent)
+                closeRegisterModal(driver);
             changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
             enterLocation(driver, params.get(Param.SEARCH_LOCATION));
             localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
@@ -127,7 +133,7 @@ public class BookingProviderImpl {
     private AppDriver startDriver(LocalDate start) {
         AppDriver driver;
         try {
-            driver = appDriverFactory.createDriver("https://www.booking.com/");
+            driver = appDriverFactory.createDriver(path);
         } catch (MalformedURLException | InterruptedException e) {
             throw new IllegalArgumentException("Error occurred when driver start: ", e);
         }

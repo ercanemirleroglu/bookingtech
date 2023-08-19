@@ -50,3 +50,9 @@ application:
     chromeDriverPath: /Users/ercanemirleroglu/Documents/Projects/drivers/chromedriver
   commands:
     killCompletely: false
+  automation:
+    path: "https://www.booking.com/"
+    pageLoadTimeout: 240
+    implicitlyWait: 60
+    setScriptTimeout: 60
+    closeRegisterModalEvent: true

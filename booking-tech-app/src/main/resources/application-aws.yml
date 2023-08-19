@@ -52,3 +52,9 @@ application:
   security:
     encryption:
       passwordFilePath: /home/ec2-user/certs/new-kp.pem
+  automation:
+    path: "https://www.booking.com/"
+    pageLoadTimeout: 120
+    implicitlyWait: 15
+    setScriptTimeout: 15
+    closeRegisterModalEvent: false

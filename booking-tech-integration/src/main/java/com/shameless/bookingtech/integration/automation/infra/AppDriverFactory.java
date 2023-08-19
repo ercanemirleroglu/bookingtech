@@ -21,6 +21,12 @@ public class AppDriverFactory {
     private String driverPath;
     @Value("${application.drivers.chromeDriverPath}")
     private String chromeDriverPath;
+    @Value("${application.automation.pageLoadTimeout}")
+    private long pageLoadTimeout;
+    @Value("${application.automation.implicitlyWait}")
+    private long implicitlyWait;
+    @Value("${application.automation.setScriptTimeout}")
+    private long setScriptTimeout;
 
     public AppDriver createDriver(String path) throws MalformedURLException, InterruptedException {
         WebDriver driver = executeDriverByPath(path);
@@ -60,9 +66,9 @@ public class AppDriverFactory {
     private WebDriver setDriver(ChromeOptions options, String path, boolean isMax) {
         log.info("driver initializing...");
         WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().pageLoadTimeout(240, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
-        driver.manage().timeouts().setScriptTimeout(60, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(pageLoadTimeout, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(implicitlyWait, TimeUnit.SECONDS);
+        driver.manage().timeouts().setScriptTimeout(setScriptTimeout, TimeUnit.SECONDS);
         driver.get(path);
         if (isMax) {
             setDeviceType(driver);
