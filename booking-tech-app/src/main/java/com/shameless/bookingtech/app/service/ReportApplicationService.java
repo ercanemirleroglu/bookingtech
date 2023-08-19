@@ -49,9 +49,14 @@ public class ReportApplicationService {
     public void triggerHourlyJob(TriggerTypeDto triggerType) {
         log.info("Hourly Job: it is starting...");
         String jobName = "Hourly Job";
-        if (TriggerTypeDto.SYSTEM.equals(triggerType))
-            jobService.start(jobName, TriggerTypeDto.SYSTEM);
+
         try{
+            if (TriggerTypeDto.SYSTEM.equals(triggerType)) {
+                log.info("Hourly Job: Job in db starting...");
+                jobService.start(jobName, TriggerTypeDto.SYSTEM);
+                log.info("Hourly Job: Job in db started");
+            }
+
             log.info("Hourly Job: Params are fetching");
             Map<Param, String> params = getAllParamsMap();
             log.info("Hourly Job: Params fetched: {}", params);
@@ -83,9 +88,13 @@ public class ReportApplicationService {
     public void triggerPeriodicJob(TriggerTypeDto triggerType) {
         log.info("Periodic Job: it is starting...");
         String jobName = "Periodic Job";
-        if (TriggerTypeDto.SYSTEM.equals(triggerType))
-            jobService.start(jobName, TriggerTypeDto.SYSTEM);
         try {
+            if (TriggerTypeDto.SYSTEM.equals(triggerType)) {
+                log.info("Periodic Job: Job in db starting...");
+                jobService.start(jobName, TriggerTypeDto.SYSTEM);
+                log.info("Periodic Job: Job in db started");
+            }
+
             log.info("Periodic Job: Params are fetching");
             Map<Param, String> params = getAllParamsMap();
             log.info("Periodic Job: Params fetched: {}", params);

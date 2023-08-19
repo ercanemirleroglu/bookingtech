@@ -68,6 +68,8 @@ public class BookingProviderImpl {
                     int finalI = (j * Constants.CONCURRENT_SIZE) + i;
                     executor.execute(() -> {
                         try {
+                            obj.path = this.path;
+                            obj.closeRegisterModalEvent = this.closeRegisterModalEvent;
                             obj.bookingScreenAutomationProcess(params, periodicResultExtDtoList, customerSelectModels, date.plusDays(finalI));
                         } catch (Exception e) {
                             log.error("Error occurred: ", e);
@@ -133,7 +135,7 @@ public class BookingProviderImpl {
     private AppDriver startDriver(LocalDate start) {
         AppDriver driver;
         try {
-            driver = appDriverFactory.createDriver(path);
+            driver = appDriverFactory.createDriver("https://www.booking.com/");
         } catch (MalformedURLException | InterruptedException e) {
             throw new IllegalArgumentException("Error occurred when driver start: ", e);
         }
