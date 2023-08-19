@@ -1,41 +1,146 @@
 package com.shameless.bookingtech.app.service;
 
+import com.shameless.bookingtech.app.mapper.BookingResultMapper;
 import com.shameless.bookingtech.app.model.*;
 import com.shameless.bookingtech.app.model.periodic.HotelPricePeriodicModel;
 import com.shameless.bookingtech.app.model.periodic.PeriodicMailReport;
 import com.shameless.bookingtech.app.model.periodic.PriceByDateRangeModel;
 import com.shameless.bookingtech.app.model.periodic.PricesByDateRange;
 import com.shameless.bookingtech.common.util.model.DateRange;
-import com.shameless.bookingtech.domain.dto.PriceDto;
-import com.shameless.bookingtech.domain.dto.ReportDto;
-import com.shameless.bookingtech.domain.dto.SearchCriteriaDto;
-import com.shameless.bookingtech.domain.dto.StoreTypeDto;
-import com.shameless.bookingtech.domain.service.PriceService;
-import com.shameless.bookingtech.domain.service.ReportService;
-import com.shameless.bookingtech.domain.service.SearchCriteriaService;
+import com.shameless.bookingtech.common.util.model.Param;
+import com.shameless.bookingtech.domain.dto.*;
+import com.shameless.bookingtech.domain.service.*;
+import com.shameless.bookingtech.integration.automation.model.SearchResultExtDto;
+import com.shameless.bookingtech.integration.automation.service.BookingProviderImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class ReportApplicationService {
 
     private final SearchCriteriaService searchCriteriaService;
     private final PriceService priceService;
     private final ReportService reportService;
+    private final BookingProviderImpl bookingProvider;
+    private final ParamService paramService;
+    private final HotelApplicationService hotelApplicationService;
+    private final EmailService emailService;
+    private final JobService jobService;
 
     public ReportApplicationService(SearchCriteriaService searchCriteriaService,
                                     PriceService priceService,
-                                    ReportService reportService) {
+                                    ReportService reportService, BookingProviderImpl bookingProvider, ParamService paramService, HotelApplicationService hotelApplicationService, EmailService emailService, JobService jobService) {
         this.searchCriteriaService = searchCriteriaService;
         this.priceService = priceService;
         this.reportService = reportService;
+        this.bookingProvider = bookingProvider;
+        this.paramService = paramService;
+        this.hotelApplicationService = hotelApplicationService;
+        this.emailService = emailService;
+        this.jobService = jobService;
+    }
+
+    public void triggerHourlyJob(TriggerTypeDto triggerType) {
+        log.info("Hourly Job: it is starting...");
+        String jobName = "Hourly Job";
+        if (TriggerTypeDto.SYSTEM.equals(triggerType))
+            jobService.start(jobName, TriggerTypeDto.SYSTEM);
+        try{
+            log.info("Hourly Job: Params are fetching");
+            Map<Param, String> params = getAllParamsMap();
+            log.info("Hourly Job: Params fetched: {}", params);
+
+            log.info("Hourly Job: Booking data is fetching...");
+            SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, false, LocalDate.now());
+            log.info("Hourly Job: Booking data fetched");
+
+            log.info("Hourly Job: Booking data is saving...");
+            hotelApplicationService.save(BookingResultMapper.INSTANCE.toDto(searchResultExtDto));
+            log.info("Hourly Job: Booking data saved");
+
+            log.info("Hourly Job: Report is generating...");
+            PriceEmailModel hourlyReport = getHourlyReport();
+            log.info("Hourly Job: report generated");
+
+            log.info("Hourly Job: Mail is sending...");
+            emailService.sendMail(hourlyReport, "emailTemplate");
+            log.info("Hourly Job: Mail sent");
+            jobService.finish(jobName);
+        } catch (Exception e) {
+            log.error("Hourly Job: An error occurred: ", e);
+            jobService.error(jobName, e.getMessage());
+        } finally {
+            log.info("Hourly Job: It is finished");
+        }
+    }
+
+    public void triggerPeriodicJob(TriggerTypeDto triggerType) {
+        log.info("Periodic Job: it is starting...");
+        String jobName = "Periodic Job";
+        if (TriggerTypeDto.SYSTEM.equals(triggerType))
+            jobService.start(jobName, TriggerTypeDto.SYSTEM);
+        try {
+            log.info("Periodic Job: Params are fetching");
+            Map<Param, String> params = getAllParamsMap();
+            log.info("Periodic Job: Params fetched: {}", params);
+
+            log.info("Periodic Job: Report Info and Date is fetching...");
+            Optional<ReportDto> reportOpt = reportService.getReportByTypeAndDate(StoreTypeDto.PERIODIC, LocalDate.now());
+            LocalDate date = reportOpt.map(reportDto -> reportDto.getLastPriceDay().plusDays(1)).orElseGet(LocalDate::now);
+            log.info("Periodic Job: Report Info and Date fetched");
+
+            log.info("Periodic Job: Booking data is fetching...");
+            SearchResultExtDto searchResultExtDto = bookingProvider.fetchBookingData(params, true, date);
+            log.info("Periodic Job: Booking data fetched");
+
+            log.info("Periodic Job: Booking data is saving...");
+            hotelApplicationService.save(BookingResultMapper.INSTANCE.toDto(searchResultExtDto));
+            log.info("Periodic Job: Booking data saved");
+
+            log.info("Periodic Job: Report is generating...");
+            PeriodicMailReport periodicReport = getPeriodicReport();
+            log.info("Periodic Job: report generated");
+
+            log.info("Periodic Job: Mail is sending...");
+            emailService.sendMail(periodicReport, "periodicEmailTemplate");
+            log.info("Periodic Job: Mail sent");
+            jobService.finish(jobName);
+        } catch (Exception e) {
+            log.error("Periodic Job: An error occurred: ", e);
+            jobService.error(jobName, e.getMessage());
+        } finally {
+            log.info("Periodic Job: It is finished");
+        }
+    }
+
+    public void triggerDummyJob() {
+        log.info("Dummy Job: it is starting...");
+        try{
+            log.info("Dummy Job: Params are fetching");
+            Map<Param, String> params = getAllParamsMap();
+            log.info("Dummy Job: Params fetched: {}", params);
+
+            log.info("Dummy Job: browser is opening...");
+            bookingProvider.dummyBrowser();
+            log.info("Dummy Job: browser opened and closed");
+        }catch (Exception e) {
+            log.error("Dummy Job: An error occurred: ", e);
+        } finally {
+            log.info("Dummy Job: It is finished");
+        }
+    }
+
+    private Map<Param, String> getAllParamsMap(){
+        Map<Param, String> params = new HashMap<>();
+        List<ParamDto> allParams = paramService.getAllParams();
+        allParams.forEach(param -> params.put(param.getKey(), param.getValue()));
+        return params;
     }
 
     public PriceEmailModel getHourlyReport() {

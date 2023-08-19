@@ -1,4 +1,4 @@
-package com.shameless.bookingtech.app.api;
+package com.shameless.bookingtech.app.rest.api;
 
 import com.shameless.bookingtech.app.model.response.UserResponse;
 import com.shameless.bookingtech.app.service.TokenService;

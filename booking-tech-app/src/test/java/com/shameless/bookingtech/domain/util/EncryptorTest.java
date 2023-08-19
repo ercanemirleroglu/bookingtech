@@ -1,13 +1,11 @@
 package com.shameless.bookingtech.domain.util;
 
 import com.shameless.bookingtech.app.BookingtechApplication;
-import com.shameless.bookingtech.app.config.EncryptionConfig;
-import com.shameless.bookingtech.app.service.ProcessService;
+import com.shameless.bookingtech.app.service.ReportJobExecutorTask;
 import com.shameless.bookingtech.app.util.Decryptor;
 import com.shameless.bookingtech.app.util.Encryptor;
 import com.shameless.bookingtech.integration.automation.infra.AppDriverFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = {BookingtechApplication.class})
-@MockBean(classes = {ProcessService.class, AppDriverFactory.class})
+@MockBean(classes = {ReportJobExecutorTask.class, AppDriverFactory.class})
 @Slf4j
 class EncryptorTest {
 

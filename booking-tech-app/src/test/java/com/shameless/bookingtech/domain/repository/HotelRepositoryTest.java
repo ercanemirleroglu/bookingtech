@@ -1,7 +1,7 @@
 package com.shameless.bookingtech.domain.repository;
 
 import com.shameless.bookingtech.app.BookingtechApplication;
-import com.shameless.bookingtech.app.service.ProcessService;
+import com.shameless.bookingtech.app.service.ReportJobExecutorTask;
 import com.shameless.bookingtech.domain.dto.HotelDto;
 import com.shameless.bookingtech.domain.dto.LocationDto;
 import com.shameless.bookingtech.domain.entity.HotelEntity;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = {BookingtechApplication.class})
-@MockBean(classes = {ProcessService.class, AppDriverFactory.class})
+@MockBean(classes = {ReportJobExecutorTask.class, AppDriverFactory.class})
 class HotelRepositoryTest {
 
     @Autowired

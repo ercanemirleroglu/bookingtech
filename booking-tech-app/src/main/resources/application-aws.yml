@@ -4,10 +4,10 @@ server:
     context-path: /booking
 spring:
   datasource:
-    url: "jdbc:postgresql://shameless-booking-instance.ckwxuigzvke5.eu-north-1.rds.amazonaws.com:5432/booking"
+    url: "jdbc:postgresql://shameless-booking-instance.ckwxuigzvke5.eu-north-1.rds.amazonaws.com:5432/booking2"
     driverClassName: org.postgresql.Driver
     username: "postgres"
-    password: ENC(9gJCckJT6MjwEM7q+Z5ZEaeCcMfjjaco)
+    password: ENC(nc7PfXOfjszOkBqUItkZjdNbTvha/nGh)
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
