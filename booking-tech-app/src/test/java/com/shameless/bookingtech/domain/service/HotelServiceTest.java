@@ -1,12 +1,10 @@
 package com.shameless.bookingtech.domain.service;
 
 import com.shameless.bookingtech.domain.dto.HotelDto;
-import com.shameless.bookingtech.domain.dto.LocationDto;
 import com.shameless.bookingtech.domain.entity.HotelEntity;
 import com.shameless.bookingtech.domain.entity.LocationEntity;
 import com.shameless.bookingtech.domain.factory.HotelFactory;
 import com.shameless.bookingtech.domain.mapper.HotelMapper;
-import com.shameless.bookingtech.domain.mapper.LocationMapper;
 import com.shameless.bookingtech.domain.repository.HotelRepository;
 import com.shameless.bookingtech.domain.repository.LocationRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -32,12 +30,14 @@ class HotelServiceTest {
     private HotelFactory hotelFactory;
     @Mock
     private LocationRepository locationRepository;
+    @Mock
+    private SearchCriteriaService searchCriteriaService;
     private AutoCloseable autoCloseable;
 
     @BeforeEach
     void setUp() {
         autoCloseable = MockitoAnnotations.openMocks(this);
-        underTest = new HotelService(hotelRepository, hotelFactory, locationRepository);
+        underTest = new HotelService(hotelRepository, hotelFactory, locationRepository, searchCriteriaService);
     }
 
     @AfterEach

@@ -4,6 +4,8 @@ import com.shameless.bookingtech.domain.dto.HotelDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,6 +26,10 @@ public class HotelEntity extends AbstractEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "location_id")
     private LocationEntity location;
+
+    @OneToMany
+    @JoinColumn(name = "hotel_id")
+    private List<PriceEntity> prices;
 
     public void update(HotelDto hotelDto) {
         this.rating = hotelDto.getRating();

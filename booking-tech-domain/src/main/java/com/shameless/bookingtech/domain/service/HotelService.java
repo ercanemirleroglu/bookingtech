@@ -1,6 +1,7 @@
 package com.shameless.bookingtech.domain.service;
 
 import com.shameless.bookingtech.domain.dto.HotelDto;
+import com.shameless.bookingtech.domain.dto.SearchCriteriaDto;
 import com.shameless.bookingtech.domain.entity.HotelEntity;
 import com.shameless.bookingtech.domain.entity.LocationEntity;
 import com.shameless.bookingtech.domain.factory.HotelFactory;
@@ -13,17 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HotelService {
     private final HotelRepository hotelRepository;
     private final HotelFactory hotelFactory;
     private final LocationRepository locationRepository;
+    private final SearchCriteriaService searchCriteriaService;
 
-    public HotelService(HotelRepository hotelRepository, HotelFactory hotelFactory, LocationRepository locationRepository) {
+    public HotelService(HotelRepository hotelRepository, HotelFactory hotelFactory, LocationRepository locationRepository, SearchCriteriaService searchCriteriaService) {
         this.hotelRepository = hotelRepository;
         this.hotelFactory = hotelFactory;
         this.locationRepository = locationRepository;
+        this.searchCriteriaService = searchCriteriaService;
     }
 
     public List<HotelDto> addBulk(List<HotelDto> hotelDtoList) {
@@ -51,5 +55,11 @@ public class HotelService {
             }
         });
         return hotelDtoListInThisProcess;
+    }
+
+    public List<HotelDto> findAllWithLastPriceInfo() {
+        SearchCriteriaDto scDto = searchCriteriaService.getCriteriaByParams();
+        return hotelRepository.findAllWithLastPriceInfo(scDto.getId()).stream()
+                .map(HotelMapper.INSTANCE::toDtoWithPrices).collect(Collectors.toList());
     }
 }
