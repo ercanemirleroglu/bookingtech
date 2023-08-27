@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationService {
@@ -43,5 +44,10 @@ public class LocationService {
         return locationRepository.findByName(location).map(LocationMapper.INSTANCE::toDto)
                 .orElseThrow(() -> new IllegalArgumentException("Loocation not found! Name: "
                         + location));
+    }
+
+    public List<LocationDto> findAllWithStatistics() {
+        return locationRepository.findAll().stream().map(LocationMapper.INSTANCE::toDtoWithStatistics)
+                .collect(Collectors.toList());
     }
 }

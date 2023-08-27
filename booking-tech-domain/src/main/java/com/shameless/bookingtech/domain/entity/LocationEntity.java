@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,5 +23,9 @@ public class LocationEntity extends AbstractEntity<Long> {
     private Long id;
 
     private String name;
+
+    @OneToMany
+    @JoinColumn(name = "location_id")
+    private List<HotelEntity> hotels;
 
 }
