@@ -27,20 +27,19 @@ public class AppDriverFactory {
     private long implicitlyWait;
     @Value("${application.automation.setScriptTimeout}")
     private long setScriptTimeout;
+    @Value("${application.automation.userAgent}")
+    private String userAgent;
 
     public AppDriver createDriver(String path) throws MalformedURLException, InterruptedException {
         WebDriver driver = executeDriverByPath(path);
-        DeviceType deviceType = setDeviceType(driver);
+        DeviceType deviceType = controlDeviceType(driver);
         return new AppDriver(driver, deviceType);
     }
 
-    protected WebDriver executeDriverByPath(String path) throws InterruptedException, MalformedURLException {
+    protected WebDriver executeDriverByPath(String path) {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         ChromeOptions options = manageOptions();
-        WebDriver driver = setDriver(options, path, false);
-        setUserAgent(driver, options);
-        terminateDriver(driver);
-        return setDriver(options, path, true);
+        return setDriver(options, path);
     }
 
     public void terminateDriver(WebDriver driver) throws InterruptedException {
@@ -60,23 +59,22 @@ public class AppDriverFactory {
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1440,900");
+        options.addArguments("user-agent=\\" + userAgent);
         return options;
     }
 
-    private WebDriver setDriver(ChromeOptions options, String path, boolean isMax) {
+    private WebDriver setDriver(ChromeOptions options, String path) {
         log.info("driver initializing...");
         WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().pageLoadTimeout(pageLoadTimeout, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(implicitlyWait, TimeUnit.SECONDS);
         driver.manage().timeouts().setScriptTimeout(setScriptTimeout, TimeUnit.SECONDS);
         driver.get(path);
-        if (isMax) {
-            setDeviceType(driver);
-        }
+        controlDeviceType(driver);
         return driver;
     }
 
-    private DeviceType setDeviceType(WebDriver driver) {
+    private DeviceType controlDeviceType(WebDriver driver) {
         Dimension dimensionInfo = getDimensionInfo(driver);
         log.info("Device width is : {}, height is : {}", dimensionInfo.width, dimensionInfo.height);
         DeviceType deviceType = Arrays.stream(DeviceType.values())

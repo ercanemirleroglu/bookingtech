@@ -256,7 +256,7 @@ public class BookingProviderImpl {
                                 .ifPresentOrElse(button -> {
                                     log.info("Page button count {}", finalCurrentPage);
                                     button.click(driver.javaScriptExecutor());
-                                    driver.timeout(10);
+                                    driver.timeout(5);
                                     List<AppElement> hotelDivListInside = getHotelDivList(driver);
                                     hotelPriceExtDtoList.addAll(fetchDataFromPage(driver, hotelDivListInside, finalCurrentPage, params.get(Param.APP_CURRENCY_UNIT)));
                                 }, () -> {
@@ -311,13 +311,13 @@ public class BookingProviderImpl {
         log.info("Clicking search button...");
         searchButton.ifPresent(e -> e.click(driver.javaScriptExecutor()));
         log.info("Clicked search button successfully");
-        driver.timeout(20);
+        driver.timeout(5);
     }
 
     private void enterCustomerTypeAndCount(AppDriver driver, List<CustomerSelectModel> customerSelectModels) {
         Optional<AppElement> elementByCssSelector = driver.findOneElementByCssSelector("div.d67edddcf0", driver.javaScriptExecutor());
         elementByCssSelector.ifPresent(e -> e.click(driver.javaScriptExecutor()));
-        driver.timeout(3);
+        driver.timeout(2);
         Optional<AppElement> occupancyPopup = driver.findOneElementByCssSelector("[data-testid='occupancy-popup']", driver.javaScriptExecutor());
         if (occupancyPopup.isEmpty()) {
             log.error("Occupancy Popup not found!");
