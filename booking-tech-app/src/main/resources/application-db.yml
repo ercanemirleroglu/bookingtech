@@ -48,7 +48,7 @@ application:
     encryption:
       passwordFilePath: /Users/ercanemirleroglu/Documents/Projects/certs/new-kp.pem
   automation:
-    path: "https://www.booking.com/"
+    path: "https://www.booking.com/?selected_currency="
     pageLoadTimeout: 240
     implicitlyWait: 60
     setScriptTimeout: 60

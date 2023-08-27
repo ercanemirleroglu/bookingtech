@@ -101,10 +101,10 @@ public class BookingProviderImpl {
         AppDriver driver = null;
         DateRange<LocalDate> localDateDateRange;
         try {
-            driver = startDriver(start);
+            driver = startDriver(start, params.get(Param.APP_CURRENCY_UNIT));
             if (closeRegisterModalEvent)
                 closeRegisterModal(driver);
-            changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
+            //changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
             enterLocation(driver, params.get(Param.SEARCH_LOCATION));
             localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
             enterCustomerTypeAndCount(driver, customerSelectModels);
@@ -132,10 +132,10 @@ public class BookingProviderImpl {
         }
     }
 
-    private AppDriver startDriver(LocalDate start) {
+    private AppDriver startDriver(LocalDate start, String currency) {
         AppDriver driver;
         try {
-            driver = appDriverFactory.createDriver("https://www.booking.com/");
+            driver = appDriverFactory.createDriver(path + currency);
         } catch (MalformedURLException | InterruptedException e) {
             throw new IllegalArgumentException("Error occurred when driver start: ", e);
         }
@@ -145,18 +145,13 @@ public class BookingProviderImpl {
     }
 
     private String getHotelCountTitle(AppDriver driver) {
-        AppElement title = driver.findOneElementByCssSelector("[data-component='arp-header']", driver.javaScriptExecutor())
-                .map(e -> e.findOneElementByCssSelector("[aria-live='assertive']", driver.javaScriptExecutor())
-                        .orElseGet(() -> {
-                            log.error("Property count title not found!");
-                            throw new NoSuchElementException("Property count title not found!");
-                        }))
+        AppElement title = driver.findOneElementByCssSelector("h1[aria-live='assertive']", driver.javaScriptExecutor())
                 .orElseGet(() -> {
-                    log.error("Arp header not found! You should control search button also!");
-                    throw new NoSuchElementException("Arp header not found! You should control search button also!");
+                    log.error("Property count title not found!");
+                    throw new NoSuchElementException("Property count title not found!");
                 });
         String text = title.getText();
-        log.info(text);
+        log.info("{} property found.", text);
         return text;
     }
 

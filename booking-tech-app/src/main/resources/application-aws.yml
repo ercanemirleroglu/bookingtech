@@ -53,7 +53,7 @@ application:
     encryption:
       passwordFilePath: /home/ec2-user/certs/new-kp.pem
   automation:
-    path: "https://www.booking.com/"
+    path: "https://www.booking.com/?selected_currency="
     pageLoadTimeout: 120
     implicitlyWait: 15
     setScriptTimeout: 15
