@@ -104,7 +104,7 @@ public class BookingProviderImpl {
             driver = startDriver(start, params.get(Param.APP_CURRENCY_UNIT));
             if (closeRegisterModalEvent)
                 closeRegisterModal(driver);
-            //changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
+            changeCurrency(driver, params.get(Param.APP_CURRENCY_UNIT));
             enterLocation(driver, params.get(Param.SEARCH_LOCATION));
             localDateDateRange = enterDateByDayRange(driver, params.get(Param.SEARCH_DATE_RANGE), start);
             enterCustomerTypeAndCount(driver, customerSelectModels);
@@ -135,7 +135,7 @@ public class BookingProviderImpl {
     private AppDriver startDriver(LocalDate start, String currency) {
         AppDriver driver;
         try {
-            driver = appDriverFactory.createDriver(path + currency);
+            driver = appDriverFactory.createDriver(path);
         } catch (MalformedURLException | InterruptedException e) {
             throw new IllegalArgumentException("Error occurred when driver start: ", e);
         }
@@ -256,7 +256,7 @@ public class BookingProviderImpl {
                                 .ifPresentOrElse(button -> {
                                     log.info("Page button count {}", finalCurrentPage);
                                     button.click(driver.javaScriptExecutor());
-                                    driver.timeout(10);
+                                    driver.timeout(5);
                                     List<AppElement> hotelDivListInside = getHotelDivList(driver);
                                     hotelPriceExtDtoList.addAll(fetchDataFromPage(driver, hotelDivListInside, finalCurrentPage, params.get(Param.APP_CURRENCY_UNIT)));
                                 }, () -> {
@@ -311,13 +311,13 @@ public class BookingProviderImpl {
         log.info("Clicking search button...");
         searchButton.ifPresent(e -> e.click(driver.javaScriptExecutor()));
         log.info("Clicked search button successfully");
-        driver.timeout(20);
+        driver.timeout(5);
     }
 
     private void enterCustomerTypeAndCount(AppDriver driver, List<CustomerSelectModel> customerSelectModels) {
         Optional<AppElement> elementByCssSelector = driver.findOneElementByCssSelector("div.d67edddcf0", driver.javaScriptExecutor());
         elementByCssSelector.ifPresent(e -> e.click(driver.javaScriptExecutor()));
-        driver.timeout(3);
+        driver.timeout(2);
         Optional<AppElement> occupancyPopup = driver.findOneElementByCssSelector("[data-testid='occupancy-popup']", driver.javaScriptExecutor());
         if (occupancyPopup.isEmpty()) {
             log.error("Occupancy Popup not found!");
@@ -392,7 +392,7 @@ public class BookingProviderImpl {
             for (int i = 0; (i < 10 && (calendar.isEmpty() || !calendar.get().isDisplayed())); i++) {
                 e.click(driver.javaScriptExecutor());
                 driver.timeout(1);
-                calendar = driver.findOneElementByCssSelector("[data-testid='datepicker-tabs']", driver.javaScriptExecutor());
+                calendar = driver.findOneElementByCssSelector("[data-testid='searchbox-datepicker-calendar']", driver.javaScriptExecutor());
             }
         }, () -> {
             log.error("Date Range Input not found!");
@@ -426,7 +426,7 @@ public class BookingProviderImpl {
                 driver.findOneElementByCssSelector("button.a83ed08757.c21c56c305.f38b6daa18.d691166b09.f671049264.deab83296e.f4552b6561.dc72a8413c.f073249358",
                         driver.javaScriptExecutor()).ifPresentOrElse(nextBtn -> {
                     nextBtn.click(driver.javaScriptExecutor());
-                    driver.timeout(1);
+                    driver.timeout(3);
                 }, () -> {
                     log.error("Next button not found in date Range Popup");
                     throw new NoSuchElementException("Next button not found in date Range Popup");

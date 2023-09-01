@@ -53,8 +53,9 @@ application:
     encryption:
       passwordFilePath: /home/ec2-user/certs/new-kp.pem
   automation:
-    path: "https://www.booking.com/?selected_currency="
+    path: "https://www.booking.com/"
     pageLoadTimeout: 120
     implicitlyWait: 15
     setScriptTimeout: 15
     closeRegisterModalEvent: false
+    userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.90 Safari/537.36"
