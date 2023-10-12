@@ -305,7 +305,7 @@ public class BookingProviderImpl {
             searchButton = driver.findElementById(btn);
         }
         if (searchButton.isEmpty()) {
-            btn = "button.a83ed08757.c21c56c305.a4c1805887.f671049264.d2529514af.c082d89982.aa11d0d5cd";
+            btn = "button.a83ed08757.c21c56c305.a4c1805887.f671049264.d2529514af.c082d89982.cceeb8986b";
             searchButton = driver.findOneElementByCssSelector(btn, driver.javaScriptExecutor());
         }
         log.info("Clicking search button...");
@@ -315,7 +315,7 @@ public class BookingProviderImpl {
     }
 
     private void enterCustomerTypeAndCount(AppDriver driver, List<CustomerSelectModel> customerSelectModels) {
-        Optional<AppElement> elementByCssSelector = driver.findOneElementByCssSelector("div.d67edddcf0", driver.javaScriptExecutor());
+        Optional<AppElement> elementByCssSelector = driver.findOneElementByCssSelector("[data-testid='occupancy-config']", driver.javaScriptExecutor());
         elementByCssSelector.ifPresent(e -> e.click(driver.javaScriptExecutor()));
         driver.timeout(2);
         Optional<AppElement> occupancyPopup = driver.findOneElementByCssSelector("[data-testid='occupancy-popup']", driver.javaScriptExecutor());
@@ -442,7 +442,7 @@ public class BookingProviderImpl {
 
     private void enterLocation(AppDriver driver, String location) {
         log.info(" >>>>>>> Starting: To enter location...");
-        Optional<AppElement> locationDiv = driver.findOneElementByCssSelector("div.a5761ae4af", driver.javaScriptExecutor());
+        Optional<AppElement> locationDiv = driver.findOneElementByCssSelector("div.e000754250", driver.javaScriptExecutor());
         if (locationDiv.isEmpty()) {
             log.error("Location div not found!");
             throw new NoSuchElementException("Location div not found!");
