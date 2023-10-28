@@ -1,0 +1,59 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /booking
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/booking"
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: ENC(rpaSXatbR6LtwuedDmu8+g==)
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sbookingtech.info@gmail.com
+    password: ENC(kC3wlYGxuMmInHPp3BGspoCo5u+pPNrmrzi3jajXD14=)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 120000
+          timeout: 120000
+          writetimeout: 120000
+          starttls:
+            enable: true
+rsa:
+  private-key: "classpath:certs/private.pem"
+  public-key: "classpath:certs/public.pem"
+
+application:
+  drivers:
+    geckoDriverPath: C:\sbt\drivers\geckodriver.exe
+    chromeDriverPath: C:\sbt\drivers\chromedriver.exe
+  commands:
+    killCompletely: false
+  security:
+    encryption:
+      passwordFilePath: C:\sbt\certs\new-kp.pem
+  automation:
+    path: "https://www.booking.com/"
+    pageLoadTimeout: 240
+    implicitlyWait: 45
+    setScriptTimeout: 45
+    closeRegisterModalEvent: false
+    userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.90 Safari/537.36"
+  browsers:
+    chrome:
+      path: C:\sbt\browsers\chrome-win64\chrome.exe

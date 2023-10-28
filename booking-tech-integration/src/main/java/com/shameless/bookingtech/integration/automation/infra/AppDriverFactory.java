@@ -21,6 +21,8 @@ public class AppDriverFactory {
     private String driverPath;
     @Value("${application.drivers.chromeDriverPath}")
     private String chromeDriverPath;
+    @Value("${application.browsers.chrome.path}")
+    private String chromePath;
     @Value("${application.automation.pageLoadTimeout}")
     private long pageLoadTimeout;
     @Value("${application.automation.implicitlyWait}")
@@ -56,6 +58,7 @@ public class AppDriverFactory {
         log.info("Options settings...");
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("--remote-debugging-port=9222");
+        options.setBinary(chromePath);
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1440,900");
